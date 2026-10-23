@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | Digital Concrete</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="page-session" data-current-session="t2_s1">
+    <nav class="navbar">
+      <a href="../index.html" class="site-logo">
+        <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status"
+          >Status: <strong>AI Architect</strong></span
+        >
+        <a href="term2.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+
+  <!-- TERM 2 DROPDOWN -->
+  <div class="sidebar-section locked" data-sidebar-term="2">
+    <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+      <span>TERM 2: THE BRAIN</span>
+      <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+    </h3>
+    <ul style="display: block;">
+      <li data-session-id="t2_s1"><a href="../term-2/t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li>
+      <li data-session-id="t2_s2"><a href="../term-2/t2_session2.html"><i class="fas fa-font"></i> S2: The Secret Code</a></li>
+      <li data-session-id="t2_s3"><a href="../term-2/t2_session3.html"><i class="fas fa-dice"></i> S3: The Simplest Guesser</a></li>
+      <li data-session-id="t2_s4"><a href="../term-2/t2_session4.html"><i class="fas fa-window-maximize"></i> S4: The Context Window</a></li>
+      <li data-session-id="t2_s5"><a href="../term-2/t2_session5.html"><i class="fas fa-highlighter"></i> S5: The Highlighter</a></li>
+      <li data-session-id="t2_s6"><a href="../term-2/t2_session6.html"><i class="fas fa-dumbbell"></i> S6: The Learning Gym</a></li>
+      <li data-session-id="t2_s7"><a href="../term-2/t2_session7.html"><i class="fas fa-save"></i> S7: Exporting the Brain</a></li>
+      <li data-session-id="t2_s8"><a href="../term-2/t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+    </ul>
+  </div>
+  
+</aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 2 / Session 1 / Digital Concrete
+        </nav>
+
+        <section id="lesson-header">
+          <h1>Session 1: Digital Concrete (Tensors)</h1>
+          <p class="lead">
+            In Term 1, you rented a brain. In Term 2, you build your own. Today, we mix the mathematical concrete that will become your Nano-GPT.
+          </p>
+          <div class="stats-bar">
+            <span><i class="far fa-clock"></i> 60 Minutes</span>
+            <span><i class="fas fa-signal"></i> Level: Junior Architect</span>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+            <p>
+              By the end of this hour, you will understand how Artificial Intelligence "sees" data. You will install PyTorch, create multi-dimensional <strong>Tensors</strong>, perform machine learning math, and debug the most famous error in AI: the <strong>Shape Mismatch</strong>.
+            </p>
+          </div>
+        </section>
+
+        <section class="lesson-body">
+          <h2>1. The "Data Container" Mindset</h2>
+
+          <div class="info-box">
+            <p>
+              Computers are like massive calculators—they don't actually know what an "Apple," "sadness," or "YouTube" is. They only understand numbers.
+            </p>
+            <p>
+              In Term 1, your <code>brain.py</code> used an API that hid the machinery from you. When you typed "Open YouTube," the cloud turned those words into numbers—like <code>[23, 91, 442, 10]</code>. Now, you are stepping inside that layer yourself. <strong>You were never interacting with intelligence directly—you were interacting with the output of math.</strong>
+            </p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-cubes"></i> The Locker Analogy</h4>
+            <p>Imagine a single school locker. It holds one thing—a single value. That is a basic variable (0D).</p>
+            <p>Now, imagine a long row of lockers. That is a 1D Tensor (List). Finally, imagine a giant wall of lockers with many rows and columns. That is a 2D Tensor (Matrix).</p>
+            <p><strong>These structures are called Tensors.</strong> They are the specialized containers we use to hold all the numbers an AI needs to process information.</p>
+          </div>
+
+          <hr />
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-bridge"></i> THE ARCHITECT'S BRIDGE</h4>
+            <p>
+              In Term 1, your <code>brain.py</code> looked like it understood text. In reality, the OpenAI API hid the math layer from you. Your <code>brain.py</code> was actually sitting directly on top of millions of tensor operations. Every word you typed was converted into math before the "Brain" could even start thinking.
+            </p>
+          </div>
+
+          <hr />
+          <h2>2. What is a Tensor? (From Intuition to Reality)</h2>
+
+<div class="info-box">
+  <p>
+    A <strong>Tensor</strong> is a structured collection of numbers arranged in one or more dimensions.
+  </p>
+
+  <p>
+    In programming terms, a tensor is like a generalized version of a list:
+  </p>
+
+  <ul>
+    <li>A single number → <strong>0D Tensor</strong> (Scalar)</li>
+    <li>A list of numbers → <strong>1D Tensor</strong> (Vector)</li>
+    <li>A grid of numbers → <strong>2D Tensor</strong> (Matrix)</li>
+    <li>Multiple grids stacked together → <strong>3D+ Tensor</strong></li>
+  </ul>
+
+  <p>
+    The only thing that changes is the <strong>number of dimensions</strong>.
+  </p>
+</div>
+
+<div class="tool-info-box">
+  <h4><i class="fas fa-layer-group"></i> The Structure (This is what matters)</h4>
+
+  <p>
+    Every tensor has two key properties:
+  </p>
+
+  <ul>
+    <li><strong>Values:</strong> The actual numbers</li>
+    <li><strong>Shape:</strong> How those numbers are arranged</li>
+  </ul>
+
+  <p>
+    Example:
+  </p>
+
+  <pre><code>
+tensor([
+  [1, 2, 3],
+  [4, 5, 6]
+])
+  </code></pre>
+
+  <p>
+    This tensor has:
+  </p>
+  <ul>
+    <li><strong>Values:</strong> 1, 2, 3, 4, 5, 6</li>
+    <li><strong>Shape:</strong> [2, 3] → 2 rows, 3 columns</li>
+  </ul>
+
+  <p>
+    <strong>Important:</strong> Shape defines how data flows in AI systems.
+  </p>
+</div>
+
+<div class="info-box">
+  <h4><i class="fas fa-code"></i> How this looks in code</h4>
+
+  <pre><code>
+import torch
+
+x = torch.tensor([
+    [1, 2, 3],
+    [4, 5, 6]
+])
+
+print(x.shape)   # torch.Size([2, 3])
+  </code></pre>
+
+  <p>
+    The computer does not “see a grid.”
+    <br>
+    It sees:
+    <br>
+    → a block of numbers  
+    → arranged in a specific structure  
+  </p>
+</div>
+
+<div class="rule-callout">
+  <h4><i class="fas fa-brain"></i> The AI Perspective</h4>
+  <p>
+    Every input to an AI model is a tensor.
+  </p>
+
+  <p>
+    For example:
+  </p>
+
+  <ul>
+    <li>Text → converted into a list of numbers → <strong>1D Tensor</strong></li>
+    <li>Image → pixels → <strong>3D Tensor</strong> (Height × Width × Channels)</li>
+    <li>Batch of images → <strong>4D Tensor</strong></li>
+  </ul>
+
+  <p>
+    This means:
+    <br><br>
+    <strong>AI never sees meaning. It only sees numbers inside tensors.</strong>
+  </p>
+</div>
+
+<div class="tool-info-box">
+  <h4><i class="fas fa-project-diagram"></i> One Concrete Example (End-to-End)</h4>
+
+  <p>
+    Let’s say you type:
+    <br>
+    <b>"Hi"</b>
+  </p>
+
+  <p>
+    Step 1: Convert characters to numbers
+  </p>
+
+  <pre><code>
+"H" → 7  
+"i" → 12
+  </code></pre>
+
+  <p>
+    Step 2: Store them in a tensor
+  </p>
+
+  <pre><code>
+[7, 12]   → 1D Tensor
+  </code></pre>
+
+  <p>
+    Step 3: Model processes this tensor using math
+  </p>
+
+  <p>
+    <b>Final Insight:</b>
+    <br>
+    The model never sees "Hi" — it only sees <code>[7, 12]</code>.
+  </p>
+</div>
+          <h2>3. Why Tensors Exist</h2>
+          <div class="info-box">
+            <p>If AI is just math, where do all those millions of numbers go? We need a way to store them, keep them organized, and move them around extremely fast.</p>
+            <p>Tensors are the solution. They act like high-speed storage boxes that let computers perform thousands of calculations at the same time. <strong>No tensors = no computation = no intelligence.</strong> If there are no numbers to process, there is nothing for the AI to learn from.</p>
+          </div>
+
+          <h2>4. Equipping the Heavy Machinery (PyTorch)</h2>
+          <p>
+            Doing tensor math manually is like trying to build a skyscraper using only a hand-held screwdriver—it is too hard and takes forever! 
+          </p>
+          <p>
+            <strong>PyTorch</strong> is our power tool. It handles the heavy lifting of complex calculations instantly so we can focus on building the brain. It is the exact same framework used by Meta to build Llama 3 and Tesla to build self-driving cars.
+          </p>
+
+          <div class="activity-box">
+            <h4>🛠 Activity: Install PyTorch</h4>
+            <ol>
+              <li>Open <strong>VS Code</strong> and navigate to your main AI Nexus project folder.</li>
+              <li>Open your terminal and <strong>activate your Virtual Environment</strong>.
+                <br><code>venv\Scripts\activate</code> (Windows)
+                <br><code>source venv/bin/activate</code> (Mac/Linux)
+              </li>
+              <li>Once you see <code>(venv)</code>, run the installation command:
+                <pre><code>pip install torch</code></pre>
+              </li>
+              <li>Wait for the download to finish.</li>
+            </ol>
+            <figure class="screenshot">
+                        <img src="../images/S1A1.png"alt="pytorch installation"/>
+                        </figure>
+          </div>
+          <div class="rule-callout">
+  <h4><i class="fas fa-microchip"></i> CPU vs GPU — The Reality Check</h4>
+  <p>
+    You are installing the <strong>CPU version</strong> of PyTorch on purpose.
+  </p>
+  <p>
+    Real-world AI models (like GPT-4) require powerful GPUs because they train on billions of data points.
+    <br><br>
+    <strong>Your Nano-GPT is different.</strong>
+  </p>
+  <ul>
+    <li>Small dataset</li>
+    <li>Small model size</li>
+    <li>Short training time</li>
+  </ul>
+  <p>
+    This means your system can run completely on a normal laptop.
+  </p>
+  <p>
+    <strong>Engineering Insight:</strong> We are learning the <b>logic of AI</b>, not scaling infrastructure.
+  </p>
+</div>
+
+          <hr />
+
+          <h2>5. Mixing the Concrete</h2>
+
+          <p>Let's create our first Tensors and use the most important command in all of AI engineering: <code>.shape</code>.</p>
+          
+          <div class="rule-callout">
+            <h4><i class="fas fa-search"></i> THE .SHAPE COMMAND: SYSTEM COMPATIBILITY</h4>
+            <p>Shape is like the blueprint of your data. It tells you how everything is arranged.</p>
+            <p>
+              AI engineers don't look at numbers; they look at <code>.shape</code>. In Term 1, your "Data Contract" required specific JSON keys. If you sent the wrong key, the system broke.
+            </p>
+            <p>
+              Every layer in an AI expects a specific <strong>Tensor Shape</strong>. Shape defines <strong>compatibility</strong>, not just size. If you ignore shape, you are guessing. If you track shape, you are engineering.
+            </p>
+            <p><em>Engineering Insight: Wrong JSON key = system logic failure. Wrong Tensor shape = model crash.</em></p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity: Your First Tensors</h4>
+            <p>Create a new folder with a name <code>Term_2</code></p>
+            <p>Inside this new folder create a new file called <code>tensor_basics.py</code></p>
+            <ol>
+              <li>Type the following code:</li>
+              <div class="code-block python">
+                <div class="code-header">tensor_basics.py - Creating Shapes</div>
+                <pre>
+import torch
+
+# 1. Create a 1D Tensor (A row of 3 lockers)
+row = torch.tensor([10, 20, 30])
+print("--- 1D TENSOR ---")
+print("row =", row)
+print("Shape:", row.shape)  # Should output: torch.Size([3])
+
+# 2. Create a 2D Tensor (A wall of lockers: 2 rows, 3 columns)
+wall = torch.tensor([
+    [1, 2, 3],
+    [4, 5, 6]
+])
+print("\n--- 2D TENSOR ---")
+print("wall =", wall)
+print("Shape:", wall.shape)  # Should output: torch.Size([2, 3])
+</pre>
+              </div>
+              <figure class="screenshot">
+                        <img src="../images/S1A2_code.png"alt="initial code"/>
+                        </figure>
+              <li>Run the script:  <code>python Term_2/tensor_basics.py</code></li>
+              <li><strong>Verify:</strong> Do you see <code>torch.Size([2, 3])</code> for the wall? This means the computer sees 2 lists, each containing 3 items.</li>
+              <figure class="screenshot">
+                        <img src="../images/S1A2_output.png"alt="output"/>
+                        </figure>
+            </ol>
+          </div>
+
+          <hr />
+          <h2>6. Higher Dimensions (3D / 4D)</h2>
+          <div class="tool-info-box">
+            <p>AI sees more than just rows and columns. Think of a digital image: it has a Height and a Width, but it also has Channels (the Red, Green, and Blue colors). That is a 3D tensor: <code>[Height, Width, Channels]</code>.</p>
+            <p>If you stack 32 of those images on top of each other to process them all at once, you get a 4D tensor. It’s like a stack of photos waiting to be scanned! <b>This is how AI processes vision at scale.</b></p>
+            <p>This is exactly how apps like Instagram or Snapchat process images in real time.</p>
+          </div>
+
+          <hr />
+          <h2>7. Tensor Math & The "Shape Mismatch"</h2>
+
+          <p>AI "learning" is actually just millions of tensor additions and multiplications happening very fast. But there is a strict rule: <strong>The grids must fit together.</strong></p>
+
+          <div class="activity-box">
+            <h4>🛠 Activity: The Crash Test</h4>
+            <p>Let's do some math, and then intentionally break our program so you know what a Machine Learning error looks like.</p>
+            <ol>
+              <li>Add this code to the bottom of your <code>tensor_basics.py</code> file:</li>
+              <div class="code-block python">
+                <div class="code-header">tensor_basics.py - Math & Mismatch</div>
+                <pre>
+# --- TENSOR MATH ---
+tensor_a = torch.tensor([1, 2, 3])
+tensor_b = torch.tensor([10, 20, 30])
+
+# This works perfectly because both shapes are [3]
+print("\nAddition Success:")
+print(tensor_a + tensor_b)
+
+# --- THE CRASH TEST ---
+# tensor_c has a shape of [2]. It only has two lockers!
+tensor_c = torch.tensor([100, 200])
+
+print("\nAttempting Shape Mismatch...")
+# Uncomment the line below to break your code!
+# print(tensor_a + tensor_c) 
+</pre>
+              </div>
+              <li>Uncomment the last line (remove the <code>#</code>) and run the script.</li>
+              <li>You should see an error containing: <code>RuntimeError: The size of tensor a (3) must match the size of tensor b (2)</code>.</li>
+            </ol>
+            <figure class="screenshot">
+                        <img src="../images/S1A3_output.png"alt="crash output"/>
+                        </figure>
+            <h4>⚙️ Fix the System</h4>
+  <p>
+    The system just crashed due to shape mismatch.
+    <br><br>
+    Your task:
+    <br>
+    Modify <code>tensor_c</code> so that the addition works.
+    <br><br>
+    What shape should it have?
+  </p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-exclamation-triangle"></i> Shape Mismatch: A System Constraint</h4>
+            <p>
+              Imagine trying to put a giant encyclopedia on a tiny shelf meant for pocketbooks. It won't fit! In AI, every layer is like a shelf. If the data (the books) doesn't have the exact right shape, it crashes.
+            </p>
+            <p>
+              Think of it as <strong>mismatched gears</strong>. If one gear has 10 teeth and the other has 8, the machine stops. <strong>If shapes don’t align, the system doesn’t negotiate—it fails instantly.</strong> Engineering is about making sure every "book" fits its "shelf."
+            </p>
+            <p><strong>Fixing it:</strong> Always use <code>print(tensor.shape)</code> right before a crash to see which gear is out of alignment.</p>
+          </div>
+
+          <div class="tool-info-box" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-microchip"></i> The Logic of Prediction</h4>
+            <p>An AI doesn't "think" about your question. Instead, it calculates probabilities over numbers to decide what word comes next. Prediction is simply the final result of high-speed math—if the tensor operations fail, the "intelligence" fails.</p>
+            <p>Every "Next Word" your Nano-GPT makes in future sessions is based on these operations. In the next session, you will see how text is broken into these numbers before this math even begins.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-brain"></i> THE IDENTITY SHIFT</h4>
+            <p>
+              Today, you didn't just build GPT—you built the <strong>foundational layer</strong> upon which every GPT is stacked. You now understand the internal mechanics required to control AI.
+            </p>
+            <p>
+              You are no longer treating AI as a black box; you are understanding the machinery that 99% of AI users will never see. <strong>Welcome to the Engine Room.</strong>
+            </p>
+          </div>
+          <details class="collapsible-box">
+  <summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+
+  <div class="activity-box">
+
+    <h4>❓ PyTorch not installing / ModuleNotFoundError: No module named 'torch'</h4>
+    <p>Check the following:</p>
+    <ul>
+      <li>Your virtual environment is activated (<code>(venv)</code> visible in terminal)</li>
+      <li>You ran <code>pip install torch</code> inside the venv</li>
+      <li>Restart your terminal after installation</li>
+    </ul>
+
+    <hr />
+
+    <h4>❓ 'Term' is not recognized as a command</h4>
+    <p>This happens due to spaces in folder names.</p>
+    <ul>
+      <li>Rename folder to <code>term2</code></li>
+      <li>OR use quotes: <code>python "Term 2/tensor_basics.py"</code></li>
+    </ul>
+
+    <hr />
+
+    <h4>❓ Shape Mismatch Error (RuntimeError)</h4>
+    <p>This means tensor sizes are incompatible.</p>
+    <ul>
+      <li>Check shapes using <code>print(tensor.shape)</code></li>
+      <li>Ensure both tensors have matching dimensions</li>
+      <li>Example: <code>[3]</code> can only work with <code>[3]</code></li>
+    </ul>
+
+    <hr />
+
+    <h4>❓ Output not matching expected result</h4>
+    <p>Check the following:</p>
+    <ul>
+      <li>You saved the file before running</li>
+      <li>Your print statements match the code exactly</li>
+      <li>You are running the correct file path</li>
+    </ul>
+
+    <hr />
+
+    <h4>❓ VS Code shows errors but code still runs</h4>
+    <p>This is usually an interpreter issue.</p>
+    <ul>
+      <li>Press <code>Ctrl + Shift + P</code></li>
+      <li>Select: <code>Python: Select Interpreter</code></li>
+      <li>Choose your <code>venv</code></li>
+    </ul>
+
+  </div>
+</details>
+          <!-- KNOWLEDGE CHECK SECTION -->
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-microchip"></i>
+              <h2>Mission Diagnostic: Level 2.01</h2>
+              <p>Verify your understanding of Tensors before moving to the Tokenizer.</p>
+            </div>
+
+            <div class="mcq-container">
+              <!-- Question 1 -->
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">1. What is the fundamental "Data Container" used by all AI models?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Strings are text. AI only processes numbers.">A) A String</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! A Tensor is a multi-dimensional grid of numbers.">B) A Tensor</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. LangChain is a tool, not a data structure.">C) A LangChain Prompt</button>
+                </div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="mcq-item q-green">
+                <p class="mcq-question">2. Why do computers use Tensors instead of English concepts?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Tensors don't connect to the internet.">A) Because Tensors automatically search the internet.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Spot on. Computers are calculators; they can only process grids of numbers.">B) Because computers cannot process abstract concepts, only math.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Tensors take up memory just like anything else.">C) Because Tensors do not use any RAM.</button>
+                </div>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">3. What does the '.shape' command tell an AI Engineer?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="true" data-feedback="Exactly. It tells you how many rows, columns, and dimensions your 'wall of lockers' has.">A) The dimensions/size of the data grid.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. .shape only shows the structure, not the actual values inside.">B) The exact numbers stored inside the tensor.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. It is a PyTorch command, not a system storage command.">C) How much hard drive space the AI is taking up.</button>
+                </div>
+              </div>
+
+              <!-- Question 4 -->
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">4. What causes a "Shape Mismatch" error?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Forgetting your API key gives an Auth error, not a Shape error.">A) Forgetting your OpenAI API key in the .env file.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. You can add negative numbers perfectly fine in PyTorch.">B) Trying to add a negative number to a Tensor.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! You cannot do math on two grids if their sizes do not align properly.">C) Trying to do math on two tensors with incompatible grid sizes.</button>
+                </div>
+              </div>
+
+              <!-- Question 5 -->
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">5. In our Locker Analogy, what represents a 2D Tensor?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. A 2D Tensor has rows and columns, just like a wall of lockers.">A) A whole wall of lockers (Rows and Columns).</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. A single row is a 1D Tensor.">B) A single row of lockers.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. A single locker represents a basic variable (0D).">C) A single locker.</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="session-block homework-block">
+  <h2>Homework / Extension</h2>
+
+  <!-- STANDARD TASK -->
+  <div class="homework-item standard">
+    <h3>Standard Task: The Image Pixel</h3>
+    <p>
+      Digital images are stored as 3D Tensors.
+      <br><br>
+
+      <strong>Step 1 (Think First):</strong><br>
+      Before writing any code, predict the shape of a tensor representing ONE pixel with RGB values.
+      <br><br>
+      What do you think the shape will be?
+    </p>
+
+    <p>
+      <strong>Step 2 (Build):</strong><br>
+      Create this tensor:
+      <br>
+      <code>torch.tensor([[[255, 0, 0]]])</code>
+    </p>
+
+    <p>
+      <strong>Step 3 (Verify):</strong><br>
+      Print its <code>.shape</code>.
+    </p>
+
+    <p>
+      <strong>Step 4 (Explain):</strong><br>
+      Explain what each number in the shape represents:
+      <br>
+      → Height<br>
+      → Width<br>
+      → Channels
+    </p>
+  </div>
+
+  <!-- ADVANCED TASK -->
+  <div class="homework-item advanced">
+    <h3>Advanced Task: Tensor Multiplication</h3>
+    <p>
+      <strong>Step 1 (Predict):</strong><br>
+      Without running the code, what do you think will happen when multiplying two tensors?
+    </p>
+
+    <p>
+      <strong>Step 2 (Test):</strong><br>
+      Create:
+      <br>
+      <code>x = torch.tensor([2, 4])</code><br>
+      <code>y = torch.tensor([3, 5])</code>
+      <br><br>
+      Print:
+      <br>
+      <code>x * y</code>
+    </p>
+
+    <p>
+      <strong>Step 3 (Think):</strong><br>
+      Is this matrix multiplication or something else?
+      <br><br>
+      <em>Bonus: What does <code>torch.matmul()</code> do differently?</em>
+    </p>
+  </div>
+
+  <!-- SOLUTIONS -->
+  <div class="homework-collapsible">
+    <div class="homework-toggle">
+      <span>Need Help? View Solutions & Explanation</span>
+      <i class="fas fa-chevron-down toggle-arrow"></i>
+    </div>
+
+    <div class="homework-content">
+
+      <!-- STANDARD SOLUTION -->
+      <h4>Standard Task – Solution</h4>
+      <div class="code-block python">
+        <pre>
+import torch
+
+pixel = torch.tensor([[[255, 0, 0]]])
+print(pixel.shape)
+        </pre>
+      </div>
+
+      <p>
+        <strong>Output:</strong> <code>torch.Size([1, 1, 3])</code>
+      </p>
+
+      <p>
+        <strong>Explanation:</strong>
+        <br>
+        - 1 → Height (1 row of pixels)<br>
+        - 1 → Width (1 column)<br>
+        - 3 → Channels (Red, Green, Blue)
+      </p>
+
+      <p>
+        This is how AI represents image data internally.
+      </p>
+
+      <hr />
+
+      <!-- ADVANCED SOLUTION -->
+      <h4>Advanced Task – Solution</h4>
+
+      <p>
+        <strong>Result:</strong>
+        <br>
+        <code>[2, 4] * [3, 5] → [6, 20]</code>
+      </p>
+
+      <p>
+        <strong>Explanation:</strong><br>
+        This is <strong>element-wise multiplication</strong>.
+        <br><br>
+        Each position is multiplied individually:
+        <br>
+        - 2 × 3 = 6<br>
+        - 4 × 5 = 20
+      </p>
+
+      <p>
+        <strong>Important:</strong><br>
+        This is NOT matrix multiplication.
+      </p>
+
+      <p>
+        <strong>torch.matmul():</strong><br>
+        Performs real matrix multiplication by combining rows and columns.
+        <br><br>
+        This is the core math used inside neural networks.
+      </p>
+
+    </div>
+  </div>
+</section>
+
+          <div class="did-you-know-box">
+            <div class="dyk-icon"><i class="fas fa-microchip"></i></div>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                The word "Tensor" originally comes from physics, describing stress and stretching in materials. Google loved this math structure so much for AI that they named their custom AI microchips <strong>TPUs</strong> (Tensor Processing Units) and their software <strong>TensorFlow</strong>!
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I have installed PyTorch, successfully created Tensors, and understand the concept of Shape Mismatches as system constraints.
+            </label>
+          </div>
+        </div>
+
+        <div class="navigation-footer">
+          <button class="btn-secondary" disabled>Previous Session</button>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete & Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- REUSABLE MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">
+            Resume Mission
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="warning-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div style="height: 12px; width: 100%; background-color: #f97316"></div>
+        <div
+          class="mcq-modal-body"
+          style="padding: 3.5rem 2.5rem; text-align: center"
+        >
+          <div style="font-size: 4rem; margin-bottom: 1.5rem; color: #f97316">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.6rem; color: #991b1b">
+            Mission Verification Required
+          </h3>
+          <p
+            style="
+              color: var(--text-muted);
+              line-height: 1.6;
+              margin-bottom: 2rem;
+              font-size: 1.05rem;
+            "
+          >
+            Please confirm you have completed all laboratory tasks by checking
+            the verification box at the bottom of the page.
+          </p>
+          <button class="btn-primary" onclick="closeWarningModal()">
+            Understood
+          </button>
+        </div>
+      </div>
+    </div>
+    
+
+    <script src="../nexus-core.js"></script>
+    <script src="../script.js"></script>
+    
+    <!-- SCRIPT FOR DROPDOWN TOGGLE -->
+    <script>
+      function toggleTerm1() {
+        var list = document.getElementById('term1-list');
+        var icon = document.getElementById('term1-icon');
+        if (list.style.display === 'none') {
+          list.style.display = 'block';
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          list.style.display = 'none';
+          icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    </script>
+  </body>
+</html>

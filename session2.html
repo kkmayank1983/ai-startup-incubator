@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | Beyond the Chatbox</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="page-session" data-current-session="t1_s2">
+    <nav class="navbar">
+      <a href="index.html" class="site-logo">
+        <img src="images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status"
+          >Status: <strong>Junior Co-founder</strong></span
+        >
+        <a href="term1.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>TERM 1: THE ENGINE ROOM</h3>
+          <ul>
+            
+              <li data-session-id="t1_s1">
+                <a href="session1.html"
+                  ><i class="fas fa-tools"></i> S1: The Architect's Toolkit</a
+                >
+              </li>
+              <li data-session-id="t1_s2">
+                <a href="session2.html"
+                  ><i class="fas fa-brain"></i> S2: Beyond the Chatbox</a
+                >
+              </li>
+              <li data-session-id="t1_s3">
+                <a href="session3.html"
+                  ><i class="fas fa-code"></i> S3: Prompting as Code</a
+                >
+              </li>
+              <li data-session-id="t1_s4">
+                <a href="session4.html"
+                  ><i class="fas fa-memory"></i> S4: Memory Management</a
+                >
+              </li>
+              <li data-session-id="t1_s5">
+                <a href="session5.html"
+                  ><i class="fas fa-cubes"></i> S5: Modular Programming</a
+                >
+              </li>
+              <li data-session-id="t1_s6">
+                <a href="session6.html"
+                  ><i class="fas fa-table"></i> S6: Structured Output</a
+                >
+              </li>
+              <li data-session-id="t1_s7">
+                <a href="session7.html"
+                  ><i class="fas fa-lightbulb"></i> S7: Project Ideation</a
+                >
+              </li>
+              <li data-session-id="t1_s8">
+                <a href="session8.html"
+                  ><i class="fas fa-rocket"></i> S8: Term 1 Showcase</a
+                >
+              </li>
+            
+          </ul>
+        </div>
+
+        <div class="sidebar-section locked">
+          <h3>TERM 2: THE BRAIN <i class="fas fa-lock"></i></h3>
+        </div>
+        <div class="sidebar-section locked">
+          <h3>TERM 3: THE BODY <i class="fas fa-lock"></i></h3>
+        </div>
+        <div class="sidebar-section locked">
+          <h3>TERM 4: THE LAUNCH <i class="fas fa-lock"></i></h3>
+        </div>
+      </aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 1 / Session 2 / Beyond the Chatbox
+        </nav>
+
+        <section id="lesson-header">
+                <h1>Session 2: Beyond the Chatbox</h1>
+                <p class="lead">Stop chatting with AI and start controlling it. Today, you connect your code to the AI engine.</p>
+                <div class="stats-bar">
+                    <span><i class="far fa-clock"></i> 60 Minutes</span>
+                    <span><i class="fas fa-signal"></i> Level: Advanced Junior</span>
+                </div>
+
+                <!-- FIX 1: Session Outcome Block -->
+                <div class="outcome-box">
+                    <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+                    <p>Today, we connect your factory to the <strong>AI power grid</strong>. We will learn how to control the 'electricity' <strong>(parameters)</strong> and how to keep our 'connection' <strong>(API keys)</strong> safe.</p>
+                </div>
+            </section>
+<section class="lesson-body">
+
+<h2>1. The "Head Chef" Mindset</h2>
+
+<div class="info-box">
+<p>
+<strong>The Shift:</strong> When you use ChatGPT on a website, you are a customer eating a meal. In this incubator, you are the <strong>Head Chef</strong>. We don’t “chat” with AI. We send intentional <strong>Requests</strong> and engineer professional <strong>Responses</strong>.
+</p>
+<p>
+Every request consumes tokens, API credits, and startup budget. As a Co-founder, your job is not just to make the AI work — your job is to make it work <strong>efficiently</strong>.
+</p>
+</div>
+
+<div class="rule-callout">
+<h4><i class="fas fa-shield-alt"></i> THE SECURITY RULE</h4>
+<p>
+We <strong>never</strong> write API keys directly inside our code. A leaked API key is like a stolen credit card. If someone gains access to it, they can burn your credits and drain your startup budget. We always store keys inside a hidden <strong>Vault file</strong>.
+</p>
+</div>
+
+<hr />
+
+<h2>2. The AI Mechanics (The Three “Dials”)</h2>
+
+<p>
+Large Language Models do not “think.” They predict the <strong>next most probable token</strong>. You control that behavior using three core dials.
+</p>
+
+<div class="tool-info-box">
+<strong>1. Tokens (The Currency)</strong>
+AI doesn’t read full words. It reads fragments of text that can include word pieces, punctuation, and even spaces. Think of a sentence like a LEGO structure. A word like “building” may become “build” + “ing”, these are <b>Tokens</b>
+<br /><br />
+You are charged for every input token you send and every output token the AI generates. Longer prompts and longer responses increase cost. Professional engineers design prompts carefully to control token usage and protect startup budget.
+</div>
+
+<figure class="screenshot">
+<img src="images/Session 2/token image.png" alt="tokens">
+<figcaption>
+Figure 2.1: Words broken into token fragments.
+</figcaption>
+</figure>
+
+<div class="tool-info-box">
+<strong>2. Temperature (The Creativity Dial)</strong>
+The model predicts the next token based on probability. Temperature modifies how strongly the model sticks to the most likely option.
+<br /><br />
+• <b>0.0 — The Robot Librarian:</b> Chooses the most probable token every time. Highly predictable and structured.<br />
+• <b>1.0 — The Mad Scientist:</b> Willing to explore less probable tokens. More creative, less predictable.
+<br /><br />
+Higher temperature increases randomness but may reduce coherence. Lower temperature increases consistency and reliability.
+</div>
+
+<figure class="screenshot">
+<img src="images/Session 2/temp.png" alt="Temperature">
+<figcaption>
+Figure 2.1: Words broken into token fragments.
+</figcaption>
+</figure>
+
+<div class="tool-info-box">
+<strong>3. Context Window (The Desk Space)</strong>
+The <b>context window </b>is the model’s short-term memory. Each model has a fixed maximum token limit.
+<br /><br />
+Imagine writing an essay on a desk that fits only two pages. When you add a third page, the first one falls off. When the context window fills up, older tokens are removed to make space for new ones.
+<br /><br />
+Engineers must design prompts carefully to stay within token limits and avoid losing important instructions.
+</div>
+
+<figure class="screenshot">
+<img src="images/Session 2/context window.png" alt="context window">
+<figcaption>
+Figure 2.3: Older instructions fall off when memory is full.
+</figcaption>
+</figure>
+
+<hr />
+
+<h2>3. The Vault Key (Secure Setup)</h2>
+
+<p>
+To communicate with the AI, you need a secret <strong>API(Application Programming Interface) Key</strong>. This key connects your code to the AI model.
+</p>
+
+<div class="activity-box">
+<h4>🛠 Activity: Generate Your API Key</h4>
+<ol>
+<li>Go to <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> and create an account.</li>
+<figure class="screenshot">
+        <img src="images/Session 2/openai login.png" alt="OpenAI Login">                    
+</figure>
+<li>Open your Dashboard and navigate to <strong>API Keys</strong>.</li>
+<figure class="screenshot">
+        <img src="images/Session 2/API keys navigation.png" alt="API key Navigation">                    
+</figure>
+<li>Click <strong>"Create new secret key"</strong>.</li>
+<figure class="screenshot">
+        <img src="images/Session 2/new secret key .png" alt="New Secret Key">                    
+</figure>
+<li>Name it something like <b>AINexus_Dev</b>.</li>
+<figure class="screenshot">
+        <img src="images/Session 2/API key name.png" alt="Name">                    
+</figure>
+<li><strong>Important:</strong> Copy the key immediately. It will only be shown once and click <b>Done</b>.</li>
+</ol>
+<p>
+Never screenshot it. Never upload it. Never commit it to GitHub.
+</p>
+<figure class="screenshot">
+        <img src="images/Session 2/API key generated.png" alt="API Key generated">                    
+</figure>
+</div>
+
+<p>
+Now we hide the key inside a file called <code>.env</code>.
+</p>
+
+<div class="activity-box">
+<h4>🛠 Activity: Initialize the Vault</h4>
+
+<p><strong>Before you begin:</strong> Make sure you are inside your <b>AI Nexus project folder</b> in VS Code.</p>
+
+<ol>
+
+<li>
+<strong>Activate your Virtual Environment</strong>
+<p>
+Run in your terminal:<br />
+<code>venv\Scripts\activate</code> (Windows)<br />
+<code>source venv/bin/activate</code> (Mac/Linux)
+</p>
+<p>You should see <code><b>(venv)</b></code> at the beginning of your terminal line.</p>
+</li>
+<figure class="screenshot">
+        <img src="images/Session 2/activating venv.png" alt="Activating venv">                    
+</figure>
+<li>
+<strong>Install the Required Libraries</strong>
+<p>Run:</p>
+<pre>pip install python-dotenv langchain-openai</pre>
+<p>Wait until installation finishes <b>without errors</b>.</p>
+</li>
+<figure class="screenshot">
+        <img src="images/Session 2/installed libraries .png" alt="Installed Libraries">                    
+</figure>
+
+<li>
+<strong>Create the Vault File</strong>
+<p>
+In your <b>main project folder</b> (same level as your Python files), create a file named:
+<code><b>.env</b></code>
+</p>
+<p>⚠ It must be exactly <code><b>.env</b></code> — not <code>.env.txt</code> or <code>env</code>.</p>
+</li>
+<li>
+<strong>Add Your API Key</strong>
+<p>Inside the <code><b>.env</b></code> file, add:</p>
+<pre>OPENAI_API_KEY=your_actual_key_here</pre>
+<p>Replace with your <b>real API key</b>. Do not use quotes or add extra spaces.</p>
+</li>
+<figure class="screenshot">
+        <img src="images/Session 2/opening git ignore .png" alt="Opening git ignore">                    
+</figure>
+<li>
+<strong>Protect the Vault from Git</strong>
+<p>Add this line to your <code><b>.gitignore</b></code> file:</p>
+<pre>.env</pre>
+</li>
+<figure class="screenshot">
+        <img src="images/Session 2/added .env line.png" alt="Added .env line">                    
+</figure>
+</ol>
+
+<p><strong>Success Check:</strong></p>
+
+<pre>git status</pre>
+<ul>
+<li>✔ If <code><b>.env</b></code> does <b>NOT</b> appear in red → Your vault is secure.</li>
+<li>❌ If <code><b>.env</b></code> appears in red → It is still being tracked. Run:</li>
+</ul>
+
+<pre>git rm --cached .env</pre>
+
+<p>Then run <code><b>git status</b></code> again.</p>
+<figure class="screenshot">
+        <img src="images/Session 2/env hidden properly.png" alt="git status">                    
+</figure>
+<h4>🧪 Final Vault Test</h4>
+
+<p>Create a new file named <code><b>ai_test.py</b></code> (or use your existing one) and add the following code at the top:</p>
+
+<div class="code-block python">
+<div class="code-header">Vault Verification Snippet</div>
+<pre>
+from dotenv import load_dotenv
+
+load_dotenv()
+</pre>
+</div>
+
+<p><b>How to Run the Test:</b></p>
+
+<ol>
+<li>Make sure your virtual environment is activated.</li>
+<li>In your terminal, run: <code>python ai_test.py</code></li>
+</ol>
+
+<p>
+✔ If the script runs <b>without any API key error</b> and does not print anything → Your vault is working correctly.<br />
+❌ If you see an API key error → Check your <code>.env</code> file and variable name.
+</p>
+<figure class="screenshot">
+        <img src="images/Session 2/success check.png" alt="Final Vault Test">                    
+</figure>
+</div>
+<hr />
+<h2>4. The First Intentional Call</h2>
+
+<p>
+We are building a <strong>Startup Idea Generator</strong>. Create a file called <code>ai_test.py</code>.
+</p>
+<div class="activity-box">
+<h4>🛠 Step-by-Step: Run Your First AI Call</h4>
+
+<ol>
+<li>
+<b>Create the File</b><br />
+Inside your AI Nexus project folder, create a new file named:
+<code>ai_test.py</code>
+</li>
+<br>
+<li>
+<b>Copy the Code shown below</b>
+</li>
+<div class="code-block python">
+<div class="code-header">ai_test.py - The AI Mixing Desk</div>
+<pre>
+import os
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+
+# 1. Open the vault
+load_dotenv()
+
+# 2. Set the AI "Dials"
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0.7
+)
+
+# 3. The Intentional Request
+print("--- REQUESTING STARTUP IDEA ---")
+response = llm.invoke(
+    "Give me one weird startup idea for a 12-year-old developer."
+)
+
+# 4. Show the response content
+print(f"AI Response: {response.content}")
+</pre>
+</div>
+<li>
+<b>Paste the full script into <code>ai_test.py</code> and save the file.</b></li>
+<figure class="screenshot">
+        <img src="images/Session 2/intentional call code .png" alt="Script">                    
+</figure>
+<li>
+<b>Activate Your Virtual Environment(You've already done that earlier in the class)</b><br />
+In your terminal, run:<br />
+<code>venv\Scripts\activate</code> (Windows)<br />
+or<br />
+<code>source venv/bin/activate</code> (Mac/Linux)
+</li>
+<br>
+<li>
+<b>Run the Script</b><br />
+In your terminal, type:
+<pre>python ai_test.py</pre>
+</li>
+<figure class="screenshot">
+        <img src="images/Session 2/running script call .png" alt="running script">                    
+</figure>
+<li>
+<b>Observe the Output</b><br />
+If everything is working, you should see:
+<ul>
+<li>--- REQUESTING STARTUP IDEA ---</li>
+<li>A startup idea printed below it</li>
+<figure class="screenshot">
+        <img src="images/Session 2/requesting startup idea output.png" alt="the script output">                    
+</figure>
+</ul>
+</li>
+
+</ol>
+
+<p>
+✔ If you see a startup idea → Your API connection is working.<br />
+❌ If you see an API key error → Check your <code>.env</code> file.<br />
+❌ If you see an import error → Run <code>pip install langchain-openai python-dotenv</code>.
+</p>
+<p>✔If you see the error <b>"You exceeded your current quota, please check your plan"</b>, this means that your OpenAI account has no remaining API credits. <b>But your code successfully reached the OpenAI servers.</b></p>
+<figure class="screenshot">
+        <img src="images/Session 2/error-insufficient quota.png" alt="insufficient quota">                    
+</figure>
+
+</div>
+
+
+<div class="tool-info-box">
+<strong>Tool: python-dotenv</strong>
+This library loads your hidden <code>.env</code> vault and securely provides the API key to Python at runtime.
+</div>
+
+<div class="tool-info-box">
+<strong>How .invoke() Works</strong>
+When you run this script, Python sends a request over the internet to the OpenAI API. The model processes your input, generates text, and returns a structured response (JSON). LangChain extracts the message, and <code>response.content</code> displays it.
+</div>
+
+
+
+<div class="activity-box">
+<h4>🛠 Activity: The Science Experiment</h4>
+<p>
+Change <code>temperature=0.7</code> to <code>0.0</code> and run twice. Is the output identical?
+</p>
+<p>
+Now change it to <code>1.2</code>. What changes? Observe determinism vs creativity.
+</p>
+</div>
+
+<hr />
+
+<h2>5. Version Control Save Point</h2>
+
+<p>
+Now take a snapshot of your progress by running the following commands on your terminal to save your progress.
+</p>
+
+<div class="code-block">
+<div class="code-header">Terminal Commands</div>
+<pre>
+git add .
+git commit -m "Connected to AI grid with secure vault"
+</pre>
+</div>
+<hr />
+
+<details class="collapsible-box">
+<summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+
+<div class="activity-box">
+
+<h4>❓ "Missing API Key" Error</h4>
+<p>
+Make sure:
+</p>
+<ul>
+<li>Your <code>.env</code> file is in the root project folder.</li>
+<li>The variable name is written exactly as <code>OPENAI_API_KEY</code>.</li>
+<li>There are no extra spaces around the equals sign.</li>
+</ul>
+<p>
+If the problem continues, restart your terminal and run the script again.
+</p>
+
+<hr />
+
+<h4>❓ "ImportError" or Module Not Found</h4>
+<p>
+This usually means the required libraries were not installed in your virtual environment.
+</p>
+<p>
+Run:
+</p>
+<pre>pip install langchain-openai python-dotenv</pre>
+<p>
+Then try running <code>python ai_test.py</code> again.
+</p>
+
+<hr />
+
+<h4>❓ "Quota Exceeded" Error</h4>
+<p>
+This happens if your API key has no remaining credits.
+</p>
+<ul>
+<li>Check your OpenAI dashboard for usage.</li>
+<li>Confirm you are using the correct key.</li>
+<li>If needed, ask your teacher to verify your account status.</li>
+</ul>
+
+</div>
+</details>
+          <!-- KNOWLEDGE CHECK SECTION -->
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-brain"></i>
+              <h2>Mission Diagnostic: Level 02</h2>
+              <p>Verify your understanding of AI Mechanics and Security.</p>
+            </div>
+
+            <div class="mcq-container">
+              <!-- Question 1 -->
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">
+                  1. What is an AI "Token" most similar to?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Correct! AI sees words as chunks or 'bricks' rather than whole letters."
+                  >
+                    A) A LEGO brick in a sentence.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Incorrect. Tokens are parts of words, not files."
+                  >
+                    B) A folder on your computer.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Not quite. That's a Virtual Environment!"
+                  >
+                    C) A plastic tray for a lab.
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="mcq-item q-green">
+                <p class="mcq-question">
+                  2. Which Temperature setting makes the AI act like a "Robot
+                  Librarian"?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="1.5 is extremely wild and might not even make sense!"
+                  >
+                    A) 1.5
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="0.7 is creative but safe. A librarian needs to be perfectly predictable."
+                  >
+                    B) 0.7
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Perfect. 0.0 removes randomness, making the AI follow rules exactly."
+                  >
+                    C) 0.0
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">
+                  3. What happens when the "Context Window" gets full?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Exactly. It deletes the oldest information to make room for the new."
+                  >
+                    A) The AI forgets the oldest part of the chat.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="No, the computer stays on; only the AI's short-term memory is cleared."
+                  >
+                    B) The computer restarts.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Venv handles tools; the Context Window handles memory."
+                  >
+                    C) The Virtual Environment breaks.
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 4 -->
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">
+                  4. Why is it dangerous to put an API key directly in your
+                  main.py file?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Python doesn't care where the key is, but your wallet does!"
+                  >
+                    A) It makes the code too slow.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Correct. If you share your code or save it to Git, others can see the key and spend your money."
+                  >
+                    B) Anyone who sees the code can steal your credits.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Keys don't expire because of where they are written; they expire based on your OpenAI account."
+                  >
+                    C) It causes the key to expire in 24 hours.
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question 5 -->
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">
+                  5. Which file acts as the "Invisibility Cloak" to hide your
+                  .env vault from Git?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Spot on. Git ignores any file listed inside .gitignore."
+                  >
+                    A) .gitignore
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="ai_test.py is your active script; it shouldn't be hidden!"
+                  >
+                    B) ai_test.py
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="main.py is your diagnostic file, not a security tool."
+                  >
+                    C) main.py
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="session-block homework-block">
+            <h2>Homework / Extension</h2>
+            <div class="homework-item standard">
+              <h3>Standard Task: The Persona Flip</h3>
+              <p>
+                Change your prompt in <code>ai_test.py</code> to: "Tell me why I
+                should learn Python, but speak like a <b>Grumpy Pirate</b>."
+                Experiment with Temperature 0.0 vs 1.0. Which pirate is funnier?
+              </p>
+            </div>
+            <div class="homework-item advanced">
+              <h3>Advanced Task: The Code Doctor</h3>
+              <p>
+                Modify your script to be a "Code Fixer." Create a variable with
+                broken Python code (like a missing parenthesis) and ask the AI
+                to find and fix the bug.
+              </p>
+            </div>
+            <div class="homework-collapsible">
+    <div class="homework-toggle">
+        <span>Need Help? View Solutions & Steps</span>
+        <i class="fas fa-chevron-down toggle-arrow"></i>
+    </div>
+
+    <div class="homework-content">
+        <h4>Standard Task – The Persona Flip (Step-by-Step)</h4>
+        <ol>
+            <li>Open <code>ai_test.py</code> in VS Code.</li>
+            <li>Locate the line that says:
+                <pre>response = llm.invoke("Give me one weird startup idea for a 12-year-old developer.")</pre>
+            </li>
+            <li>Replace the prompt with:
+                <pre>response = llm.invoke("Tell me why I should learn Python, but speak like a Grumpy Pirate.")</pre>
+            </li>
+            <li>Save the file.</li>
+            <li>Run:
+                <pre>python ai_test.py</pre>
+            </li>
+            <li>Now change <code>temperature=0.7</code> to <code>0.0</code> and run again.</li>
+            <li>Then change it to <code>1.0</code> and run again.</li>
+            <li>Compare the outputs. Which pirate sounds more creative?</li>
+        </ol>
+
+        <hr>
+
+        <h4>Advanced Task – The Code Doctor (Step-by-Step)</h4>
+        <ol>
+            <li>Inside <code>ai_test.py</code>, create a new variable with broken Python code. Example:</li>
+            <pre>
+broken_code = "print('Hello World'"
+            </pre>
+            <li>Modify your prompt to ask the AI to fix it. Example:</li>
+            <pre>
+response = llm.invoke(
+    f"Fix this broken Python code and explain the error: {broken_code}"
+)
+            </pre>
+            <li>Save the file.</li>
+            <li>Run:
+                <pre>python ai_test.py</pre>
+            </li>
+            <li>Verify that the AI identifies the missing parenthesis and provides the corrected version.</li>
+        </ol>
+
+        <p><strong>Why This Matters:</strong> Real AI engineers test models with structured tasks. Persona control tests creativity. Code fixing tests reasoning.</p>
+    </div>
+</div>
+
+          </section>
+
+          <div class="did-you-know-box">
+            <div class="dyk-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                The word "Token" comes from the world of arcade games and coins.
+                In AI, tokens aren't just words—they can be punctuation marks or
+                even spaces! An average word is about 1.3 tokens. Professionals
+                always count their tokens to keep their "Startup Budget" under
+                control.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I have secured my API key in a .env vault and successfully
+              executed a controlled AI request.
+            </label>
+          </div>
+        </div>
+
+        <div class="navigation-footer">
+          <a href="session1.html" class="btn-secondary">Previous Session</a>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete & Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- REUSABLE MODALS (Keep exactly as in session1) -->
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">
+            Resume Mission
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="warning-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div style="height: 12px; width: 100%; background-color: #f97316"></div>
+        <div
+          class="mcq-modal-body"
+          style="padding: 3.5rem 2.5rem; text-align: center"
+        >
+          <div style="font-size: 4rem; margin-bottom: 1.5rem; color: #f97316">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+          <h3 style="margin-bottom: 1rem; font-size: 1.6rem; color: #991b1b">
+            Mission Verification Required
+          </h3>
+          <p
+            style="
+              color: var(--text-muted);
+              line-height: 1.6;
+              margin-bottom: 2rem;
+              font-size: 1.05rem;
+            "
+          >
+            Please confirm you have completed all laboratory tasks by checking
+            the verification box at the bottom of the page.
+          </p>
+          <button class="btn-primary" onclick="closeWarningModal()">
+            Understood
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="nexus-core.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nexus | System Blueprinting</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="page-session" data-current-session="t1_s7">
+
+    <nav class="navbar">
+        <a href="index.html" class="site-logo">
+            <img src="images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+        </a>
+        <div class="nav-links">
+            <span class="user-status">Status: <strong>Junior Co-founder</strong></span>
+            <a href="term1.html" class="btn-primary">My Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>TERM 1: THE ENGINE ROOM</h3>
+                <ul>
+                    <li data-session-id="t1_s1"><a href="session1.html"><i class="fas fa-tools"></i> S1: The Architect's Toolkit</a></li>
+                    <li data-session-id="t1_s2"><a href="session2.html"><i class="fas fa-brain"></i> S2: Beyond the Chatbox</a></li>
+                    <li data-session-id="t1_s3"><a href="session3.html"><i class="fas fa-code"></i> S3: Prompting as Code</a></li>
+                    <li data-session-id="t1_s4"><a href="session4.html"><i class="fas fa-memory"></i> S4: Memory Management</a></li>
+                    <li data-session-id="t1_s5"><a href="session5.html"><i class="fas fa-cubes"></i> S5: Modular Programming</a></li>
+                    <li data-session-id="t1_s6"><a href="session6.html"><i class="fas fa-table"></i> S6: Structured Output</a></li>
+                    <li data-session-id="t1_s7"><a href="session7.html"><i class="fas fa-lightbulb"></i> S7: System Blueprinting</a></li>
+                    <li data-session-id="t1_s8"><a href="session8.html"><i class="fas fa-rocket"></i> S8: Term 1 Showcase</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section locked">
+                <h3>TERM 2: THE BRAIN <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 3: THE BODY <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 4: THE LAUNCH <i class="fas fa-lock"></i></h3>
+            </div>
+        </aside>
+
+        <div id="sidebar-resizer" class="resizer"></div>
+
+        <main class="content">
+            <nav class="breadcrumb">Mission Control / Term 1 / Session 7 / System Blueprinting</nav>
+            
+            <section id="lesson-header">
+                <h1>Session 7: System Blueprinting & The Technical Bridge</h1>
+                <p class="lead">From Chatbot to System. Finalize your architecture and build a body ready for a Brain Transplant in Term 2.</p>
+                <div class="stats-bar">
+                    <span><i class="far fa-clock"></i> 60 Minutes</span>
+                    <span><i class="fas fa-signal"></i> Level: Advanced Junior</span>
+                </div>
+
+                <div class="outcome-box">
+                    <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+                    <p>By the end of this hour, you will have built a "Universal Body"—a Python system that is so robust it can work with any AI brain (Cloud or Local). You will master Command Mapping and prove your system can survive real-world data failures.</p>
+                </div>
+            </section>
+
+            <section class="lesson-body">
+                
+                <h2>1. The Concept: Brain vs. Body</h2>
+                <div class="info-box">
+                    <p><strong>The Strategy:</strong> Real AI Engineers don't just "talk to AI." They build <strong>Systems</strong>. To understand your project, you must see it in two parts:</p>
+                    <ul>
+                        <li><strong>The Brain (LLM):</strong> This is the logic and thinking. Currently, we use OpenAI (Cloud Brain).</li>
+                        <li><strong>The Body (Python Code):</strong> This is the wiring, the cleaning layers, and the physical actions (like opening browsers or saving files).</li>
+                    </ul>
+                    <p>Think of it like a robot: the Brain thinks, but the Body moves.</p>
+                    <p>Your job as a Co-founder is to make the "Body" so good that the "Brain" can be swapped out later without breaking anything!</p>
+                </div>
+
+                <div class="tool-info-box">
+                    <h4><i class="fas fa-code"></i> Mental Model: Brain as a Function</h4>
+                    <p>In engineering terms, the Brain is just a function that takes a question and returns a specific dictionary:</p>
+                    <pre><code>def brain(user_input):
+    return {"reply": "...", "action": "..."}</code></pre>
+                    <p>As long as the "Brain" returns structured data, the "Body" doesn't care if the thinking happens in the cloud or on your own system.</p>
+                    <p><strong>Important:</strong> This is why the Brain is replaceable. As long as it returns the correct structure, your system will always work.</p>
+                </div>
+
+                <h2>2. Visualizing the AI Pipeline</h2>
+                <p>Before we add the final features, let's look at the seven-step pipeline you built in Session 6. This is your system's "central nervous system."</p>
+
+                <div class="tool-info-box" style="text-align: center;">
+                    <h4><i class="fas fa-project-diagram"></i> Your System Flow</h4>
+                    <div style="background: #1e293b; padding: 20px; border-radius: 12px; font-family: monospace; color: #10b981; border: 1px solid #334155; line-height: 1.5; text-align: left; display: inline-block; width: 90%;">
+                        1. <b style="color: dodgerblue;">INPUT</b> (app.py) → User types a request.<br><br>
+                        2. <b style="color: dodgerblue;">BRAIN</b> (brain.py) → LLM generates a raw response.<br><br>
+                        3. <b style="color: dodgerblue;">CLEAN</b> (Regex) → Find the { } and remove "polite" filler.<br><br>
+                        4. <b style="color: dodgerblue;">PARSE</b> (ast) → Turn the string into a Python Dictionary.<br><br>
+                        5. <b style="color: dodgerblue;">VALIDATE</b> (Check) → Ensure mandatory keys exist.<br><br>
+                        6. <b style="color: dodgerblue;">ROUTE</b> (Action) → Trigger a computer command.<br><br>
+                        7. <b style="color: dodgerblue;">OUTPUT</b> (Terminal) → Show the final result to the user.
+                    </div>
+                </div>
+                <p><strong>Key Insight:</strong> No matter what AI you use in the future—OpenAI, a local model, or even your own custom-built AI—this pipeline will stay the same. This is the permanent structure of your system.</p>
+                <h2>3. Choose Your AI Mission</h2>
+<p>Now that your system structure is ready, it's time to give your AI a <strong>purpose</strong>. A powerful AI is not generic—it is focused. Once you choose your mission, your AI must ONLY behave according to it.</p>
+
+<div class="tool-info-box">
+    <h4>🎯 Choose ONE Mission:</h4>
+    <ul>
+        <li><strong>Study Buddy:</strong> Gives learning hints and saves important notes using <code>"save"</code>.</li>
+        <li><strong>Search Assistant:</strong> Opens useful websites based on your queries using <code>"open"</code>.</li>
+        <li><strong>Alert System:</strong> Uses "alert" when urgent or important input is detected (e.g., warnings, critical messages)</li>
+    </ul>
+</div>
+
+<p><strong>Why this matters:</strong> Your system stays the same, but your AI’s behavior changes based on its mission.</p>
+                <h2>4. The Data Contract</h2>
+                <div class="info-box">
+                    <p><strong>What is a Contract?</strong> In engineering, a contract is a promise. The Brain promises to send data in a specific format, and the Body promises to know how to use it.</p>
+                    <p><strong>Why it matters:</strong> Your Python code (The Body) is a computer program—it doesn't actually understand English. It cannot read a sentence like <i>"I've saved that for you."</i> It only understands specific signals like <code>"action": "save"</code>. By creating a contract, you ensure that ANY future brain—cloud, local, or one you build yourself—can talk to your Body perfectly.</p>
+                    <p><strong>Deep Insight:</strong> Think of this contract like a language between two machines. The Brain speaks in structured signals, and the Body listens for exact instructions. If even one key is missing or incorrect, the Body cannot respond. This is why structure is more powerful than natural language in engineering systems.</p>
+                    <p><strong>Connection:</strong> The <code>"action"</code> key is what allows your AI to control real-world behavior. Without it, your system cannot trigger any actual command.</p>
+                </div>
+            
+
+                <div class="activity-box">
+                    <h4>🛠 Activity 1: Design the Data Contract (Thinking Activity)</h4>
+                    <p><strong>Note:</strong> This is a thinking activity. You are designing how your AI communicates—not running code yet.</p>
+                    <p><b>Goal:</b> Before writing code, you must decide what "Signals" your Body needs. Choose your mission (Study Buddy, Search Assistant, or Alert System) and design your keys.</p>
+                    <ol>
+                        <li>Choose 3 mandatory keys (e.g., <code>"reply"</code>, <code>"action"</code>, <code>"status"</code>).</li>
+                        <li>Write down what happens if a key is missing.</li>
+                    </ol>
+                    <div class="code-block python">
+                        <div class="code-header">Example Data Contract</div>
+                        <pre>{
+    "reply": "I've saved your notes on Gravity.",
+    "action": "save"
+}</pre>
+                    </div>
+                    <p><strong>Remember:</strong> Every future AI you use must follow this contract. This is how you stay in control of your system.</p>
+                </div>
+                <div class="activity-box">
+    <h4>🛠 Activity 2: Define Your AI Behavior (brain.py)</h4>
+    <p><b>Goal:</b> Your AI must follow your mission and speak using the Data Contract.</p>
+
+    <ol>
+        <li>Open <code>brain.py</code></li>
+        <li>Update your <code>system_rules</code> based on your chosen mission</li>
+    </ol>
+
+    <div class="code-block python">
+        <div class="code-header">Example: Study Buddy Rules</div>
+        <pre>system_rules = """
+You are an AI system that MUST return structured JSON.
+
+You MUST ALWAYS respond in this format:
+{{
+    "reply": "...",
+    "action": "open/save/alert/none"
+}}
+
+RULES:
+- NEVER return normal text
+- NEVER skip the JSON format
+- ALWAYS include both "reply" and "action"
+
+ACTION DECISION RULES:
+- If user asks to open something → action = "open"
+- If user asks to save something → action = "save"
+- If user says something urgent → action = "alert"
+- Otherwise → action = "none"
+
+EXAMPLES:
+
+User: Open a website  
+Output:
+{{
+    "reply": "Opening a website for you",
+    "action": "open"
+}}
+
+User: Save this note: AI is powerful  
+Output:
+{{
+    "reply": "AI is powerful",
+    "action": "save"
+}}
+
+User: This is urgent!  
+Output:
+{{
+    "reply": "This seems important",
+    "action": "alert"
+}}
+
+User: Hello  
+Output:
+{{
+    "reply": "Hello! How can I help?",
+    "action": "none"
+}}
+"""</pre>
+    </div>
+    <p><strong>Remember:</strong> If your format is wrong, your system will reject the response.</p>
+    <p><strong>Key Idea:</strong> This is how you control the Brain without changing your system.</p>
+</div>
+                <h2>5. Command Architecture: Professional Routing</h2>
+                <p>Instead of using a messy <code>if/elif</code> chain, professional engineers use <strong>Command Mapping</strong>. Imagine writing 50 different <code>if</code> statements—your code would become impossible to manage. By using a dictionary, your system stays clean, scalable, and easy to upgrade.</p>
+                <p><strong>Why this matters:</strong> As your system grows, you might have 10, 20, or even 100 different actions. Without a structured mapping system, your code becomes harder to read, debug, and expand. Command Mapping allows your system to grow without becoming chaotic.</p>
+                <div class="info-box">
+    <p><strong>Upgrade:</strong> So far, our system only prints messages. Now, we will upgrade it to perform <strong>real actions</strong> on your computer.</p>
+    <p>This means your AI will not just reply—it will actually <strong>open websites, save files, and trigger system behavior</strong>. Always remember that the AI does not perform actions, but the Python system does. The AI only decides what action should happen.</p>
+    <p><strong>This is the moment your AI becomes real.</strong></p>
+</div>
+                <div class="tool-info-box">
+    <h4>🚀 Your System Action Library</h4>
+    <p>These are the powers your AI can use. Each action connects to real system behavior.</p>
+
+    <ul>
+        <li><strong>"open"</strong> → Opens a website</li>
+        <li><strong>"save"</strong> → Saves notes to a file</li>
+        <li><strong>"none"</strong> → No action (used when AI only needs to reply)</li>
+        <li><strong>"alert"</strong> → Triggers a warning message when something important or urgent is detected</li>
+    </ul>
+    <p><strong>When is "alert" used?</strong></p>
+<ul>
+    <li>If the user says something urgent (e.g., "This is important!")</li>
+    <li>If the AI detects a warning or critical situation</li>
+</ul>
+
+<p><strong>Example:</strong></p>
+<pre><code>User: "This is urgent!"
+AI Output:
+{
+    "reply": "This seems important.",
+    "action": "alert"
+}</code></pre>
+
+<p>This will trigger a system alert instead of just printing a message.</p>
+
+    <p><strong>Engineer Mindset:</strong> You are building a library of capabilities. Each new action you add makes your AI more powerful.</p>
+</div>
+<div class="tool-info-box">
+    <p><strong>Important Continuation:</strong> In Session 6, you built a full safety pipeline:</p>
+    <pre><code>AI → Clean → Parse → Validate → Data</code></pre>
+
+    <p>We are NOT replacing that system.</p>
+    <p>We are now adding one more step:</p>
+
+    <pre><code>AI → Clean → Parse → Validate → Data → <b>Action</b></code></pre>
+
+    <p><strong>Key Rule:</strong> You must ONLY use <code>data</code> after it has been validated. If validation fails, no action should run.</p>
+</div>
+                <div class="activity-box">
+    <h4>🛠 Activity 3: Upgrading to Real System Actions</h4>
+
+    <p><b>Goal:</b> Replace the old mood-based system with real, executable system actions.</p>
+
+    <p><strong>Follow these exact steps carefully:</strong></p>
+
+    <ol>
+        <li>Open your <code>app.py</code> file</li>
+
+        <li>Locate this section inside your code:</li>
+
+        <div class="code-block python">
+            <div class="code-header">Old Mood-Based System</div>
+            <pre><code>mood = data.get("mood")
+
+ACTIONS = {
+    "bored": "Opening Coding Playground...",
+    "sad": "Showing motivational quote...",
+    "happy": "Playing upbeat music..."
+}
+
+action = ACTIONS.get(mood, "No action available")
+
+print(f"🚀 [SYSTEM ACTION]: {action}")
+print(f"AI: {data.get('reply')}")</code></pre>
+        </div>
+
+        <li><strong>Delete ONLY this mood-based block</strong> (do NOT delete any <code>if/else</code> structure)</li>
+
+        <li><strong>Update your validation logic:</strong> Replace <code>"mood"</code> with <code>"action"</code> inside your <code>validate()</code> function</li>
+        <figure class="screenshot">
+                <img src="images/Session 7/Activty 3 action word.png"alt="mood to action"/>
+        </figure>
+
+        <li>Now scroll to the <code>if validate(data):</code> block — this is where actions will run</li>
+    </ol>
+
+    <hr />
+
+    <h4>🔧 Step 2: Add System Actions (Outside the Loop)</h4>
+
+    <p>Paste this code <strong>above your while loop</strong> (outside the loop):</p>
+
+    <div class="code-block python">
+        <div class="code-header">Define System Actions</div>
+        <pre><code>import webbrowser #at the very start of the code where you are importing ast and re
+
+def open_website(query):
+    url = f"https://www.google.com/search?q={query}"
+    webbrowser.open(url)
+
+def save_note(content):
+    if content:
+        with open("notes.txt", "a") as file:
+            file.write(content + "\n")
+
+def show_alert():
+    print("\n⚠️ ALERT: Important message detected!")
+    print("Please pay attention to this input.\n")
+
+def do_nothing():
+    print("✅ No action needed.")
+
+ACTIONS = {
+    "open": open_website,
+    "save": save_note,
+    "alert": show_alert,
+    "none": do_nothing
+}</code></pre>
+    </div>
+
+    <hr />
+
+    <h4>⚙️ Step 3: Add Action Execution Logic (Inside Loop)</h4>
+
+    <p>Now go inside this block:</p>
+
+    <pre><code>if validate(data):</code></pre>
+
+    <p>Replace the old mood logic with this:</p>
+
+    <div class="code-block python">
+        <div class="code-header">Action Execution Logic</div>
+        <pre><code>action_code = data.get("action", "none")
+action_function = ACTIONS.get(action_code, do_nothing)
+
+if action_code == "open":
+    action_function(data.get("reply", "AI tools"))
+
+elif action_code == "save":
+    action_function(data.get("reply", "No content"))
+
+else:
+    action_function()</code></pre>
+    </div>
+    <ul><li>Run the script using this following command in your terminal:</li>
+                        <pre><code>python AINexus_Modular/app.py</code></pre>
+                        <li>You will see the following output on your terminal:</li></ul>
+                        <figure class="screenshot">
+                <img src="images/Session 7/Activity 3 output.png"alt="output"/>
+        </figure>
+    <hr />
+
+    <h4>🔁 What Changed?</h4>
+
+    <ul>
+        <li>Before: AI controlled actions using <code>"mood"</code></li>
+        <li>Now: AI controls actions using <code>"action"</code></li>
+    </ul>
+
+    <p>This is a major upgrade—your system is now modular, scalable, and closer to real-world AI systems.</p>
+
+    <p><strong>Important:</strong> Do NOT remove your existing pipeline (clean → parse → validate). You are only replacing the action logic.</p>
+
+    <hr />
+
+    <h4>🧠 How This Works</h4>
+
+    <ul>
+        <li>The AI (Brain) sends an <code>"action"</code> like <code>"open"</code>, <code>"save"</code>, or <code>"alert"</code></li>
+        <li>Your Python system (Body) finds the correct function using <code>ACTIONS</code></li>
+        <li>The system executes a real command on your computer</li>
+    </ul>
+
+    <p><strong>Important:</strong> The AI does NOT perform actions—your Python code does.</p>
+
+    <hr />
+
+    <h4>🧪 Try This</h4>
+
+    <ul>
+        <li>Ask: <code>"Open a website"</code> → Browser should open</li>
+        <li>Ask: <code>"Save this note: AI is powerful"</code> → File should be created</li>
+        <li>Ask: <code>"This is urgent!"</code> → Alert should trigger</li>
+        <li>Ask: <code>"Give me a quote for the day"</code> → Quote given but no action(then ask to save it, and see if it saves the quote in notes.txt or not)</li>
+    </ul>
+
+    <p>If nothing happens, check your <code>"action"</code> value.</p>
+
+    <p><strong>Success Signal:</strong> If your browser opens or your file gets created, your system is working correctly.</p>
+
+</div>
+<div class="tool-info-box">
+    <p><b>Where does <code>data</code> come from?</b></p>
+
+    <p>This <code>data</code> variable is created in your Session 6 pipeline:</p>
+
+    <pre><code># From Session 6
+cleaned = extract_dict(response_str)
+data = ast.literal_eval(cleaned)</code></pre>
+
+    <p><b>Important:</b> This happens BEFORE your action logic runs.</p>
+
+    <p>Your system flow is:</p>
+
+    <pre><code>AI → Clean → Parse → Validate → Action</code></pre>
+
+    <p>You are now working on the final step: <b>Action</b>.</p>
+</div>
+                <div class="rule-callout"><p><strong>Critical Rule:</strong> If the AI output is invalid, your system must NOT execute any action.</p></div>
+                <div class="tool-info-box">
+                <p><strong>Mission Connection:</strong></p>
+<ul>
+    <li>If you chose <b>Study Buddy</b> → Focus on <code>"save"</code></li>
+    <li>If you chose <b>Search Assistant</b> → Focus on <code>"open"</code></li>
+    <li>If you chose <b>Alert System</b> → Focus on <code>"alert"</code></li>
+</ul>
+
+<p>This is how your AI’s purpose connects to real system behavior.</p>
+</div>
+                <h2>6. Failure Testing: Hardening the System</h2>
+                <div class="info-box">
+                    <p><strong>The Strategy:</strong> A pro-level system must survive an AI mistake. We don't just "try prompts"; we test for <strong>Failure Modes</strong> to ensure our Body is resilient.</p>
+                    <p><strong>Engineering Mindset:</strong> Beginners test when things work. Engineers test when things break. A strong system is not one that works perfectly—it is one that continues to work even when the AI makes mistakes.</p>
+                </div>
+
+                <div class="activity-box">
+                    <h4>🛠 Activity 4: The Red Team Stress Test</h4>
+                    <p><b>Task:</b> Force your AI to break the "Data Contract" and see if your Body survives.</p>
+                    <ul>
+                        <li><strong>Test A (Missing Key):</strong> Ask the AI to respond but "Forget the 'action' key".</li>
+                        <li><strong>Test B (Invalid Code):</strong> Ask it to use an action like "delete" (which isn't in your map).</li>
+                        <li><strong>Test C (Corrupted Structure):</strong> Force the AI to send a broken dictionary.</li>
+                    </ul>
+                    <p><b>Verification:</b> If your code handles the error instead of crashing, your architecture is <b>Production Ready</b>. This means you are thinking like a real engineer—building systems that survive failure, not just work when everything is perfect.</p>
+                </div>
+
+                <h2>7. The Bridge: Cloud vs. Local</h2>
+                <div class="rule-callout">
+                    <h4><i class="fas fa-exchange-alt"></i> THE BRAIN SWAP PREVIEW</h4>
+                    <p>In Term 2, we will host our own LLM locally. Because your code is <strong>Modular</strong>, the transition is easy:</p>
+                    <ul>
+                        <li><strong>UNTOUCHED:</strong> <code>app.py</code>, the cleaning regex, validation, and action mapping.</li>
+                        <li><strong>UPDATED:</strong> <code>config.py</code> (pointing to your local PC instead of OpenAI) and <code>brain.py</code> (rules for the local model).</li>
+                    </ul>
+                    <p><strong>SAME BODY → DIFFERENT BRAIN.</strong> In future terms, you will not only replace the brain, but also start shaping your own custom AI to follow this contract perfectly.</p>
+                </div>
+
+                <div class="rule-callout" style="background-color: #dcfce7; border-color: #22c55e; color: #166534;">
+                    <h4><i class="fas fa-medal"></i> SYSTEM COMPLETION MOMENT</h4>
+                    <p><strong>Engineering Milestone:</strong> You have officially built a complete AI System. You have moved from a "User" who chats with a bot to an "Engineer" who architects a pipeline. </p>
+                    <p>Take a look at what you've achieved: 
+                        <ul>
+                            <li><strong>Input Layer:</strong> Capturing user intent.</li>
+                            <li><strong>Brain Layer:</strong> Intelligence and reasoning.</li>
+                            <li><strong>Processing Pipeline:</strong> Cleaning, parsing, and validating data.</li>
+                            <li><strong>Action System:</strong> Mapping thoughts to computer power.</li>
+                            <li><strong>Error Handling:</strong> Building system resilience.</li>
+                        </ul>
+                    </p>
+                    <p><strong>This is exactly how real AI systems are used in real-world systems at companies.</strong> Your "Body" is now ready for Session 8.</p>
+                </div>
+
+                <details class="collapsible-box">
+    <summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+
+    <div class="activity-box">
+
+        <h4>❓ Nothing happens when I give a command</h4>
+        <p>This usually means the AI returned an action that does not match your system.</p>
+        <p><b>The Fix:</b> Check your <code>brain.py</code> rules. Make sure the AI ONLY uses these exact actions:</p>
+        <pre><code>"open", "save", "alert", "none"</code></pre>
+        <p>If the action name is different (like <code>"open_site"</code>), your system will not execute anything.</p>
+
+        <hr />
+
+        <h4>❓ The browser is not opening</h4>
+        <p>This means the <code>"open"</code> action is not being triggered correctly.</p>
+        <p><b>The Fix:</b></p>
+        <ul>
+            <li>Check if <code>import webbrowser</code> is added at the top of your file</li>
+            <li>Make sure your <code>ACTIONS</code> dictionary includes <code>"open": open_website</code></li>
+            <li>Check if the AI is actually returning <code>"action": "open"</code></li>
+        </ul>
+
+        <hr />
+
+        <h4>❓ My notes are not saving</h4>
+        <p>This means the <code>"save"</code> action is not working properly.</p>
+        <p><b>The Fix:</b></p>
+        <ul>
+            <li>Check your <code>save_note()</code> function</li>
+            <li>Make sure you are passing content correctly:</li>
+        </ul>
+        <pre><code>action_function(data.get("reply", ""))</code></pre>
+        <p>The file <code>notes.txt</code> will be created in the same folder as your <code>app.py</code>.</p>
+
+        <hr />
+
+        <h4>❓ NameError: name 'data' is not defined</h4>
+        <p>This means your parsed AI response is not being stored correctly.</p>
+        <p><b>The Fix:</b> Ensure your Session 6 pipeline is working:</p>
+        <ul>
+            <li>Cleaning → Parsing → Validation</li>
+            <li>Your final dictionary should be stored in a variable called <code>data</code></li>
+        </ul>
+
+        <hr />
+
+        <h4>❓ The system crashes on wrong AI output</h4>
+        <p>This happens when the AI breaks the Data Contract.</p>
+        <p><b>The Fix:</b></p>
+        <ul>
+            <li>Ensure your validation layer is active</li>
+            <li>Always use safe access:</li>
+        </ul>
+        <pre><code>data.get("action", "none")</code></pre>
+        <p>This prevents crashes when keys are missing.</p>
+
+        <hr />
+
+        <h4>❓ File is not appearing in my project folder</h4>
+        <p>This happens if your script is running from a different directory.</p>
+        <p><b>The Fix:</b> Make sure you run your program from inside your project folder.</p>
+        <p>The file will be saved in the same location as your running script.</p>
+
+        <hr />
+
+        <h4>❓ My AI gives wrong or random actions</h4>
+        <p>This means your <code>system_rules</code> are not strict enough.</p>
+        <p><b>The Fix:</b> Update your rules in <code>brain.py</code>:</p>
+        <pre><code>You MUST only use:
+"open", "save", "alert", "none"</code></pre>
+        <p>The stricter your rules, the more reliable your AI becomes.</p>
+
+        <hr />
+
+        <h4>❓ Understanding the System (Important)</h4>
+        <ul>
+            <li>• The AI does NOT perform actions</li>
+            <li>• The AI only decides what action should happen</li>
+            <li>• Your Python system actually executes the action</li>
+        </ul>
+
+        <hr />
+
+        <h4>❓ Engineering Mindset</h4>
+        <ul>
+            <li>• Your system may not work perfectly on the first try—and that is expected</li>
+            <li>• Debugging is part of building real systems</li>
+            <li>• If your browser opens or your file gets created, your system is working correctly</li>
+            <li>• Your goal is not perfection—your goal is control</li>
+        </ul>
+
+    </div>
+</details>
+
+                <!-- KNOWLEDGE CHECK -->
+                <section class="knowledge-check">
+                    <div class="check-header">
+                        <i class="fas fa-tasks"></i>
+                        <h2>Mission Diagnostic: Level 07</h2>
+                        <p>Verify your architectural system knowledge.</p>
+                    </div>
+
+                    <div class="mcq-container">
+                        <!-- Q1 -->
+                        <div class="mcq-item q-purple">
+                            <p class="mcq-question">1. Why can't the Python 'Body' just read English sentences to perform actions?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct! Python is a logic-based language; it needs structured keys, not unpredictable human sentences.">It needs exact keys and structured data to run logic code.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Python can read strings, but it can't use them to trigger specific logic gates reliably.">Python is only capable of reading numbers.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="OpenAI can translate, but our 'Body' code still needs structure!">OpenAI is the only thing that understands English.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="mcq-item q-green">
+                            <p class="mcq-question">2. Why do we prefer an 'ACTIONS' dictionary over a long list of 'if/elif' statements?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="true" data-feedback="Exactly. This is called 'Scalable Architecture'.">It is cleaner and easier to add dozens of new actions.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Mapping uses a tiny bit of RAM, but it's worth it!">It makes the computer's fans spin slower.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Only the system prompt can do that.">It makes the AI's personality more creative.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="mcq-item q-blue">
+                            <p class="mcq-question">3. What happens to 'app.py' if we swap the Cloud Brain for a Local Brain in Term 2?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="We use a modular bridge so we don't have to rewrite everything!">We have to delete it and start over.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Spot on! As long as the 'Data Contract' stays the same, the Body stays the same.">Nothing. The Body (interface) stays the same.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Validation is local code, not cloud code.">It gets deleted by the OpenAI server.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="mcq-item q-amber">
+                            <p class="mcq-question">4. In the 'Brain as a Function' model, what is the output of the function?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="true" data-feedback="Yes! The function's job is to return structured data that the system can use.">A Python dictionary containing specific keys like 'reply' and 'action'.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="That would be unstructured data, which the Body can't use easily.">A long paragraph of friendly text.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="That is what the Cleaning Layer handles.">A raw string containing markdown and filler.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="mcq-item q-purple">
+                            <p class="mcq-question">5. What is the final goal of "System Blueprinting"?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="That was Session 3!">To write the best possible prompt.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct. You are building a reliable tool, not just a chat window.">To build a reliable structure where AI thoughts trigger computer actions.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Git is just a tool; the system is the goal.">To upload everything to Git.</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+               <section class="session-block homework-block">
+    <h2>Final Showcase Preparation</h2>
+
+    <!-- STANDARD TASK -->
+    <div class="homework-item standard">
+        <h3>Task: Extend Your AI System</h3>
+        <p>Add one new action to your system. Choose any one:</p>
+        <ul>
+            <li>Open YouTube directly</li>
+            <li>Save notes to a different file</li>
+            <li>Print a custom message</li>
+        </ul>
+
+        <p><strong>Goal:</strong> Update your <code>ACTIONS</code> dictionary and create a new function for your action.</p>
+
+        <p><strong>This is how engineers expand systems—by adding new commands to the architecture.</strong></p>
+    </div>
+
+    <!-- ADVANCED TASK -->
+    <div class="homework-item advanced">
+        <h3>Task: Multi-Action Trigger</h3>
+        <p>Update your <code>ACTIONS</code> dictionary so that a single AI command triggers TWO things at once (e.g., prints a message AND opens a website).</p>
+    </div>
+
+    <!-- SOLUTIONS -->
+    <div class="homework-collapsible">
+        <div class="homework-toggle">
+            <span>Need Help? View Solutions & Guidance</span>
+            <i class="fas fa-chevron-down toggle-arrow"></i>
+        </div>
+
+        <div class="homework-content">
+
+            <h4>✅ Standard Task Solutions</h4>
+
+            <p><strong>1. Open YouTube directly</strong></p>
+<pre><code>def open_youtube():
+    webbrowser.open("https://www.youtube.com")
+
+ACTIONS["youtube"] = open_youtube
+</code></pre>
+
+            <p><strong>2. Save notes to a different file</strong></p>
+<pre><code>def save_to_file(content):
+    if content:
+        with open("my_notes.txt", "a") as file:
+            file.write(content + "\n")
+
+ACTIONS["save_file"] = save_to_file
+</code></pre>
+
+            <p><strong>3. Print a custom message</strong></p>
+<pre><code>def custom_message():
+    print("🔥 Custom action executed!")
+
+ACTIONS["custom"] = custom_message
+</code></pre>
+
+            <hr />
+
+            <h4>🚀 Upgrade: Open vs Search (Better System Design)</h4>
+
+            <p>Improve your system by separating <code>"open"</code> and <code>"search"</code> actions:</p>
+
+<pre><code>def search_google(query):
+    url = f"https://www.google.com/search?q={query}"
+    webbrowser.open(url)
+
+ACTIONS["search"] = search_google
+</code></pre>
+
+<pre><code>def open_website(site):
+    sites = {
+        "youtube": "https://www.youtube.com",
+        "google": "https://www.google.com",
+        "github": "https://www.github.com"
+    }
+
+    site = site.lower()
+
+    if site in sites:
+        webbrowser.open(sites[site])
+    else:
+        webbrowser.open("https://www.google.com")
+</code></pre>
+
+            <hr />
+
+            <h4>⚡ Advanced Task Solution (Multi-Action)</h4>
+
+<pre><code>def open_and_alert(query):
+    print("🚀 Opening and notifying...")
+    webbrowser.open(f"https://www.google.com/search?q={query}")
+
+ACTIONS["multi"] = open_and_alert
+</code></pre>
+
+            <p><strong>How it works:</strong> One action triggers multiple outputs—this is how real automation systems behave.</p>
+
+            <hr />
+
+            <h4>📌 Showcase Checklist</h4>
+            <ul>
+                <li>Is your <code>.env</code> file safe (in .gitignore)?</li>
+                <li>Does your <code>brain.py</code> use double curly braces <code>{{ }}</code>?</li>
+                <li>Does your system correctly trigger actions like open, save, alert?</li>
+            </ul>
+
+        </div>
+    </div>
+</section>
+                <div class="did-you-know-box">
+                    <div class="dyk-icon"><i class="fas fa-link"></i></div>
+                    <div class="dyk-text">
+                        <h3>Did You Know?</h3>
+                        <p>The concept of "Separation of Concerns" (keeping Brain and Body separate) was invented in the 1970s. It’s the reason why your smartphone can update its apps without breaking your photos or contacts!</p>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <h4><i class="fas fa-link"></i> Your Journey So Far</h4>
+                    <p>In Session 6, you made AI <strong>reliable</strong> by structuring and validating its output.</p>
+                    <p>In this session, you made AI <strong>controllable</strong> by connecting it to real system actions.</p>
+                    <p><strong>Next:</strong> You will go one step further—making the Brain your own.</p>
+                </div>
+            </section>
+
+            <div class="completion-zone">
+                <div class="completion-card">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="session-check">
+                        <span class="checkmark"></span>
+                        I have built a robust Data Contract and scalable Command Architecture.
+                    </label>
+                </div>
+            </div>
+
+            <div class="navigation-footer">
+                <a href="session6.html" class="btn-secondary">Previous Session</a>
+                <button class="btn-primary" id="next-btn">Mark Complete & Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+        <div class="mcq-modal-content">
+            <div id="mcq-modal-status-bar"></div>
+            <div class="mcq-modal-body">
+                <div id="mcq-modal-icon"></div>
+                <h3 id="mcq-modal-title">Checking Logic...</h3>
+                <p id="mcq-modal-feedback"></p>
+                <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="nexus-core.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

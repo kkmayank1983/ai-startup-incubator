@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nexus | Memory Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="page-session" data-current-session="t1_s4">
+
+    <nav class="navbar">
+        <a href="index.html" class="site-logo">
+            <img src="images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+        </a>
+        <div class="nav-links">
+            <span class="user-status">Status: <strong>Junior Co-founder</strong></span>
+            <a href="term1.html" class="btn-primary">My Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>TERM 1: THE ENGINE ROOM</h3>
+                <ul>
+                    <li data-session-id="t1_s1"><a href="session1.html"><i class="fas fa-tools"></i> S1: The Architect's Toolkit</a></li>
+                    <li data-session-id="t1_s2"><a href="session2.html"><i class="fas fa-brain"></i> S2: Beyond the Chatbox</a></li>
+                    <li data-session-id="t1_s3"><a href="session3.html"><i class="fas fa-code"></i> S3: Prompting as Code</a></li>
+                    <li data-session-id="t1_s4"><a href="session4.html"><i class="fas fa-memory"></i> S4: Memory Management</a></li>
+                    <li data-session-id="t1_s5"><a href="session5.html"><i class="fas fa-cubes"></i> S5: Modular Programming</a></li>
+                    <li data-session-id="t1_s6"><a href="session6.html"><i class="fas fa-table"></i> S6: Structured Output</a></li>
+                    <li data-session-id="t1_s7"><a href="session7.html"><i class="fas fa-lightbulb"></i> S7: Project Ideation</a></li>
+                    <li data-session-id="t1_s8"><a href="session8.html"><i class="fas fa-rocket"></i> S8: Term 1 Showcase</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section locked">
+                <h3>TERM 2: THE BRAIN <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 3: THE BODY <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 4: THE LAUNCH <i class="fas fa-lock"></i></h3>
+            </div>
+        </aside>
+
+        <div id="sidebar-resizer" class="resizer"></div>
+
+        <main class="content">
+            <nav class="breadcrumb">Mission Control / Term 1 / Session 4 / Memory Management</nav>
+            
+            <section id="lesson-header">
+                <h1>Session 4: Memory Management</h1>
+                <p class="lead">Solving the Goldfish Problem. Give your AI a long-term memory while mastering the engineering of the "Desk Space."</p>
+                <div class="stats-bar">
+                    <span><i class="far fa-clock"></i> 60 Minutes</span>
+                    <span><i class="fas fa-signal"></i> Level: Advanced Junior</span>
+                </div>
+
+                <div class="outcome-box">
+                    <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+                    <p>In this lab, you will define <b>Statelessness</b>, visualize the <b>Context Window</b>, build manual memory loops, and implement professional <b>Conversation Chains</b> to make your bot remember everything.</p>
+                </div>
+            </section>
+
+            <section class="lesson-body">
+                <!-- PART 1: THE GOLDFISH BRAIN -->
+                <h2>1. The Goldfish Brain (Statelessness)</h2>
+                <div class="info-box">
+                    <p>
+                    In <strong>Session 3</strong>, we learned that AI models are powerful 
+                    <b>Next-Word Guessers</b>. They do not think or store memories. 
+                    They only respond to the text they can currently see.
+                    </p>
+                    <p>
+                    Now test this:
+                    <br>Tell the AI: <b>My name is Chiara.</b>
+                    <br>Then ask: <b>What is my name?</b>
+                    </p>
+                    <p>
+                    It forgets.
+                    </p>
+                    <p>
+                    Why?<br>
+                    Because every time you run <b>llm.invoke()</b>, it sends a completely new request to the API.
+                    The model only sees the text included in that specific request.
+                    </p>
+                    <p>
+                    It has no hard drive.<br>
+                    No saved chat history.<br>
+                    No automatic memory between calls.
+                    </p>
+                    <p>
+                    This is called <strong>Statelessness</strong>.
+                    </p>
+                    <p>
+                    Every time you press Enter, the AI starts fresh — like a goldfish with a 5-second memory.
+                    </p>
+                </div>
+                <p><strong>The Result:</strong> The AI responds that it doesn't know your name. It forgot everything between the two calls! This is <b>Statelessness</b>.</p>
+                <div class="activity-box">
+        <h4>🛠 Activity: Testing the Goldfish Brain</h4>
+        <p>Let's prove the AI forgets who you are immediately unless we build a memory system.</p>
+        <ol>
+            <li>Open **VS Code** and make sure your virtual environment is active.</li>
+            <p>
+                  Run in your terminal: <p>
+                  <code>venv\Scripts\activate</code> (Windows)<br>
+                  <code>source venv/bin/activate</code> (Mac/Linux)</p>
+                </p>
+            <li>Create a new file named <code>memory_test.py</code> in your project folder.</li>
+            <li>Copy and paste the baseline code below into the file:</li>
+            <div class="code-block python">
+                <div class="code-header">memory_test.py - Baseline</div>
+                <pre>import os
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+
+load_dotenv()
+llm = ChatOpenAI(model="gpt-4o-mini")
+
+# Attempt 1: Tell the AI your name
+response1 = llm.invoke("My name is Chiara.")
+print(f"AI Response 1: {response1.content}")
+
+# Attempt 2: Ask it your name
+response2 = llm.invoke("What is my name?")
+print(f"AI Response 2: {response2.content}")</pre>
+            </div>
+            <li>Save the file and run it in your terminal: <code>python memory_test.py</code></li>
+            <figure class="screenshot">
+                <img src="images/Session 4/gold fish code output.png"alt="initial code"/>
+        </figure>
+        </ol>
+        
+    </div>
+                
+                <div class="info-box">
+                  <strong>Observation</strong>: The AI forgets your name between the first and second call.  
+                </div>
+                <!-- PART 2: THE AI'S DESK -->
+                <h2>2. The AI’s Desk (Context Window & Tokens)</h2>
+
+                <div class="tool-info-box">
+                    <p>In Session 2, we introduced the <b>Context Window</b> and compared it to a desk. Let’s revisit that idea — because now it becomes critical.
+                    The AI can only “see” what fits on that desk.
+                    </p>
+
+                    <p>
+                    Everything counts:
+                    </p>
+                    <ul>
+                        <li>System instructions</li>
+                        <li>Chat history</li>
+                        <li>Your message</li>
+                        <li>The AI’s reply</li>
+                    </ul>
+                    
+
+                    <p>
+                    Text is measured in <b>Tokens</b>.
+                    If the model supports 8,000 tokens and you use 7,900,
+                    only 100 remain.
+                    </p>
+
+                    <p>
+                    If the desk gets full, older messages fall off.
+                    This is called <b>Truncation</b>.
+                    </p>
+
+                    <p>
+                    The AI doesn’t choose to forget.
+                    The text simply doesn’t fit.
+                    </p>
+
+                </div>
+
+                <div class="tool-info-box">
+                    <strong>Truncation:</strong> If the desk becomes too full, the AI has to throw the oldest papers (messages) in the bin to make room for new ones.
+                </div>
+
+                <div class="rule-callout">
+                    <p><strong>Key Lesson:</strong> Memory is limited by the size of the Context Window. It is not infinite.</p>
+                </div>
+
+                <!-- PART 3: MANUAL MEMORY -->
+                <h2>3. Manual Memory: It’s Just Text</h2>
+                <p>
+Up until now, every API call has been independent. 
+If we want the AI to behave like it remembers things, we need to control what we send inside each request.
+</p>
+
+                <div class="tool-info-box">
+<p>
+If the AI forgets between requests, how do we fix it?
+We remind it. <br>
+Instead of sending only the new message, we send the entire conversation again.
+</p>
+<div class="code-block python">
+<pre>
+chat_history = ""
+
+while True:
+    user_input = input("You: ")
+    chat_history += f"User: {user_input}\n"
+
+    response = llm.invoke(chat_history)
+
+    chat_history += f"AI: {response.content}\n"
+    print(response.content)
+</pre>
+</div>
+<p>
+Each time the loop runs:
+<ol>
+    <li>We add the new user message to <code>chat_history</code>.</li>
+    <li>We send the entire history to the model.</li>
+    <li>We add the AI’s response back into the history.</li>
+</ol>
+</p>
+
+<p>
+From the model’s perspective, it looks like one long conversation.
+</p>
+
+<p>
+We did not upgrade the model or install memory hardware.<br>
+We simply sent more text.
+</p>
+
+<p>
+<b>Memory = Resending previous messages.</b>
+</p>
+
+
+                </div>
+
+                <div class="activity-box">
+        <h4>🛠 Activity: Building a Manual Memory Loop</h4>
+        <p>We will create a growing string called <code>chat_history</code> to act as the AI's "short-term memory."</p>
+        <ol>
+            <li>In your <code>memory_test.py</code> file, delete the previous code from <code>#Attempt 1</code> line.</li>
+            <li>Initialize a variable called <code>chat_history = ""</code>.</li>
+            <li>Create a <code>while True:</code> loop to keep the conversation running.</li>
+            <li>Use the code below to implement the manual memory logic:</li>
+            <div class="code-block python">
+                <div class="code-header">Manual Memory Loop</div>
+                <pre>chat_history = ""
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() == "exit": break
+
+    # 1. Add user input to the history
+    chat_history += f"User: {user_input}\n"
+
+    # 2. Send the ENTIRE history string to the AI
+    response = llm.invoke(chat_history)
+
+    # 3. Add the AI's response back into the history
+    chat_history += f"AI: {response.content}\n"
+
+    print(f"AI: {response.content}")</pre>
+            </div>
+            <li>It should be looking like this :</li>
+            <figure class="screenshot">
+                    <img src="images/Session 4/manual memory loop code .png"alt="initial code"/>
+                </figure>
+            <li>Run the script and tell the AI your name.</li>
+            <figure class="screenshot">
+                    <img src="images/Session 4/memory test - name .png"alt="initial code"/>
+                </figure>
+            <li>Ask a few unrelated questions.</li>
+            <figure class="screenshot">
+                <img src="images/Session 4/memory test - questions.png" alt="Terminal showing AI remembering name via chat_history" />
+            </figure>
+            <li>Now ask "By the way what is my Name?". Observe that it actually remembers your name now.</li>
+            <figure class="screenshot">
+                <img src="images/Session 4/memory test success.png" alt="Terminal showing AI remembering name via chat_history" />
+            </figure>
+        </ol>
+    </div>
+                <div class="info-box">
+                <strong>Observation:</strong><br>
+                In this activity, the AI will continue remembering your name even after several questions. 
+                This is because the entire conversation is sent to the model every time.
+                <br><br>
+                However, memory is not infinite. Each AI model has a limit called the <b>Context Window</b>. 
+                For example, models like <code>gpt-4o-mini</code> can handle a very large conversation, so the AI may remember your name for hundreds of messages.
+                <br><br>
+                If the conversation becomes extremely long, the oldest messages (like the first time you shared your name) will eventually be removed. 
+                When that happens, the AI will forget.
+                </div>
+
+                <div class="rule-callout">
+                    <p><strong>Key Lesson:</strong> We did not make the AI smarter. We simply resend the entire conversation every time. <br><b>Memory = Resending previous messages.</b></p>
+                </div>
+
+                <!-- PART 4: AUTOMATION -->
+                <h2>4. Automation: Converstaion Buffer Memory & Conversation Chain</h2>
+                <p>Managing strings manually gets messy quickly. Professional engineers use tools that act like a <b>Notebook</b> to keep track of the chat automatically.</p>
+
+                <div class="tool-info-box">
+                    <strong>Conversation Buffer Memory:</strong> A LangChain tool that writes down every message in a running "buffer" (notebook). <code>ConversationBufferMemory</code> keeps the entire conversation in order.
+<p>
+Each time the user sends a message:
+<ul>
+    <li>The new message is added</li>
+    <li>Previous history is preserved</li>
+    <li>The full conversation is sent back to the model</li>
+</ul>
+</p>
+
+<p>
+The model can “remember” earlier details — not because it has real memory, but because we keep resending the stored chat history.
+</p>
+
+                </div>
+                <div class="rule-callout">
+                    <p>
+Important: This memory is temporary. It exists only while the script runs. Restarting the program clears it.
+</p>
+
+<p>
+In simple terms: It is an automatic chat history manager.
+</p>
+                </div>
+                <div class="tool-info-box">
+                    <strong>Conversation Chain:</strong> A ready-made loop that connects the LLM (Brain), the Memory (Notebook), and the User input.
+<p>
+Instead of manually building and resending chat history, it automatically:
+<ul>
+    <li>Receives user input</li>
+    <li>Adds it to memory</li>
+    <li>Sends the full conversation to the model</li>
+    <li>Returns the response</li>
+</ul>
+</p>
+
+<p>
+It simplifies conversation logic into one object. When used with <code>ConversationBufferMemory</code>, it creates a chatbot that remembers earlier messages during the session.
+</p>
+
+<p>
+In simple terms:
+ConversationBufferMemory stores the chat.
+ConversationChain uses it when talking to the model.
+</p>
+
+
+                </div>
+                <div class="rule-callout">
+    <h4><i class="fas fa-exclamation-triangle"></i> SETUP NOTE</h4>
+    <p>
+        In the latest versions of LangChain, some of the older conversational tools such as 
+        <code>ConversationChain</code> and <code>ConversationBufferMemory</code> have been moved 
+        into a separate package called <code>langchain-classic</code>.  
+        Since this activity teaches how conversational memory works using these tools, we need 
+        to install that package inside our virtual environment.
+        <br><br>
+        Run the following command in your terminal before continuing:
+        <br>
+        <code>pip install langchain-classic</code>
+    </p>
+</div>
+
+                <div class="activity-box">
+        <h4>🛠 Activity: The Professional Structure</h4>
+        <p>Let's use LangChain to handle the memory logic automatically and cleanly.</p>
+        <ol>
+            <li>Create a new file named <code>pro_memory.py</code>.</li>
+            <li>Import the required memory tools and set up the <code>ConversationChain</code>:</li>
+            <div class="code-block python">
+                <div class="code-header">pro_memory.py</div>
+                <pre>from langchain_classic.chains import ConversationChain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+llm = ChatOpenAI(model="gpt-4o-mini")
+
+# 1. Create the 'Notebook' (Memory)
+memory = ConversationBufferMemory()
+
+# 2. Create the 'Chatbot' (Chain)
+bot = ConversationChain(llm=llm, memory=memory)
+
+# 3. Use .predict() instead of .invoke()
+print(bot.predict(input="My name is Chiara."))
+print(bot.predict(input="What is my name?"))</pre>
+            </div>
+            <li>Run the script and notice how much cleaner the code is. The "Chain" handles the resending of text for you!</li>
+            <figure class="screenshot">
+                <img src="images/Session 4/ConversationChain output.png" alt="Output of ConversationChain" />
+            </figure>
+        </ol>
+    </div>
+                <div class="rule-callout">
+                <strong>Note:</strong><br>
+                You may see a warning message saying <code>ConversationChain</code> is deprecated.
+                This does not affect the activity. The code will still run correctly because we are using 
+                <code>langchain-classic</code> for learning conversational memory concepts. The tool still works
+                but LangChain plans to replace it in the future.
+                </div>
+
+                <!-- PART 5: STRESS TEST & RECEIPT -->
+                <h2>5. The Stress Test & “The Receipt”</h2>
+                <div class="info-box">
+                    <h4>THE RECEIPT ANALOGY</h4>
+                    <p>Every new message includes the entire previous conversation again. If your history is 500 tokens long, Message #11 costs you 510 tokens. You are paying for the full conversation every time you hit Enter.</p>
+                </div>
+                <div class="tool-info-box">
+                    <strong>🧾 The Stress Test</strong>
+<p>
+Tell your bot 5–10 facts about yourself.
+Then keep chatting.
+<br>
+Now ask:
+<br><code>What was the first thing I told you?</code>
+</p>
+
+<p>
+If the conversation becomes extremely long, the model may eventually forget the earliest facts.
+</p>
+
+<p>
+Every new message resends the full history.
+If your chat is 500 tokens long:
+<br>Message #10 costs ~500 tokens
+<br>Message #11 costs ~510 tokens
+</p>
+
+<p>
+Longer memory:
+<ul>
+    <li>Better context</li>
+    <li>Higher cost</li>
+    <li>Faster desk overflow</li>
+</ul>
+</p>
+                </div>
+                 <div class="activity-box">
+                    <h4>🛠 Activity: The Memory Stress Test</h4>
+                    <p>Let's see how much information we can pack onto the AI's "Desk" before things get expensive or crowded.</p>
+                    <ol>
+                        <li>Run your <code>pro_memory.py</code> script.</li>
+                        <li>Provide at least 5–10 different facts to the bot (e.g., "I live in Melbourne," "My dog is named Rex," "My favorite color is orange").</li>
+                        <li>Continue chatting about other things for a minute.</li>
+                        <li>Now ask: <b>“What was the very first fact I told you?”</b></li>
+                        <li>Observe: Did the AI still remember the first fact? Every time you sent a new fact, you were "paying" tokens for all the previous facts!</li>
+                    </ol>
+                </div>
+                            <div class="rule-callout">
+                    <strong>Key Lesson:</strong> Long memory improves context, but it increases token usage, increases cost, and fills the Context Window faster. Memory must be managed carefully.
+                </div>
+                <div class="info-box">
+                    <p>
+In every request, the AI is still a next-word guesser. 
+It does not gain real memory — we control what it sees.
+</p>
+
+<p>
+By managing chat history, we control context. 
+By controlling context, we control behavior.
+</p>
+
+<p>
+You have now moved from writing simple prompts to engineering conversational systems.
+</p>
+
+<p>
+<strong>Looking Ahead:</strong> As conversations grow, our code will grow too.
+In the next session, we will reorganize this expanding system using Modular Programming — because real AI engineers build structured systems, not messy scripts.
+</p>
+
+                </div>
+                <h2>6. Version Control Save Point</h2>
+                <div class="code-block">
+                    <div class="code-header">Terminal</div>
+                    <pre>git add .
+git commit -m "Session 4: Implemented manual memory and conversation chains"</pre>
+                </div>
+                <details class="collapsible-box">
+                    <summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+
+                    <div class="activity-box">
+
+                        <h4>❓ The AI Still Forgets My Name</h4>
+                        <p>Check the following:</p>
+                        <ul>
+                        <li>You are using <code>ConversationChain</code> and not calling <code>llm.invoke()</code> directly.</li>
+                        <li>Your memory object is correctly passed into the chain.</li>
+                        <li>You are using <code>bot.predict()</code> instead of <code>llm.invoke()</code>.</li>
+                        </ul>
+                        <p>
+                        Remember: If you bypass the chain, memory will not be used.
+                        </p>
+
+                        <hr />
+
+                        <h4>❓ NameError: ConversationChain or ConversationBufferMemory Not Defined</h4>
+                        <p>This means the classes were not imported correctly or the other reason could be that you have not installed 
+                            langchain-classic package in your virtual environment. </p>
+                            <p>To install that you should run the following command: <code>pip install langchain-classic</code>
+                        </p>
+                        <p>Make sure you added:</p>
+                        <pre>
+                    from langchain_classic.chains import ConversationChain
+                    from langchain_classic.memory import ConversationBufferMemory
+                        </pre>
+
+                        <hr />
+
+                        <h4>❓ Infinite Loop Running Forever</h4>
+                        <p>If you used <code>while True:</code>, your program will not stop automatically.</p>
+                        <p>
+                        Press <strong>Ctrl + C</strong> in the terminal to stop the loop.
+                        </p>
+
+                        <hr />
+
+                        <h4>❓ Memory Resets When I Restart the Script</h4>
+                        <p>
+                        This is expected behavior. <code>ConversationBufferMemory</code> is temporary.
+                        It stores messages only while the program is running.
+                        </p>
+                        <p>
+                        Permanent storage will be covered in a later session.
+                        </p>
+
+                        <hr />
+
+                        <h4>❓ The Bot Forgets After Long Conversations</h4>
+                        <p>
+                        This happens because of the <strong>Context Window limit</strong>.
+                        When the token limit is reached, older messages are removed.
+                        </p>
+                        <p>
+                        This is called <strong>Truncation</strong>.
+                        </p>
+
+                    </div>
+                    </details>
+
+                
+                <!-- KNOWLEDGE CHECK -->
+                <section class="knowledge-check">
+                    <div class="check-header">
+                        <i class="fas fa-brain"></i>
+                        <h2>Mission Diagnostic: Level 04</h2>
+                        <p>Verify your understanding of memory architecture.</p>
+                    </div>
+
+                    <div class="mcq-container">
+                        <div class="mcq-item">
+                            <p class="mcq-question">1. What does it mean when we say an AI model is "Stateless"?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. That is the goal of memory, not the default state.">A) It saves every chat to its hard drive automatically.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct! Every message is a brand new start for the AI unless we remind it.">B) It starts fresh with a blank slate for every message.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Statelessness refers to memory, not connectivity.">C) It only works when you have an internet connection.</button>
+                            </div>
+                        </div>
+
+                        <div class="mcq-item">
+                            <p class="mcq-question">2. How do we give an AI "Memory" in code?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. The System Message is for rules, not chat history.">A) By updating the System Message every time.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct! We resend the history so the AI 'sees' the past.">B) By resending the previous messages in every new request.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. AI doesn't have a persistent brain storage.">C) By telling the AI to 'remember harder'.</button>
+                            </div>
+                        </div>
+
+                        <div class="mcq-item">
+                            <p class="mcq-question">3. What represents the AI's "Desk" or working space?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Tokens are the papers ON the desk, not the desk itself.">A) Tokens</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Spot on! It limits how much text the AI can process at once.">B) Context Window</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. venv is for your Python tools.">C) Virtual Environment</button>
+                            </div>
+                        </div>
+
+                        <div class="mcq-item">
+                            <p class="mcq-question">4. What is "Truncation"?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="true" data-feedback="Exactly. When the desk is full, old info falls off.">A) When old messages are removed because the context window is full.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Truncation is about deleting, not saving.">B) When the AI saves a chat to Git.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. That is an API Quota error.">C) When you run out of money in your API account.</button>
+                            </div>
+                        </div>
+
+                        <div class="mcq-item">
+                            <p class="mcq-question">5. Why do engineers care about the "Receipt Analogy"?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. We pay for input tokens, not speed.">A) Because AI gets faster when you pay more.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Resending history costs more money as the chat gets longer.">B) Because resending history increases token usage and cost.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Receipt analogy is about money/usage.">C) To print out a physical copy of the chat.</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="session-block homework-block">
+                    <h2>Homework / Extension</h2>
+                    <div class="homework-item standard">
+                        <h3>Standard Task: The Pirate Guard with Memory</h3>
+                        <p>Combine Session 3 and Session 4! Build a Pirate Guard that uses <b>ConversationChain</b>. Tell the Pirate your "Secret Key" and then talk for 5 messages. Ask the Pirate what the secret is to see if he remembers.</p>
+                    </div>
+                    <div class="homework-item advanced">
+                        <h3>Advanced Task: Context Break</h3>
+                        <p>Try to make your bot forget. Find a very long piece of text (like a Wikipedia article) and paste it into the chat. Then ask the bot for your name. Did it forget? This is <b>Truncation</b> in action!</p>
+                    </div>
+
+                   <div class="homework-collapsible">
+                <div class="homework-toggle">
+                    <span>Need Help? View Solutions & Guidance</span>
+                    <i class="fas fa-chevron-down toggle-arrow"></i>
+                </div>
+
+                <div class="homework-content">
+
+                    <h4>Standard Task Guidance (Pirate Guard with Memory)</h4>
+                    <ol>
+                    <li>Import and create <code>ConversationBufferMemory()</code>.</li>
+                    <li>Create a <code>ConversationChain</code> and pass both <code>llm</code> and <code>memory</code>.</li>
+                    <li>Add your Pirate personality using a custom prompt if needed.</li>
+                    <li>Tell the Pirate a secret key.</li>
+                    <li>Continue the conversation for at least 5 more messages.</li>
+                    <li>Ask: <code>What is the secret key?</code></li>
+                    </ol>
+
+                    <p><strong>Success Check:</strong></p>
+                    <ul>
+                    <li>The Pirate should remember the secret.</li>
+                    <li>The Pirate should stay in character.</li>
+                    </ul>
+
+                    <hr>
+
+                    <h4>Advanced Task Guidance (Context Break)</h4>
+                    <ol>
+                    <li>Tell the bot your name.</li>
+                    <li>Paste a very long text (multiple paragraphs).</li>
+                    <li>Ask: <code>What is my name?</code></li>
+                    </ol>
+
+                    <p>
+                    If the bot forgets, you triggered <strong>Truncation</strong>.
+                    The Context Window filled up, and older messages were removed.
+                    </p>
+
+                    <hr>
+
+                    <h4>Common Mistakes</h4>
+                    <ul>
+                    <li>Calling <code>llm.invoke()</code> instead of <code>bot.predict()</code>.</li>
+                    <li>Creating memory but not passing it into <code>ConversationChain</code>.</li>
+                    <li>Restarting the script and expecting memory to persist.</li>
+                    <li>Using extremely long text and hitting the Context Window limit.</li>
+                    </ul>
+
+                </div>
+                </div>
+
+                </section>
+
+                <div class="did-you-know-box">
+                    <div class="dyk-icon"><i class="fas fa-question-circle"></i></div>
+                    <div class="dyk-text">
+                        <h3>Did You Know?</h3>
+                       <p>
+                        Every time you send a new message to your bot, it has to reread the entire conversation again.
+                        That means by <b>message #20</b>, the AI might be rereading thousands of words just to answer one question.
+                        </p>
+
+                        <p>
+                        Memory makes your bot smarter — but also <b>slower</b> and <b>more expensive</b>.
+                        </p>
+
+
+                    </div>
+                </div>
+
+                <div class="rule-callout">
+                    <h4><i class="fas fa-sync"></i> TRANSITION TO SESSION 5</h4>
+                    <p>Our chatbot now remembers who we are. But look at our file—it's getting crowded! In the next session, we will reorganize our project into a clean, <b>Modular Structure</b> just like professional developers.</p>
+                </div>
+            </section>
+
+            <div class="completion-zone">
+                <div class="completion-card">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="session-check">
+                        <span class="checkmark"></span>
+                        I have successfully implemented a conversational loop with automated memory.
+                    </label>
+                </div>
+            </div>
+
+            <div class="navigation-footer">
+                <a href="session3.html" class="btn-secondary">Previous Session</a>
+                <button class="btn-primary" id="next-btn">Mark Complete & Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+        <div class="mcq-modal-content">
+            <div id="mcq-modal-status-bar"></div>
+            <div class="mcq-modal-body">
+                <div id="mcq-modal-icon"></div>
+                <h3 id="mcq-modal-title">Checking Logic...</h3>
+                <p id="mcq-modal-feedback"></p>
+                <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="warning-modal" class="mcq-modal">
+        <div class="mcq-modal-content">
+            <div style="height: 12px; width: 100%; background-color: #f97316"></div>
+            <div class="mcq-modal-body" style="padding: 3.5rem 2.5rem; text-align: center;">
+                <div style="font-size: 4rem; margin-bottom: 1.5rem; color: #f97316;">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-size: 1.6rem; color: #991b1b;">Mission Verification Required</h3>
+                <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem;">
+                    Please confirm you have completed all laboratory tasks by checking the verification box at the bottom of the page.
+                </p>
+                <button class="btn-primary" onclick="closeWarningModal()">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="nexus-core.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

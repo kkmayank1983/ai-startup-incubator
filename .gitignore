@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+.env
+.env.*
+!.env.example
+.vscode/
+
+# Unpacked from .xz when the codespace is created
+/input.txt
+/tokens.pt

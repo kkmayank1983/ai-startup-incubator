@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Twenty Subjects, One Mouth</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* ---------- lesson roadmap ---------- */
+    .t3-map { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+    .t3-map-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 16px 14px;
+                   box-shadow:0 2px 10px rgba(15,23,42,.05); }
+    .t3-map-card h3 { margin:8px 0 6px; font-size:.98rem; color:#0f172a; }
+    .t3-map-card p { margin:0; font-size:.83rem; color:#64748b; line-height:1.5; }
+    .t3-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+              border-radius:8px; background:#0ea5e9; color:#fff; font-weight:700; font-size:.82rem; }
+
+    /* ---------- where we are strip ---------- */
+    .t3-recap { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0; }
+    .t3-recap > div { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 14px;
+                      font-size:.85rem; color:#475569; line-height:1.5; }
+    .t3-recap b { display:block; color:#0f172a; margin-bottom:4px; font-size:.8rem;
+                  text-transform:uppercase; letter-spacing:.05em; }
+    .t3-recap .today { background:#ecfeff; border-color:#67e8f9; }
+    .t3-recap .today b { color:#0e7490; }
+
+    /* ---------- dark demo panel ---------- */
+    .t3-panel { border:1px solid #1e293b; border-radius:14px; padding:24px 26px; margin:22px 0;
+                background:#0f172a; box-shadow:0 8px 26px rgba(2,6,23,.28); }
+    .t3-panel, .t3-panel p, .t3-panel li, .t3-panel td, .t3-panel th { color:#cbd5e1; }
+    .t3-panel h3, .t3-panel h4 { color:#f8fafc; margin-top:0; }
+    .t3-panel b, .t3-panel strong { color:#f8fafc; }
+    .t3-panel code { background:#1e293b; color:#7dd3fc; padding:2px 7px; border-radius:4px; }
+    .t3-badge { display:inline-block; background:#0ea5e9; color:#04222f; font-weight:700; font-size:.78rem;
+                letter-spacing:.06em; padding:4px 14px; border-radius:999px; margin-bottom:10px; }
+    .t3-badge.good { background:#22c55e; color:#052e16; }
+
+    /* ---------- before / after ---------- */
+    .t3-ba { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .t3-ba-card { border-radius:12px; padding:16px 18px; border:1px solid #334155; background:#111f36; }
+    .t3-ba-card.after { border-color:#16a34a; background:#0d2318; }
+    .t3-ba-tag { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;
+                 margin-bottom:4px; display:block; color:#f87171; }
+    .t3-ba-card.after .t3-ba-tag { color:#4ade80; }
+    .t3-ba-meta { font-size:.72rem; color:#64748b; font-family:monospace; margin-bottom:10px; }
+    .t3-ba-text { font-size:.92rem; line-height:1.65; min-height:7.4em; color:#e2e8f0; }
+    .t3-ba-text .bad { color:#fca5a5; font-weight:700; }
+    .t3-ba-text .ok { color:#86efac; font-weight:700; }
+
+    /* ---------- piece splitter ---------- */
+    .t3-psplit { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:6px; }
+    .t3-pcol { border:1px solid #334155; border-radius:12px; padding:14px 16px; background:#111f36; }
+    .t3-pcol.good { border-color:#16a34a; background:#0d2318; }
+    .t3-pcol h5 { margin:0 0 10px; font-size:.78rem; text-transform:uppercase; letter-spacing:.07em;
+                  color:#94a3b8; }
+    .t3-pcol.good h5 { color:#4ade80; }
+    .t3-pieces { display:flex; flex-wrap:wrap; gap:5px; min-height:3.4em; align-items:flex-start; }
+    .t3-pc { font-family:monospace; font-size:.84rem; padding:5px 9px; border-radius:6px;
+             background:#1e293b; color:#fca5a5; border:1px solid #334155; }
+    .t3-pcol.good .t3-pc { background:#14532d; color:#bbf7d0; border-color:#166534; }
+    .t3-pcount { font-family:monospace; font-size:.8rem; color:#94a3b8; margin-top:10px; }
+
+    /* ---------- bars ---------- */
+    .t3-bars { margin:14px 0; display:flex; flex-direction:column; gap:12px; }
+    .t3-bar { display:grid; grid-template-columns:184px 1fr 124px; align-items:center; gap:12px;
+              font-size:.82rem; color:#94a3b8; }
+    .t3-bar .track { height:22px; background:#1e293b; border-radius:999px; overflow:hidden; }
+    .t3-bar .fill { height:100%; width:0; border-radius:999px; transition:width 1.1s ease;
+                    background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
+    .t3-bar .fill.warn { background:linear-gradient(90deg,#dc2626,#f87171); }
+    .t3-bar .fill.good { background:linear-gradient(90deg,#16a34a,#4ade80); }
+    .t3-bar .val { font-family:monospace; color:#e2e8f0; text-align:right; }
+
+    /* ---------- counters / scale ---------- */
+    .t3-scale { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:18px 0; }
+    .t3-scale-card { text-align:center; padding:18px; border-radius:12px; border:1px solid #334155;
+                     background:#111f36; }
+    .t3-scale-card.new { border-color:#16a34a; background:#0d2318; }
+    .t3-scale-num { font-family:monospace; font-size:1.9rem; font-weight:700; color:#7dd3fc;
+                    font-variant-numeric:tabular-nums; }
+    .t3-scale-card.new .t3-scale-num { color:#4ade80; }
+    .t3-scale-lab { font-size:.78rem; color:#94a3b8; text-transform:uppercase; letter-spacing:.06em;
+                    margin-top:6px; }
+    .t3-dots { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:14px; }
+    .t3-dot { width:11px; height:11px; border-radius:3px; background:#0ea5e9; opacity:.8; }
+    .t3-scale-card.new .t3-dot { background:#22c55e; }
+
+    /* ---------- change cards ---------- */
+    .t3-changes { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:18px 0; }
+    .t3-change { border:1px solid #e2e8f0; border-radius:12px; padding:16px 18px; background:#fff; }
+    .t3-change h4 { margin:0 0 8px; font-size:.95rem; color:#0f172a; display:flex; align-items:center; gap:8px; }
+    .t3-change .from-to { font-family:monospace; font-size:.85rem; margin:8px 0; }
+    .t3-change .from { color:#dc2626; text-decoration:line-through; }
+    .t3-change .to { color:#16a34a; font-weight:700; }
+    .t3-change p { margin:0; font-size:.84rem; color:#64748b; line-height:1.55; }
+
+    /* ---------- tables ---------- */
+    .t3-table { width:100%; border-collapse:collapse; font-size:.86rem; margin:14px 0; }
+    .t3-table th, .t3-table td { border:1px solid #e2e8f0; padding:9px 12px; text-align:left; }
+    .t3-table th { background:#f1f5f9; color:#0f172a; font-weight:700; }
+    .t3-table td.num { font-family:monospace; text-align:right; font-variant-numeric:tabular-nums; }
+    .t3-table tr.win td { background:#049938; }
+    .t3-panel .t3-table th { background:#1e293b; color:#f8fafc; border-color:#334155; }
+    .t3-panel .t3-table td { border-color:#334155; }
+
+    .t3-scroll { overflow-x:auto; }
+    .t3-cap { text-align:center; font-family:monospace; font-size:.85rem; color:#94a3b8;
+              min-height:2.4em; line-height:1.7; margin-top:12px; }
+    .t3-cap .hi { color:#fcd34d; font-weight:700; }
+    .t3-cap .good { color:#86efac; font-weight:700; }
+    .t3-cap .bad { color:#fca5a5; font-weight:700; }
+
+    /* ---------- buttons / chips ---------- */
+    .t3-btn { font-family:inherit; font-size:.82rem; padding:7px 16px; border-radius:999px;
+              border:1px solid #334155; background:#1e293b; color:#cbd5e1; cursor:pointer;
+              transition:background .15s, color .15s, border-color .15s; }
+    .t3-btn:hover:not([disabled]) { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-btn[disabled] { opacity:.35; cursor:default; }
+    .t3-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:16px; }
+    .t3-chip { font-family:inherit; font-size:.82rem; padding:7px 15px; border-radius:999px;
+               border:1px solid #334155; background:#1e293b; color:#cbd5e1; cursor:pointer; }
+    .t3-chip:hover { border-color:#0ea5e9; color:#7dd3fc; }
+    .t3-chip.on { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; font-weight:700; }
+    .t3-draws { margin:0; padding-left:20px; font-size:.82rem; line-height:1.55; color:#cbd5e1; }
+    .t3-draws li { margin-bottom:9px; padding-left:3px; }
+    .t3-draws li::marker { color:#64748b; font-family:monospace; font-size:.9em; }
+
+    /* ---------- sampling bars ---------- */
+    .t3-samp { max-width:560px; margin:0 auto; }
+    .t3-srow { display:flex; align-items:center; gap:10px; margin-bottom:6px;
+               font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; }
+    .t3-sname { width:132px; text-align:right; color:#cbd5e1; flex-shrink:0;
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .t3-strack { flex:1; background:#1e293b; border-radius:5px; height:22px; overflow:hidden; }
+    .t3-sfill { height:100%; width:0; border-radius:5px; background:#0ea5e9;
+                transition:width .45s ease, background .3s ease; }
+    .t3-srow.group .t3-sfill { background:#f59e0b; }
+    .t3-srow.junk .t3-sfill { background:#dc2626; }
+    .t3-srow.cut .t3-sfill { background:#334155; }
+    .t3-srow.cut .t3-sname { color:#64748b; text-decoration:line-through; }
+    .t3-spct { width:58px; color:#94a3b8; flex-shrink:0; text-align:right; }
+    .t3-srow.cut .t3-spct { color:#475569; }
+    .t3-sbar { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:16px; }
+    .t3-howto { background:#111f36; border:1px solid #334155; border-left:3px solid #0ea5e9;
+                border-radius:10px; padding:14px 18px; margin:16px 0 20px; }
+    .t3-howto h4 { margin:0 0 8px; font-size:.9rem; color:#f8fafc; }
+    .t3-howto ul { margin:0 0 10px; padding-left:20px; }
+    .t3-howto li { font-size:.83rem; color:#cbd5e1; line-height:1.6; margin-bottom:5px; }
+    .t3-howto p { font-size:.83rem; color:#94a3b8; }
+
+    /* ---------- top-words bars ---------- */
+    .t3-topwords { max-width:520px; margin:16px auto 20px; display:flex;
+                   flex-direction:column; gap:6px; }
+    .t3-tw { display:flex; align-items:center; gap:10px;
+             font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem; }
+    .t3-tw .w { width:78px; text-align:right; color:#334155; flex-shrink:0; }
+    .t3-tw .b { flex:1; height:20px; border-radius:4px; max-width:var(--p);
+                background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
+    .t3-tw .n { width:58px; color:#64748b; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+    /* ---------- the 100% split bar ---------- */
+    .t3-split { display:flex; height:54px; border-radius:10px; overflow:hidden;
+                margin:18px 0 10px; border:1px solid #cbd5e1; }
+    .t3-split .seg { display:flex; align-items:center; justify-content:center;
+                     font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem;
+                     font-weight:700; color:#fff; min-width:0; }
+    .t3-split .seg.good { background:#16a34a; }
+    .t3-split .seg.ok   { background:#f59e0b; }
+    .t3-split .seg.junk { background:#dc2626; font-size:.72rem; }
+    .t3-split .seg span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 4px; }
+    .t3-splitkey { display:flex; flex-wrap:wrap; gap:18px; justify-content:center;
+                   font-size:.8rem; color:#475569; margin-bottom:6px; }
+    .t3-splitkey .sw { width:12px; height:12px; border-radius:3px; display:inline-block;
+                       vertical-align:-1px; margin-right:5px; }
+    .t3-splitkey .sw.good { background:#16a34a; }
+    .t3-splitkey .sw.ok   { background:#f59e0b; }
+    .t3-splitkey .sw.junk { background:#dc2626; }
+
+    /* ---------- before/after mini bars inside a dial card ---------- */
+    .t3-mini { background:#f8fafc; border-radius:8px; padding:10px 12px; margin:4px 0 10px; }
+    .t3-mini .row { display:flex; align-items:center; gap:9px; margin-bottom:6px;
+                    font-size:.78rem; font-family:ui-monospace,Menlo,Consolas,monospace; }
+    .t3-mini .row:last-child { margin-bottom:0; }
+    .t3-mini .lab { width:46px; color:#64748b; flex-shrink:0; text-align:right; }
+    .t3-mini .bar { flex:1; height:14px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+    .t3-mini .bar i { display:block; height:100%; border-radius:4px; }
+    .t3-mini .bar i.junk { background:#dc2626; min-width:2px; }
+    .t3-mini .bar i.keep { background:#0ea5e9; }
+    .t3-mini .val { width:60px; color:#475569; flex-shrink:0; font-variant-numeric:tabular-nums; }
+    .t3-mini .val.good { color:#16a34a; font-weight:700; }
+    .t3-mini.rep .txt { flex:1; font-size:.75rem; color:#64748b; }
+    .t3-mini.rep .txt.good { color:#15803d; }
+    .t3-dial .cap { font-size:.78rem; color:#64748b; margin:0; line-height:1.5; }
+
+    /* ---------- the pipeline funnel ---------- */
+    .t3-funnels { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0; }
+    .t3-funnel { border:1px solid #e2e8f0; border-radius:12px; padding:16px 18px; background:#fff; }
+    .t3-funnel h4 { margin:0 0 4px; font-size:.92rem; color:#0f172a; }
+    .t3-funnel .ctx { margin:0 0 12px; font-size:.8rem; color:#64748b; }
+    .t3-stage { display:flex; align-items:baseline; gap:10px; background:#f1f5f9;
+                border-radius:8px; padding:9px 12px; }
+    .t3-stage .s { font-size:.72rem; color:#64748b; text-transform:uppercase;
+                   letter-spacing:.05em; width:38px; flex-shrink:0; }
+    .t3-stage .n { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:1.25rem;
+                   font-weight:700; color:#0f172a; width:52px; flex-shrink:0; }
+    .t3-stage .d { font-size:.76rem; color:#64748b; line-height:1.4; }
+    .t3-stage.final { background:#dcfce7; }
+    .t3-stage.final .n { color:#15803d; }
+    .t3-stage.final.one { background:#bbf7d0; }
+    .t3-funnel .arrow { text-align:center; font-size:.74rem; color:#0ea5e9;
+                        font-family:ui-monospace,Menlo,Consolas,monospace; padding:5px 0; }
+    .t3-survivors { margin-top:12px; font-size:.78rem; color:#475569; line-height:2; }
+    .t3-survivors b { display:block; margin-bottom:5px; color:#0f172a; font-size:.76rem; }
+    .t3-survivors span { display:inline-block; background:#dcfce7; color:#15803d;
+                         border-radius:5px; padding:2px 8px; margin-right:5px;
+                         font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.76rem; }
+
+    /* ---------- the four dials ---------- */
+    .t3-dials { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:18px 0; }
+    .t3-dial { border:1px solid #e2e8f0; border-radius:12px; padding:16px 18px; background:#fff; }
+    .t3-dial h4 { margin:0 0 4px; font-size:.95rem; color:#0f172a; }
+    .t3-dial .what { margin:0 0 8px; font-size:.8rem; color:#0ea5e9; font-weight:700;
+                     text-transform:uppercase; letter-spacing:.04em; }
+    .t3-dial p { margin:0 0 10px; font-size:.84rem; color:#64748b; line-height:1.55; }
+    .t3-dial .effect { font-size:.8rem; color:#0f172a; background:#f1f5f9;
+                       border-radius:8px; padding:8px 10px; line-height:1.5; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .t3-bar .fill, .t3-sfill { transition:none; }
+    }
+    @media (max-width: 860px) {
+      .t3-map, .t3-recap, .t3-changes, .t3-ba, .t3-scale, .t3-psplit,
+      .t3-dials, .t3-funnels { grid-template-columns:1fr; }
+      .t3-bar { grid-template-columns:1fr; }
+      .t3-sname { width:96px; }
+      .t3-topwords .w { width:60px; }
+      .t3-splitkey { gap:10px; font-size:.74rem; }
+    }
+  </style>
+</head>
+
+<body class="page-session" data-current-session="t3_s2">
+  <nav class="navbar">
+    <a href="../index.html" class="site-logo">
+      <img src="../Images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+    </a>
+    <div class="nav-links">
+      <span class="user-status">Status: <strong>AI Systems Architect</strong></span>
+      <a href="term3.html" class="btn-primary">My Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section" data-sidebar-term="3">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>TERM 3: THE INSTRUCTION-TUNED PLATFORM</span>
+          <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+        </h3>
+        <ul style="display: block;">
+          <li data-session-id="t3_s1"><a href="t3_session1.html"><i class="fas fa-earth-asia"></i> S1: Same Engine, Bigger World</a></li>
+          <li data-session-id="t3_s2" class="active"><a href="t3_session2.html"><i class="fas fa-dice"></i> S2: Twenty Subjects, One Mouth</a></li>
+          <li data-session-id="t3_s3"><a href="t3_session3.html"><i class="fas fa-layer-group"></i> S3: Thinking In Layers</a></li>
+          <li data-session-id="t3_s4"><a href="t3_session4.html"><i class="fas fa-box-archive"></i> S4: Where Facts Are Kept</a></li>
+          <li data-session-id="t3_s5"><a href="t3_session5.html"><i class="fas fa-highlighter"></i> S5: Learn From The Answer</a></li>
+          <li data-session-id="t3_s6"><a href="t3_session6.html"><i class="fas fa-thumbs-up"></i> S6: Teaching It What Good Means</a></li>
+          <li data-session-id="t3_s7"><a href="t3_session7.html"><i class="fas fa-shield-halved"></i> S7: Ready For Strangers</a></li>
+          <li data-session-id="t3_s8"><a href="t3_session8.html"><i class="fas fa-code"></i> S8: Build the Website</a></li>
+          <li data-session-id="t3_s9"><a href="t3_session9.html"><i class="fas fa-rocket"></i> S9: Put Your Model Online</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" class="resizer"></div>
+
+    <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 3 / Session 2 / Twenty Subjects, One Mouth</nav>
+
+      <section id="lesson-header">
+        <h1>Session 2: Twenty Subjects, and a Mouth to Speak Them</h1>
+        <p class="lead">Last session your model learned to read, and you worked out why it still mangles words. Today it learns about <i>sixteen new subjects</i> &mdash; and then you fix the mangling, in fifteen lines, with no retraining at all.</p>
+        <div class="stats-bar">
+          <span><i class="far fa-clock"></i> 60 Minutes</span>
+          <span><i class="fas fa-signal"></i> Level: AI Systems Architect</span>
+        </div>
+      </section>
+
+      <section class="lesson-body">
+
+        <!-- ============================================================
+             ROADMAP
+             ============================================================ -->
+        <div class="t3-map">
+          <div class="t3-map-card">
+            <span class="t3-num">1</span>
+            <h3>Ask it something new</h3>
+            <p>Your Session 1 model knows four topics. Ask it about plants and watch it guess.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">2</span>
+            <h3>Give it a bigger book</h3>
+            <p>Twenty subjects, and a bigger box of pieces so their words survive whole.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">3</span>
+            <h3>Let it read properly</h3>
+            <p>A six-times bigger book needs more than 2,500 steps. Work out how many.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">4</span>
+            <h3>Fix the picking</h3>
+            <p>Last session you found the dice problem. Today you solve it &mdash; no retraining.</p>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             0. WHERE WE ARE
+             ============================================================ -->
+        <h2>0. Where We Are</h2>
+        <div class="t3-recap">
+          <div>
+            <b>Session 8, Term 2</b>
+            You wrote a tokenizer that glues characters into pieces, so no word is ever unknown.
+          </div>
+          <div>
+            <b>Session 1, Term 3</b>
+            A real book, a 256-piece window and a GPU. Loss fell to <b>2.0</b>, and answers became readable.
+          </div>
+          <div>
+            <b>You left it half fixed</b>
+            141 broken words became 25. You proved the model was not confused &mdash; your code was.
+          </div>
+          <div class="today">
+            <b>Today</b>
+            Sixteen more subjects, and the fifteen lines that take 25 to almost nothing.
+          </div>
+        </div>
+
+        <p>Your model ended last session at <strong>871,072 parameters</strong> and a loss near <strong>2.0</strong>. Two things are still wrong with it, and today you deal with both.</p>
+        <p>The first is that it only knows <b>four topics</b>. The second is the one you diagnosed at the end of last session but did not fix: even when it knows the answer, your code sometimes picks the wrong piece while writing it down.</p>
+
+        <hr />
+
+        <!-- ============================================================
+             1. ASK IT SOMETHING NEW
+             ============================================================ -->
+        <h2>1. First, Ask It Something It Has Never Heard Of</h2>
+        <p>Open your Session 1 model and ask it about photosynthesis. It has never seen the word. Watch what it does instead of saying so.</p>
+
+        <div class="t3-panel">
+          <span class="t3-badge">YOUR SESSION 1 MODEL</span>
+          <h3>It does not refuse. It guesses.</h3>
+          <div class="t3-chips" id="t3-ask-chips">
+            <button class="t3-chip on" data-i="0">what is photosynthesis?</button>
+            <button class="t3-chip" data-i="1">why does a bulb light up?</button>
+            <button class="t3-chip" data-i="2">what is gravity?</button>
+          </div>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">Session 1 model &mdash; four topics</span>
+              <div class="t3-ba-meta">qa_model_v4.pth &nbsp;&middot;&nbsp; 871,072 parameters</div>
+              <div class="t3-ba-text" id="t3-ask-old"></div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">What you wanted</span>
+              <div class="t3-ba-meta">the answer the book should have taught it</div>
+              <div class="t3-ba-text" id="t3-ask-want"></div>
+            </div>
+          </div>
+          <div class="t3-cap" id="t3-ask-cap"></div>
+        </div>
+
+        <div class="rule-callout">
+          <strong>The thing to notice</strong><br><br>
+          It never says "I don't know". It cannot. A model like this always produces the next most likely piece, and if the only subjects it has ever read about are gravity and magnets, then every question gets answered with gravity and magnets. <b>Silence is not one of its options.</b>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             2. THE BOOK IS TOO SMALL
+             ============================================================ -->
+        <h2>2. The Book Is Too Small</h2>
+        <p>Last session's book was a big step up &mdash; 137 KB to 36 MB. But look at what is actually in it.</p>
+
+        <div class="t3-panel">
+          <span class="t3-badge">MEASURED, NOT ESTIMATED</span>
+          <div class="t3-scale">
+            <div class="t3-scale-card">
+              <div class="t3-scale-num" data-to="4">0</div>
+              <div class="t3-scale-lab">subjects, Session 1</div>
+              <div class="t3-dots" data-dots="4"></div>
+            </div>
+            <div class="t3-scale-card new">
+              <div class="t3-scale-num" data-to="20">0</div>
+              <div class="t3-scale-lab">subjects, today</div>
+              <div class="t3-dots" data-dots="20"></div>
+            </div>
+          </div>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>&nbsp;</th><th>Session 1 book</th><th>Today's book</th></tr>
+              <tr><td>Subjects</td><td class="num">4</td><td class="num">20</td></tr>
+              <tr><td>Size on disk</td><td class="num">36 MB</td><td class="num">189.5 MB</td></tr>
+              <tr><td>Question-and-answer blocks</td><td class="num">84,324</td><td class="num">533,113</td></tr>
+              <tr class="win"><td>Pieces the model reads</td><td class="num">7,689,481</td><td class="num">44,144,438</td></tr>
+            </table>
+          </div>
+          <p style="margin-bottom:0;">All four of the old topics are still in there, untouched. Sixteen new ones joined them: plants, circuits, acids, cells, genetics, sound, light, heat, atoms, reactions, mixtures, the human body, ecosystems, rocks and water, the solar system, and states of matter.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             3. THREE THINGS HAVE TO CHANGE
+             ============================================================ -->
+        <h2>3. Three Things Have To Change</h2>
+        <p>Dropping in a bigger file is only the first of them. The other two are forced by it.</p>
+
+        <h3>3.1 &nbsp;The box of pieces is too small</h3>
+        <p>Your tokenizer glues characters together until it has <code>VOCAB_SIZE</code> pieces. Four physics topics needed 4,096. Twenty subjects bring <i>chlorophyll</i>, <i>mitochondria</i> and <i>voltage</i> &mdash; and at 4,096 there is no room to learn any of them, so they get shattered into scraps.</p>
+
+        <div class="t3-panel">
+          <span class="t3-badge">CLICK A WORD</span>
+          <h3>The same word, in two different boxes</h3>
+          <div class="t3-chips" id="t3-word-chips"></div>
+          <div class="t3-psplit">
+            <div class="t3-pcol">
+              <h5>4,096 pieces &mdash; Session 1</h5>
+              <div class="t3-pieces" id="t3-split-old"></div>
+              <div class="t3-pcount" id="t3-split-old-n"></div>
+            </div>
+            <div class="t3-pcol good">
+              <h5>6,144 pieces &mdash; today</h5>
+              <div class="t3-pieces" id="t3-split-new"></div>
+              <div class="t3-pcount" id="t3-split-new-n"></div>
+            </div>
+          </div>
+          <div class="t3-cap" id="t3-split-cap"></div>
+        </div>
+
+        <div class="rule-callout">
+          <strong>Why shattering hurts</strong><br><br>
+          A word split into seven scraps has to be reassembled from seven separate guesses, and every one of them is a chance to get it wrong. Worse, the model cannot build a single clean meaning for <i>photosynthesis</i> &mdash; it only ever sees <code>ph</code>, <code>ot</code>, <code>os</code> and the rest, each of which also turns up in a hundred unrelated words.
+        </div>
+
+        <h3>3.2 &nbsp;Nobody can wait an hour and a half</h3>
+        <p>Here is the problem that bites first. Your <code>data_pipeline.py</code> learns the glue rules <b>every time you run it</b>. On a 36 MB book that was slow. On a 190 MB book it is impossible.</p>
+
+        <div class="t3-panel">
+          <h3>What the tokenizer actually has to do</h3>
+          <div class="t3-bars" id="t3-tok-bars">
+            <div class="t3-bar"><span>distinct chunks to sort</span><div class="track"><div class="fill warn" data-w="100"></div></div><span class="val">66,097</span></div>
+            <div class="t3-bar"><span>glue rules to learn</span><div class="track"><div class="fill warn" data-w="91"></div></div><span class="val">6,028</span></div>
+            <div class="t3-bar"><span>time, learning it live</span><div class="track"><div class="fill warn" data-w="100"></div></div><span class="val">~90 min</span></div>
+            <div class="t3-bar"><span>time, loading it from a file</span><div class="track"><div class="fill good" data-w="1"></div></div><span class="val">3 sec</span></div>
+          </div>
+          <p style="margin-bottom:0;">So the rules get learned <b>once</b> and written to a file. You are given that file. Your tokenizer gains two short methods &mdash; one to write the rules out, one to read them back &mdash; and <code>data_pipeline.py</code> checks for the file before it does any work.</p>
+        </div>
+
+        <h3>3.3 &nbsp;Everything that changes today, in one place</h3>
+        <p>Four changes across three files. Activity 1 walks you through the first three; the fourth is section 4.</p>
+        <div class="t3-changes">
+          <div class="t3-change">
+            <h4><i class="fas fa-book" style="color:#0ea5e9;"></i> A twenty-subject book</h4>
+            <div class="from-to"><span class="from">36 MB, 4 topics</span> &nbsp;&rarr;&nbsp; <span class="to">189.5 MB, 20 topics</span></div>
+            <p>Drop in the new <code>input.txt</code>. Sixteen subjects join the four you already had.</p>
+          </div>
+          <div class="t3-change">
+            <h4><i class="fas fa-cubes" style="color:#0ea5e9;"></i> A bigger box of pieces</h4>
+            <div class="from-to"><code>VOCAB_SIZE</code> = <span class="from">4096</span> &nbsp;&rarr;&nbsp; <span class="to">6144</span></div>
+            <p>In <code>data_pipeline.py</code>. Room for the words the new subjects brought with them.</p>
+          </div>
+          <div class="t3-change">
+            <h4><i class="fas fa-floppy-disk" style="color:#0ea5e9;"></i> Rules you load, not relearn</h4>
+            <div class="from-to"><span class="from">train() every run</span> &nbsp;&rarr;&nbsp; <span class="to">load() if the file is there</span></div>
+            <p>Two new methods on the tokenizer, and a <code>read_book()</code> that only opens the book when something truly needs it.</p>
+          </div>
+          <div class="t3-change">
+            <h4><i class="fas fa-arrows-rotate" style="color:#0ea5e9;"></i> Enough steps to read it</h4>
+            <div class="from-to"><code>STEPS</code> = <span class="from">2500</span> &nbsp;&rarr;&nbsp; <span class="to">14000</span></div>
+            <p>In <code>train_qa.py</code>. Section 4 is where you work out why 14,000.</p>
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-circle-question"></i> Before you start: what are <code>tokenizer.json</code> and <code>tokens.pt</code>?</h4>
+          <p>Activity 1 hands you two files you have never seen before. They are not new ideas &mdash; they are the two slow jobs from section 3.2, already done once and saved.</p>
+
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>&nbsp;</th><th><code>tokenizer.json</code></th><th><code>tokens.pt</code></th></tr>
+              <tr><td>What it is</td><td>the <b>rulebook</b></td><td>the <b>book, as numbers</b></td></tr>
+              <tr><td>What it holds</td><td>the 6,144 pieces, and the order to glue them in</td><td>all 44,144,438 numbers the model reads</td></tr>
+              <tr><td>Size</td><td class="num">154 KB</td><td class="num">84 MB</td></tr>
+              <tr><td>Made by</td><td>your <code>train()</code>, run once</td><td>your <code>encode()</code>, run once</td></tr>
+              <tr><td>Would cost you</td><td>about 90 minutes</td><td>about 20 minutes</td></tr>
+            </table>
+          </div>
+
+          <p style="margin-top:14px;"><b>Why two files and not one?</b> Because they answer different questions. The rulebook says <i>how to cut any text into pieces</i> &mdash; including a question you type tomorrow that appears nowhere in the book. The numbered book is only this one book, already cut up. You cannot work the rules back out from the numbers, so you need both.</p>
+
+          <p><b>What each one is for:</b></p>
+          <ul>
+            <li><code>tokens.pt</code> is what <b>training</b> reads. The training loop never sees words at all &mdash; only numbers, and this is where they come from.</li>
+            <li><code>tokenizer.json</code> is what <b>talking</b> needs. Without it you could still train, but you would have no way to turn "what is an acid?" into numbers, or turn the model's answer back into English.</li>
+          </ul>
+
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> Neither file is a secret you are being kept from. Delete both and your code still works &mdash; it simply rebuilds them, and you wait the 110 minutes. That is exactly what the <code>if os.path.exists(...)</code> checks in Activity 1 are for.</p>
+        </div>
+
+        <div class="activity-box">
+          <h4>&#128296; Activity 1: Give it twenty subjects, and a tokenizer that remembers</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Swap the book</strong></p>
+          <ul>
+            <li>Open your project folder &mdash; the one holding <code>data_pipeline.py</code>.</li>
+            <li><b>Delete</b> the old <code>input.txt</code>. That is the 36 MB four-topic book from last session.</li>
+            <li>Copy the new <code>input.txt</code> (189.5 MB) into that same folder. It <b>must</b> keep the name <code>input.txt</code>, because <code>data_pipeline.py</code> opens that exact filename.</li>
+          </ul>
+
+          <p style="margin-top:18px;"><strong>Step 2: Let the tokenizer write its rules to a file</strong></p>
+          <ul>
+            <li>Open <code>bpe_tokenizer.py</code>.</li>
+            <li>At the very top of the file, add one import:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">bpe_tokenizer.py &mdash; the first three lines</div>
+            <pre>
+import json
+import re
+from collections import Counter
+            </pre>
+          </div>
+          <ul>
+            <li>Inside the <code>BPETokenizer</code> class, just above <code>def break_up</code>, add these two methods:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">bpe_tokenizer.py &mdash; two new methods, above break_up</div>
+            <pre>
+    def save(self, path):
+        """Write the learned rules out, so training happens once."""
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({
+                "pieces": [self.itos[i] for i in range(len(self.itos))],
+                "merges": [list(pair) for pair in self.merges],
+            }, f)
+
+    def load(self, path):
+        """Read the rules back. Gives exactly the tokenizer that saved them."""
+        with open(path, encoding="utf-8") as f:
+            saved = json.load(f)
+        pieces = saved["pieces"]
+        self.stoi = {p: i for i, p in enumerate(pieces)}
+        self.itos = {i: p for i, p in enumerate(pieces)}
+        self.merges = [tuple(pair) for pair in saved["merges"]]
+        self.cache = {}
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 3: Stop data_pipeline.py opening the book every run</strong></p>
+          <ul>
+            <li>Open <code>data_pipeline.py</code>.</li>
+            <li>Select everything from <code># --- Open the book ---</code> down to and including <code>tokenizer.train(text, VOCAB_SIZE)</code> &mdash; that is about twenty lines, and it includes <code>VOCAB_SIZE = 4096</code> and the <code>text = f.read()</code> that opens the book.</li>
+            <li><b>Replace the whole lot</b> with this:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">data_pipeline.py &mdash; replace that whole opening block</div>
+            <pre>
+current_dir = os.path.dirname(__file__)
+input_file = os.path.join(current_dir, "input.txt")
+tokenizer_file = os.path.join(current_dir, "tokenizer.json")
+tokens_file = os.path.join(current_dir, "tokens.pt")
+
+# 4,096 was enough for four physics topics. Twenty subjects bring
+# chlorophyll, voltage and mitochondria, and at 4,096 every one of
+# those gets shattered into scraps.
+VOCAB_SIZE = 6144
+
+
+def read_book():
+    """Only opened when something actually needs it. The book is 190 MB,
+    and once the two saved files exist, nothing does."""
+    with open(input_file, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+# Learning the glue rules is slow and the answer never changes, so it
+# is done once and written to tokenizer.json. You were given that file.
+tokenizer = BPETokenizer()
+if os.path.exists(tokenizer_file):
+    tokenizer.load(tokenizer_file)
+    print(f"Loaded the glue rules from {os.path.basename(tokenizer_file)}")
+else:
+    print("No saved tokenizer. Learning the rules -- go and have lunch.")
+    tokenizer.train(read_book(), VOCAB_SIZE)
+    tokenizer.save(tokenizer_file)
+    print(f"Saved {os.path.basename(tokenizer_file)}")
+            </pre>
+          </div>
+          <p><i class="fas fa-circle-info"></i> <b>That <code>read_book()</code> function is the important part.</b> Before, the file opened <code>input.txt</code> the moment it ran, whether anything needed it or not. Now it only opens if one of the two saved files is missing &mdash; which is what lets you train on Colab without uploading 190 MB. Leave the old <code>with open(...)</code> lines in and your Colab run will stop with <code>FileNotFoundError</code>.</p>
+
+          <p style="margin-top:18px;"><strong>Step 4: Do the same for the numbered book</strong></p>
+          <ul>
+            <li>Further down, find the two lines <code># --- Turn the WHOLE book into numbers ---</code> and <code>data = torch.tensor(encode(text), dtype=torch.long)</code>.</li>
+            <li>Replace <b>both</b> with this:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">data_pipeline.py &mdash; replace the line that numbers the book</div>
+            <pre>
+# Same reasoning. Spelling out 41 million chunks takes a while and the
+# answer never changes, so it lives in tokens.pt. Saved as int16 because
+# 6,144 pieces fit in one, which halves the file you have to upload.
+if os.path.exists(tokens_file):
+    data = torch.load(tokens_file).long()
+    print(f"Loaded the numbered book from {os.path.basename(tokens_file)}")
+else:
+    print("Numbering the book -- this one is slow too.")
+    data = torch.tensor(encode(read_book()), dtype=torch.long)
+    torch.save(data.to(torch.int16), tokens_file)
+    print(f"Saved {os.path.basename(tokens_file)}")
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 5: Drop in the two files you were given, and test</strong></p>
+          <ul>
+            <li>Copy <code>tokenizer.json</code> (154 KB) and <code>tokens.pt</code> (84 MB) into the same folder.</li>
+            <li>Run <code>python data_pipeline.py</code>.</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">what you should see, in about three seconds</div>
+            <pre>
+Loaded the glue rules from tokenizer.json
+Loaded the numbered book from tokens.pt
+Dataset Size: 44144438 tokens.
+Different pieces: 6144
+            </pre>
+          </div>
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> If it says <code>No saved tokenizer</code> instead, stop it. One of the two files is missing or in the wrong folder, and you are about to wait ninety minutes for nothing.</p>
+        </div>
+
+
+        <hr />
+
+        <!-- ============================================================
+             4. HOW MANY STEPS
+             ============================================================ -->
+        <h2>4. Stop &mdash; How Many Steps Does A Six-Times Bigger Book Need?</h2>
+        <p>Do not read ahead. Work it out, then check.</p>
+        <p>Every training step reads <code>batch_size</code> &times; <code>block_size</code> pieces &mdash; that is 64 &times; 256 = <strong>16,384 pieces</strong>. Last session, 2,500 steps on a 7.7 million piece book meant the model saw the whole thing about <b>4.6 times over</b>.</p>
+
+        <div class="t3-panel">
+          <span class="t3-badge">YOUR TURN</span>
+          <h3>The new book is 44,144,438 pieces. How many steps for the same 4.6 passes?</h3>
+          <div class="t3-chips" id="t3-steps-chips">
+            <button class="t3-chip" data-v="2500">2,500 &mdash; leave it alone</button>
+            <button class="t3-chip" data-v="6000">6,000</button>
+            <button class="t3-chip" data-v="14000">14,000</button>
+            <button class="t3-chip" data-v="40000">40,000</button>
+          </div>
+          <div class="t3-bars">
+            <div class="t3-bar">
+              <span>passes over the book</span>
+              <div class="track"><div class="fill" id="t3-pass-fill" style="width:0"></div></div>
+              <span class="val" id="t3-pass-val">&mdash;</span>
+            </div>
+            <div class="t3-bar">
+              <span>time on a T4 GPU</span>
+              <div class="track"><div class="fill" id="t3-time-fill" style="width:0"></div></div>
+              <span class="val" id="t3-time-val">&mdash;</span>
+            </div>
+          </div>
+          <div class="t3-cap" id="t3-steps-cap">Pick one.</div>
+        </div>
+
+        <div class="activity-box">
+          <h4>&#128296; Activity 2: Give it enough steps to read the book</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Raise the step count</strong></p>
+          <ul>
+            <li>Open <code>train_qa.py</code> and find <code>STEPS = 2500</code> near the top.</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the step count has to grow with the book</div>
+            <pre>
+# Last session's 2,500 steps showed the model its 7.7M-token book about
+# 4.6 times over. The new book is 44M tokens, nearly six times bigger.
+# A step reads 64 x 256 = 16,384 tokens, so 14,000 steps is 5.2 passes.
+STEPS = 14000            # &lt;-- was 2500
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 2: Print how many passes that actually is</strong></p>
+          <ul>
+            <li>Find the line that prints the parameter count &mdash; it starts <code>print(f"Model params</code>. Add these three lines directly under it:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; see the number, do not trust it</div>
+            <pre>
+seen = STEPS * batch_size * block_size
+print(f"Will read    : {seen:,} tokens = {seen/len(data):.1f} passes "
+      f"over the book")
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 3: Report progress less often, and say how long is left</strong></p>
+          <ul>
+            <li>Inside the training loop, find these two lines:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the OLD lines, inside the loop</div>
+            <pre>
+    if step % 300 == 0:
+        print(f"  step {step:5d} | average loss {running/300:.3f}")
+            </pre>
+          </div>
+          <ul>
+            <li>Replace both with this. At 14,000 steps, printing every 300 would give you 46 lines of noise and no idea how long is left:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; inside the loop, replace the progress print</div>
+            <pre>
+    if step % 500 == 0:
+        done = time.perf_counter() - t_start
+        left = done / step * (STEPS - step)
+        print(f"  step {step:5d} | average loss {running/500:.3f} "
+              f"| {left/60:4.1f} min left")
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 4: Save under a new name, and ask a new question</strong></p>
+          <ul>
+            <li>Near the bottom, find these two lines:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the OLD lines</div>
+            <pre>
+torch.save(model.state_dict(), "qa_model_v4.pth")
+print("Saved qa_model_v4.pth")
+            </pre>
+          </div>
+          <ul>
+            <li>Change <b>both</b> to <code>v5</code>, so last session's model survives:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; a new name, so qa_model_v4.pth is not overwritten</div>
+            <pre>
+torch.save(model.state_dict(), "qa_model_v5.pth")
+print("Saved qa_model_v5.pth")
+            </pre>
+          </div>
+          <ul>
+            <li>A few lines further down is the question it asks itself at the end:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the OLD line</div>
+            <pre>
+prompt = "&lt;|user|&gt;\nWhat is gravity?\n&lt;|assistant|&gt;\n"
+            </pre>
+          </div>
+          <ul>
+            <li>Gravity is one of the four it already knew. Ask it something new:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; ask about one of the SIXTEEN NEW subjects</div>
+            <pre>
+prompt = "&lt;|user|&gt;\nWhat is photosynthesis?\n&lt;|assistant|&gt;\n"
+            </pre>
+          </div>
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> Keeping every model you train is a habit worth having. From Session 4 you will have five of them and will want to compare.</p>
+        </div>
+
+
+        <div class="rule-callout">
+          <strong>The rule you just used</strong><br><br>
+          Training length is not a number you inherit from the last project. It is <b>passes over your data</b>, and it has to be recalculated every time the data changes. Keeping 2,500 here would have shown the model less than one pass &mdash; it would have read twenty subjects and remembered none of them.
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             5. RUN IT
+             ============================================================ -->
+        <h2>5. Run It</h2>
+        <p>Upload seven files to Colab. Notice what is <b>not</b> in the list: <code>input.txt</code>. You never upload the 190 MB book, because <code>tokens.pt</code> is already the whole book turned into numbers.</p>
+
+        <div class="activity-box">
+          <h4><i class="fas fa-cloud-arrow-up"></i> Activity 3: Train it on Colab</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Open a notebook and get a GPU</strong></p>
+          <ul>
+            <li>Go to <a href="https://colab.research.google.com" target="_blank" style="color:#0284c7; font-weight:bold;">colab.research.google.com</a> and start a new notebook.</li>
+            <li><b>Runtime &rarr; Change runtime type &rarr; T4 GPU &rarr; Save.</b> Do this before anything else. On a CPU this takes about four hours instead of eleven minutes.</li>
+          </ul>
+
+          <p style="margin-top:18px;"><strong>Step 2: Upload seven files</strong></p>
+          <ul>
+            <li>Click the folder icon in the left sidebar, then the upload button, and pick all seven together:</li>
+            <li><code>bpe_tokenizer.py</code> &nbsp;<code>data_pipeline.py</code> &nbsp;<code>attention_engine.py</code> &nbsp;<code>train_qa.py</code> &nbsp;<code>talk_to_your_engine.py</code> &nbsp;<code>tokenizer.json</code> &nbsp;<code>tokens.pt</code></li>
+            <li><b>Not <code>input.txt</code>.</b> You never need it &mdash; <code>tokens.pt</code> is already the whole book as numbers. That is what the <code>read_book()</code> change in Activity 1 was for.</li>
+            <li>The 84 MB file takes a few minutes. Do not close the tab while it uploads.</li>
+          </ul>
+
+          <p style="margin-top:18px;"><strong>Step 3: One cell, one command</strong></p>
+          <div class="code-block python">
+            <div class="code-header">Colab &mdash; this is the whole training run</div>
+            <pre>
+!python train_qa.py
+            </pre>
+          </div>
+          <ul>
+            <li>The first line must say <code>Running on   : cuda</code>. If it says <code>cpu</code>, stop and fix the runtime.</li>
+            <li>It prints everything itself: the vocabulary, the piece count, the parameter count, how many passes it will make, then the loss every 500 steps with the time remaining. At the end it saves the model and asks it a question.</li>
+            <li>About <b>eleven minutes</b>.</li>
+          </ul>
+
+          <p style="margin-top:18px;"><strong>Step 4: Bring the model home</strong></p>
+          <ul>
+            <li>In the file sidebar, right-click <code>qa_model_v5.pth</code> and choose <b>Download</b>.</li>
+            <li>Put it in your project folder, next to <code>talk_to_your_engine.py</code>.</li>
+          </ul>
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> Colab throws everything away when the runtime disconnects. Download the model before you close the tab, or you will be training it again.</p>
+        </div>
+
+
+        <div class="t3-panel">
+          <span class="t3-badge good">WHAT WE MEASURED</span>
+          <h3>The run, on a Colab T4</h3>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>&nbsp;</th><th>Session 1</th><th>Today</th></tr>
+              <tr><td>Steps</td><td class="num">2,500</td><td class="num">14,000</td></tr>
+              <tr><td>Milliseconds per step</td><td class="num">33.9</td><td class="num">48.7</td></tr>
+              <tr><td>Total time</td><td class="num">1.4 min</td><td class="num">11.4 min</td></tr>
+              <tr><td>Parameters</td><td class="num">871,072</td><td class="num">1,266,336</td></tr>
+              <tr><td>Final loss</td><td class="num">2.013</td><td class="num">2.510</td></tr>
+            </table>
+          </div>
+          <p style="margin-bottom:0;"><b>The loss went up, and that is not a failure.</b> Loss only compares two runs on the <i>same</i> book. Session 1's book was four topics repeating themselves; today's holds five times as much distinct material. A harder exam gives lower marks to the same student.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             6. LISTEN AGAIN
+             ============================================================ -->
+        <h2>6. Now Ask It Again</h2>
+        <p>Same questions as section 1. Different model.</p>
+
+        <div class="activity-box">
+          <h4>&#128296; Activity 4: Talk to the new model</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Let it take a model name</strong></p>
+          <ul>
+            <li>Open <code>talk_to_your_engine.py</code>. Add one import at the very top:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; the first two lines</div>
+            <pre>
+import sys
+import torch
+            </pre>
+          </div>
+          <ul>
+            <li>Then find the line that loads the model:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; the OLD line</div>
+            <pre>
+model.load_state_dict(torch.load("qa_model_v4.pth", map_location=device))
+            </pre>
+          </div>
+          <ul>
+            <li>Put a new line above it, and change the load line itself:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; say which model on the command line</div>
+            <pre>
+# Until now this was typed into the file, so comparing two models meant
+# editing code. From Session 4 you will have five of them.
+#     python talk_to_your_engine.py qa_model_v4.pth
+checkpoint = sys.argv[1] if len(sys.argv) &gt; 1 else "qa_model_v5.pth"
+
+model.load_state_dict(torch.load(checkpoint, map_location=device))
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 2: Fix the banner</strong></p>
+          <ul>
+            <li>A few lines down it still calls itself a physics tutor:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; the OLD line</div>
+            <pre>
+print("ASK YOUR AI A PHYSICS QUESTION")
+            </pre>
+          </div>
+          <ul>
+            <li>It covers twenty subjects now, so say so &mdash; and show which model is loaded:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; it is not a physics tutor any more</div>
+            <pre>
+print(f"ASK YOUR AI A SCIENCE QUESTION   [{checkpoint}]")
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 3: Ask it about the new subjects</strong></p>
+          <ul>
+            <li>Run <code>python talk_to_your_engine.py</code> and try these:</li>
+            <li><code>what is photosynthesis?</code> &nbsp;&middot;&nbsp; <code>why does a bulb light up?</code> &nbsp;&middot;&nbsp; <code>what is an acid?</code> &nbsp;&middot;&nbsp; <code>what does the heart do?</code></li>
+            <li>Then two it already knew: <code>what is gravity?</code> and <code>what is friction?</code></li>
+          </ul>
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> Write down what you notice. You should see real answers on subjects it had never heard of an hour ago &mdash; and you should still see broken words. That second thing is section 7.</p>
+        </div>
+
+
+        <div class="t3-panel">
+          <span class="t3-badge good">REAL OUTPUT FROM THE TRAINED MODEL</span>
+          <h3>Sixteen subjects it could not discuss an hour ago</h3>
+          <div class="t3-chips" id="t3-new-chips"></div>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">Session 1 model</span>
+              <div class="t3-ba-meta">four topics &nbsp;&middot;&nbsp; 871,072 parameters</div>
+              <div class="t3-ba-text" id="t3-new-old"></div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">Today's model</span>
+              <div class="t3-ba-meta">twenty subjects &nbsp;&middot;&nbsp; 1,266,336 parameters</div>
+              <div class="t3-ba-text" id="t3-new-now"></div>
+            </div>
+          </div>
+          <div class="t3-cap" id="t3-new-cap"></div>
+        </div>
+
+        <p>It is not right every time. We asked it one question from each of the twenty subjects and scored the answers:</p>
+
+        <div class="t3-panel">
+          <div class="t3-bars" id="t3-score-bars">
+            <div class="t3-bar"><span>talks about the right subject</span><div class="track"><div class="fill" data-w="70"></div></div><span class="val">14 / 20</span></div>
+            <div class="t3-bar"><span>genuinely answers the question</span><div class="track"><div class="fill warn" data-w="45"></div></div><span class="val">9 / 20</span></div>
+            <div class="t3-bar"><span>answer length matches the book</span><div class="track"><div class="fill good" data-w="98"></div></div><span class="val">43 vs 44 words</span></div>
+          </div>
+          <p style="margin-bottom:0;">So it has learned <b>how to talk</b> about twenty subjects before it has learned <b>what is true</b> about them. That gap is Session 3 and Session 4 &mdash; but there is something you can fix today, in fifteen lines, before you go anywhere near a bigger model.</p>
+        </div>
+
+        <hr />
+
+        <h2>7. It Knows More Than It Says</h2>
+        <p>Those broken words are <b>not</b> the model being stupid. We are about to prove that — and then fix them in fifteen lines, with <b>no retraining at all</b>.</p>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-lightbulb"></i> Your model never picks a word</h4>
+          <p style="margin-bottom:0;">This surprises almost everyone. It does not choose. It produces a <b>chance for all 6,144 pieces at once</b>, and then your code rolls a weighted dice over every single one of them. The choosing is not the model's job — it is <i>your</i> job, and so far you have been doing it in the laziest possible way.</p>
+        </div>
+
+        <h3>7.1 &nbsp;What it was actually thinking</h3>
+        <p>We stopped your own model mid-sentence, right after <code>"Photosynthesis is how plants"</code>, and read out its real numbers. These are the eight it liked best:</p>
+
+        <div class="t3-topwords">
+          <div class="t3-tw"><span class="w">grow</span><span class="b" style="--p:100%"></span><span class="n">18.42%</span></div>
+          <div class="t3-tw"><span class="w">and</span><span class="b" style="--p:73%"></span><span class="n">13.42%</span></div>
+          <div class="t3-tw"><span class="w">produce</span><span class="b" style="--p:36%"></span><span class="n">6.69%</span></div>
+          <div class="t3-tw"><span class="w">create</span><span class="b" style="--p:30%"></span><span class="n">5.53%</span></div>
+          <div class="t3-tw"><span class="w">are</span><span class="b" style="--p:29%"></span><span class="n">5.42%</span></div>
+          <div class="t3-tw"><span class="w">use</span><span class="b" style="--p:27%"></span><span class="n">4.99%</span></div>
+          <div class="t3-tw"><span class="w">convert</span><span class="b" style="--p:19%"></span><span class="n">3.45%</span></div>
+          <div class="t3-tw"><span class="w">make</span><span class="b" style="--p:15%"></span><span class="n">2.84%</span></div>
+        </div>
+
+        <div class="rule-callout" style="background:rgba(22,163,74,.08); border-left-color:#16a34a;">
+          <h4><i class="fas fa-circle-check"></i> Every one of those is a good word</h4>
+          <p style="margin-bottom:0;">"Photosynthesis is how plants <b>grow</b>…", "…how plants <b>produce</b>…", "…how plants <b>convert</b>…". Any of them makes a sensible sentence. <b>The model knows exactly what it is doing.</b> So where does <code>askngine</code> come from?</p>
+        </div>
+
+        <h3>7.2 &nbsp;Where the broken words come from</h3>
+        <p>From everything <i>below</i> those eight. Here is the model's full 100% of confidence, split into three parts:</p>
+
+        <div class="t3-split">
+          <div class="seg good" style="width:68.5%"><span>68.5%</span></div>
+          <div class="seg ok" style="width:20.2%"><span>20.2%</span></div>
+          <div class="seg junk" style="width:11.3%"><span>11.3%</span></div>
+        </div>
+        <div class="t3-splitkey">
+          <span><i class="sw good"></i> <b>the 12 best pieces</b> &mdash; all sensible words</span>
+          <span><i class="sw ok"></i> <b>ranks 13&ndash;40</b> &mdash; still reasonable</span>
+          <span><i class="sw junk"></i> <b>6,104 hopeless pieces</b> &mdash; nonsense</span>
+        </div>
+
+        <div class="rule-callout" style="background:rgba(220,38,38,.06); border-left-color:#dc2626;">
+          <h4><i class="fas fa-triangle-exclamation"></i> Your code rolls a dice over all three parts</h4>
+          <p>Each hopeless piece on its own is nearly impossible &mdash; about <b>0.0019%</b>. But there are <b>6,104</b> of them, and added together they hold <b>11.3%</b> of the chance.</p>
+          <p style="margin-bottom:0;">So roughly <b>1 pick in 9</b>, your model reaches straight past every sensible word and grabs junk. Land one of those in the middle of a word and <code>engine</code> becomes <code>askngine</code>. <b>The model was never confused. The dice were.</b></p>
+        </div>
+
+        <h3>7.3 &nbsp;The four dials &mdash; and what each one does to that red band</h3>
+        <p>Every dial has the same job: <b>shrink or delete the red band</b> before the dice is rolled. Each one goes about it differently.</p>
+
+        <div class="t3-dials">
+          <div class="t3-dial">
+            <h4><i class="fas fa-temperature-half"></i> Temperature = 0.6</h4>
+            <p class="what">How bold is it?</p>
+            <p>Divides every score before they become percentages. Below 1.0 makes the favourite <b>even more</b> favoured, which squeezes everything weak downwards.</p>
+            <div class="t3-mini">
+              <div class="row"><span class="lab">before</span><span class="bar"><i class="junk" style="width:11.3%"></i></span><span class="val">11.3%</span></div>
+              <div class="row"><span class="lab">after</span><span class="bar"><i class="junk" style="width:0.68%"></i></span><span class="val good">0.68%</span></div>
+            </div>
+            <p class="cap">Top pick also rises <b>18.4% &rarr; 39.8%</b>. It becomes more decisive.</p>
+          </div>
+
+          <div class="t3-dial">
+            <h4><i class="fas fa-filter"></i> Top-k = 40</h4>
+            <p class="what">Only the best few are allowed</p>
+            <p>Rank every piece, keep the best 40, <b>delete the other 6,104</b> outright &mdash; no matter what their chances were.</p>
+            <div class="t3-mini">
+              <div class="row"><span class="lab">before</span><span class="bar"><i class="junk" style="width:11.3%"></i></span><span class="val">11.3%</span></div>
+              <div class="row"><span class="lab">after</span><span class="bar"></span><span class="val good">0%</span></div>
+            </div>
+            <p class="cap">Blunt, and it removes the entire red band in one move.</p>
+          </div>
+
+          <div class="t3-dial">
+            <h4><i class="fas fa-percent"></i> Top-p = 0.92</h4>
+            <p class="what">Keep going until you have enough</p>
+            <p>Go down the ranked list adding percentages. Stop once the running total passes 92%. Cut everything below. <b>It adapts to how sure the model is.</b></p>
+            <div class="t3-mini">
+              <div class="row"><span class="lab">sure</span><span class="bar"><i class="keep" style="width:14%"></i></span><span class="val">keeps 3</span></div>
+              <div class="row"><span class="lab">torn</span><span class="bar"><i class="keep" style="width:100%"></i></span><span class="val">keeps 10</span></div>
+            </div>
+            <p class="cap">Running after the other dials: at the first word it kept <b>3</b>. Mid-sentence, where the model is far less sure, it kept <b>10</b>.</p>
+          </div>
+
+          <div class="t3-dial">
+            <h4><i class="fas fa-repeat"></i> Repetition penalty = 1.25</h4>
+            <p class="what">Stop saying the same thing</p>
+            <p>Pushes down any piece already used in the last 40. Nothing to do with the red band &mdash; this one fixes a different bug.</p>
+            <div class="t3-mini rep">
+              <div class="row"><span class="lab">before</span><span class="txt">"such as oil… <b>such as oil</b> and slows"</span></div>
+              <div class="row"><span class="lab">after</span><span class="txt good">"Lubricants such as grease reduce…"</span></div>
+            </div>
+            <p class="cap">Kills the loops a model falls into inside one answer.</p>
+          </div>
+        </div>
+
+        <h3>7.4 &nbsp;Try all four yourself</h3>
+        <p>Same moment, same model. Click each dial and watch what happens to the bars &mdash; especially the red one at the bottom.</p>
+
+        <div class="t3-panel">
+          <span class="t3-badge">YOUR MODEL'S REAL NUMBERS</span>
+          <h3><i class="fas fa-sliders"></i> All 6,144 pieces, and what each dial does to them</h3>
+          <p style="font-size:.86rem;">Every bar below is measured from <code>qa_model_v5.pth</code>, at the moment it had just written <code>"Photosynthesis is how plants"</code> and had to choose the next piece.</p>
+
+          <div class="t3-howto">
+            <h4><i class="fas fa-circle-question"></i> How to read this</h4>
+            <ul>
+              <li><b>Each row is one possible next piece</b> &mdash; a word, or a chunk of one.</li>
+              <li><b>The bar length is its chance of being chosen.</b> Longer bar = the model thinks it fits better. The number on the right is that chance as a percentage.</li>
+              <li><b>All the bars add up to 100%.</b> The model always spreads exactly one whole share of confidence across all 6,144 pieces.</li>
+              <li><b>The bottom three bars are groups.</b> There are 6,144 pieces in total and we cannot draw them all, so the weaker ones are bundled: the orange bars are ranks 13&ndash;31 and 32&ndash;40 added together, and the <span style="color:#fca5a5;"><b>red bar is all 6,104 hopeless ones</b></span> added together.</li>
+              <li><b>Greyed out and struck through = deleted.</b> A dial has removed that option; it now has zero chance of being picked.</li>
+            </ul>
+            <p style="margin-bottom:0;">Click a dial and watch the bars move. Nothing about the model changes &mdash; only which options survive to be picked from. <b>Each button shows that one dial on its own.</b> In the real code all four run one after another &mdash; that is section 7.5.</p>
+          </div>
+
+          <div id="t3-sampling"></div>
+          <p style="font-size:.78rem; color:#64748b; margin:14px 0 0; text-align:center;">These are your model&rsquo;s genuine numbers. Only the dial changes between views &mdash; the underlying scores are the same every time.</p>
+        </div>
+
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-dice"></i> The one and only place your AI is random</h4>
+          <p style="margin-bottom:0;">All four dials run in order, then <b>one</b> piece is drawn at random from whatever survived. That single line is the only randomness in your whole project. The tokenizer, the embedding, the attention heads — every one of those gives the identical answer every time. Asking the same question twice gives two answers <i>only</i> because of that one dice roll.</p>
+        </div>
+
+        <div class="activity-box">
+          <h4>🛠 Activity 5: Fix the picking</h4>
+          <p>No retraining. You are changing how the model <b>chooses</b>, not what it knows.</p>
+
+          <p style="margin-top:18px;"><strong>Step 1: Add the four dials</strong></p>
+          <ul>
+            <li>Open <code>attention_engine.py</code> and find <code>class PredictionEngine</code>.</li>
+            <li>Scroll to the end of its <code>forward</code> method — the line <code>return logits</code>.</li>
+            <li><b>Directly under</b> that line, still inside the class, add the settings and the new method:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; add UNDER "return logits", inside PredictionEngine</div>
+            <pre>
+        logits = self.lm_head(x)  # turn it back into a guess
+        return logits
+
+    # The four dials. They live on the class so that every file using
+    # this model picks pieces the same way.
+    TEMPERATURE = 0.6
+    TOP_K = 40
+    TOP_P = 0.92
+    REPETITION_PENALTY = 1.25
+    REPETITION_WINDOW = 40
+
+    def sample_next(self, logits, recent_ids=None):
+        """Pick ONE piece: repetition penalty, temperature, top-k, top-p."""
+
+        # 1. push down anything used in the last 40 pieces
+        if recent_ids:
+            for tid in set(recent_ids):
+                if logits[0, tid] &lt; 0:
+                    logits[0, tid] *= self.REPETITION_PENALTY
+                else:
+                    logits[0, tid] /= self.REPETITION_PENALTY
+
+        # 2. temperature: below 1.0 makes the favourite even more favoured
+        logits = logits / max(self.TEMPERATURE, 1e-5)
+
+        # 3. top-k: keep the best 40, delete the other 6,104
+        if self.TOP_K &gt; 0:
+            v, _ = torch.topk(logits, min(self.TOP_K, logits.size(-1)))
+            logits[logits &lt; v[:, [-1]]] = -float('inf')
+
+        # 4. top-p: keep only enough pieces to cover 92% of the chance
+        if self.TOP_P &lt; 1.0:
+            sorted_logits, sorted_idx = torch.sort(logits, descending=True)
+            cumulative = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
+            remove = cumulative &gt; self.TOP_P
+            remove[..., 1:] = remove[..., :-1].clone()
+            remove[..., 0] = False
+            logits[remove.scatter(1, sorted_idx, remove)] = -float('inf')
+
+        return torch.multinomial(F.softmax(logits, dim=-1), num_samples=1)
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 2: Use it in <code>generate</code></strong></p>
+          <ul>
+            <li>Just below that, in the <code>generate</code> method, find these two lines:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the OLD lines, inside generate</div>
+            <pre>
+            probs = F.softmax(logits, dim=-1)
+            idx_next = torch.multinomial(probs, num_samples=1)
+            </pre>
+          </div>
+          <ul>
+            <li><b>Replace those two lines</b> with a call to your new method. You also need a list to remember what it just said, so add <code>produced = []</code> next to <code>lines_done = 0</code> above the loop:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the NEW version of generate's loop</div>
+            <pre>
+        lines_done = 0
+        produced = []                      # &lt;-- add this line
+
+        for _ in range(max_new_tokens):
+            idx_cond = idx[:, -block_size:]
+            logits = self(idx_cond)
+            logits = logits[:, -1, :]
+
+            # the dice roll is now a careful choice
+            idx_next = self.sample_next(
+                logits,
+                produced[-self.REPETITION_WINDOW:] if produced else None)
+            produced.append(idx_next.item())
+
+            idx = torch.cat((idx, idx_next), dim=1)
+            </pre>
+          </div>
+
+          <p style="margin-top:18px;"><strong>Step 3: Listen to it again</strong></p>
+          <ul>
+            <li>Save, then run <code>talk_to_your_engine.py</code>. <b>Nothing is retrained</b> — same <code>qa_model_v5.pth</code>, same weights.</li>
+            <li>Ask <code>what is photosynthesis</code> five times again and count the same four things.</li>
+          </ul>
+          <p style="margin-bottom:0;"><i class="fas fa-clipboard-check"></i> <b>Check yourself:</b> <code>sample_next</code> should appear <b>twice</b> in the file — once where you defined it, once where <code>generate</code> calls it.</p>
+        </div>
+
+        <h3>7.5 &nbsp;All four, one after another</h3>
+        <p>They are <b>not</b> alternatives. You do not pick the best dial &mdash; all four run in order, every single time a piece is chosen, and each one hands its result to the next. Here is that pipeline traced on your own model:</p>
+
+        <div class="t3-funnels">
+          <div class="t3-funnel">
+            <h4>Mid-sentence &mdash; the model is torn</h4>
+            <p class="ctx"><code>"Photosynthesis is how plants ___"</code></p>
+            <div class="t3-stage"><span class="s">start</span><span class="n">6,144</span><span class="d">every piece it knows</span></div>
+            <div class="arrow">&darr; temperature 0.6</div>
+            <div class="t3-stage"><span class="s">still</span><span class="n">6,144</span><span class="d">none deleted &mdash; but the junk shrank to 0.68%</span></div>
+            <div class="arrow">&darr; top-k 40</div>
+            <div class="t3-stage"><span class="s">now</span><span class="n">40</span><span class="d">the whole junk tail is gone</span></div>
+            <div class="arrow">&darr; top-p 0.92</div>
+            <div class="t3-stage final"><span class="s">left</span><span class="n">10</span><span class="d">only the genuinely good options</span></div>
+            <div class="t3-survivors">
+              <b>The 10 it may now choose from:</b>
+              <span>grow</span><span>and</span><span>produce</span><span>create</span><span>are</span><span>use</span><span>convert</span><span>make</span><span>have</span><span>work</span>
+            </div>
+          </div>
+
+          <div class="t3-funnel">
+            <h4>First word &mdash; the model is sure</h4>
+            <p class="ctx"><code>"&lt;|assistant|&gt; ___"</code></p>
+            <div class="t3-stage"><span class="s">start</span><span class="n">6,144</span><span class="d">every piece it knows</span></div>
+            <div class="arrow">&darr; temperature 0.6</div>
+            <div class="t3-stage"><span class="s">still</span><span class="n">6,144</span><span class="d">Photosynthesis rises from 43.2% to 84.1%</span></div>
+            <div class="arrow">&darr; top-k 40</div>
+            <div class="t3-stage"><span class="s">now</span><span class="n">40</span><span class="d">same hard cap as before</span></div>
+            <div class="arrow">&darr; top-p 0.92</div>
+            <div class="t3-stage final one"><span class="s">left</span><span class="n">3</span><span class="d">and Photosynthesis holds 84% of that</span></div>
+            <div class="t3-survivors">
+              <b>The 3 it may choose from:</b>
+              <span>Photosynthesis</span><span>The</span><span>In</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-layer-group"></i> Why you need all four, not the best one</h4>
+          <p>Each does a job the others cannot:</p>
+          <ul style="margin-bottom:12px;">
+            <li><b>Repetition penalty</b> fixes loops. Nothing else in the list even looks at what was already said.</li>
+            <li><b>Temperature</b> reshapes <i>every</i> chance at once. It deletes nothing &mdash; it makes the good options stand further above the bad ones, so the cuts that follow land better.</li>
+            <li><b>Top-k</b> is a hard ceiling. No matter how lost the model gets, it can never choose from more than 40 pieces.</li>
+            <li><b>Top-p</b> is the adaptive one, and it does the real work: <b>7 options when the model is torn, 1 when it is sure.</b></li>
+          </ul>
+          <p style="margin-bottom:0;">Top-k alone would leave 40 options open in both cases above &mdash; far too many when the answer is obviously "Photosynthesis". Top-p alone, without temperature first, would keep 54. <b>Together they land on 10 and 3.</b> That is the difference between a model that guesses and one that answers.</p>
+        </div>
+
+        <h3>7.6 &nbsp;What that bought you</h3>
+        <div class="tool-info-box">
+          <h4><i class="fas fa-ruler"></i> The same 40 answers, measured a third time</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Measured over the same 20 questions</th><th>No dials<br><small>what you have now</small></th><th>All four dials<br><small>today's fix</small></th></tr>
+              <tr><td>Words that are real words</td><td class="num">97.8%</td><td class="num"><b>99.7%</b></td></tr>
+              <tr class="win"><td>Different broken words invented</td><td class="num">15</td><td class="num"><b>2</b></td></tr>
+              <tr class="win"><td>Answers that mention their subject</td><td class="num">20%</td><td class="num"><b>65%</b></td></tr>
+            </table>
+          </div>
+          <p style="margin-bottom:0;"><b>Fifteen invented words down to two, and the share of answers that stay on their subject more than triples &mdash; with no training whatsoever.</b> That second row is the surprise: junk pieces do not just misspell a word, they knock the whole sentence off course. The knowledge never changed. Only the choosing did.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">SAME MODEL, SAME QUESTION</span>
+          <h3><i class="fas fa-volume-high"></i> Hear the difference</h3>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">Rolling the full dice</span>
+              <ol class="t3-draws">
+                <li>In photosynthesis, providing about 45 to 13 showed at 45% photosynthesis.1% of the air we have light going up, which is not just the missing it.</li>
+                <li>It just one amoeba are important to get to think about the <b style="color:#fca5a5;">mtal</b> shape of the <b style="color:#fca5a5;">coece</b> on your body. On average, the other seeds are mainly bacteria, making it <b style="color:#fca5a5;">une</b>!</li>
+              </ol>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">With the four dials</span>
+              <ol class="t3-draws">
+                <li>Photosynthesis is the primary producers, which are like plants and animals in a garden. When you look at plant leaves or trees, they create more sunlight!</li>
+                <li>Photosynthesis is the foundation of energy in a rainforest, and it is like an <b style="color:#fca5a5;">xyland</b>. This discovery changed how we understand living things with plants!</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+
+        <hr />
+
+        <!-- ============================================================
+             8. WHAT THIS FIXED
+             ============================================================ -->
+        <h2>8. What This Fixed &mdash; And What It Did Not</h2>
+        <div class="t3-scroll">
+          <table class="t3-table">
+            <tr><th>Problem</th><th>Status</th><th>Why</th></tr>
+            <tr class="win"><td>Broken words &mdash; <code>warpically</code>, <code>askngine</code></td><td><b>Fixed</b></td><td>15 invented words became 2, and real words went 97.8% &rarr; 99.7%. The dials, not the training.</td></tr>
+            <tr class="win"><td>Only knows four topics</td><td><b>Fixed</b></td><td>It now talks about the right subject for 14 of 20 questions, across all twenty.</td></tr>
+            <tr class="win"><td>Waiting 90 minutes to start</td><td><b>Fixed</b></td><td>The glue rules are learned once and loaded in 3 seconds.</td></tr>
+            <tr class="win"><td>Wandering off its subject mid-answer</td><td><b>Much better</b></td><td>20% &rarr; 65% of answers stay on topic, purely from the dials. A junk piece derails the whole sentence, not just one word.</td></tr>
+            <tr><td>Facts that are confidently wrong</td><td>Still there</td><td>Only 9 of 20 answers are genuinely right. It has learned how to talk, not what is true.</td></tr>
+            <tr><td>Mixing two subjects in one answer</td><td>Still there</td><td>1,266,336 parameters, but only <b>55,968</b> of them do any thinking. The rest is dictionary.</td></tr>
+            <tr><td>Falls apart on a typo</td><td>Still there</td><td>Change one letter and the answer changes completely. Session 7.</td></tr>
+            <tr><td>Answers things it was never taught</td><td>Still there</td><td>Ask it about Romeo and Juliet and it will try. Session 7 teaches it to decline.</td></tr>
+          </table>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">THE NUMBER TO CARRY INTO SESSION 3</span>
+          <h3>Your model is 95.6% dictionary</h3>
+          <div class="t3-bars" id="t3-param-bars">
+            <div class="t3-bar"><span>lookup tables</span><div class="track"><div class="fill warn" data-w="96"></div></div><span class="val">1,210,368</span></div>
+            <div class="t3-bar"><span>attention + thinking</span><div class="track"><div class="fill good" data-w="4"></div></div><span class="val">55,968</span></div>
+          </div>
+          <p>Raising the vocabulary from 4,096 to 6,144 added 395,264 parameters &mdash; and <b>every single one of them</b> went into the two word tables. The part that reasons is 55,968 parameters, exactly what it was in Term 2.</p>
+          <p style="margin-bottom:0;">Fifty-six thousand parameters, trying to keep twenty subjects apart. That is why it answers a question about bulbs by talking about prisms. Next session you fix that.</p>
+        </div>
+
+        <!-- ============================================================
+             MISSION DIAGNOSTIC
+             ============================================================ -->
+        <section class="knowledge-check">
+          <div class="check-header">
+            <i class="fas fa-microchip"></i>
+            <h2>Mission Diagnostic: Level 3.02</h2>
+          </div>
+          <div class="mcq-container">
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">1. Your loss went from 2.013 to 2.510. What does that mean?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Nothing broke. The run completed, the answers got better, and the model now covers twenty subjects instead of four.">Something broke in training and you should run it again.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Loss only compares runs on the same book. Today&#39;s book holds five times more distinct material, so the same model scores worse on it while actually knowing more.">Almost nothing on its own. Loss only compares two runs on the same book, and the book changed.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="More steps help a little, but we fitted your own loss curve: reaching 2.0 would take about 394,000 steps, over five hours. The limit is size, not time.">It just needs more training steps to get back under 2.0.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-green">
+              <p class="mcq-question">2. Why did <code>VOCAB_SIZE</code> have to go up when the new subjects arrived?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="The tokenizer can already spell any word from pieces, so nothing is ever unknown. The question is how many pieces it takes.">Because the tokenizer could not read the new words at all.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. At 4,096, photosynthesis becomes ph|ot|os|y|nt|hes|is: seven scraps, each shared with a hundred unrelated words. At 6,144 it is one piece with one meaning.">Because at 4,096 the new subjects&#39; words were being shattered into scraps that carry no meaning.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="A bigger file does not need a bigger vocabulary. Four topics repeated five times over would still need only 4,096.">Because the file is five times bigger, so the vocabulary must be bigger too.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-blue">
+              <p class="mcq-question">3. The dials improved your answers without any retraining. How is that possible?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. The weights were always fine. generate() was throwing that knowledge away by picking at random from all 6,144 options instead of the handful that made sense.">The model already knew the right answers. The code that picked words was discarding that knowledge.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Not one weight changed. You loaded the same qa_model_v5.pth both times.">The dials quietly adjust the model&#39;s weights as it generates.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Temperature does not change the ranking at all. The model&#39;s favourite stays its favourite; only how strongly it is favoured changes.">Temperature re-ranks the options so better ones come first.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-amber">
+              <p class="mcq-question">4. On your Session 1 model junk was picked about 1 time in 17. On today&#39;s model it is 1 time in 5. Why did it get worse?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="The new model is better, not worse. It covers twenty subjects and writes cleaner sentences once the dials are on.">The new model is worse trained, so its numbers are worse.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. 5.9% became 18.4%. Sampling matters more as a model covers more ground, not less.">With twenty subjects there is more it could reasonably say next, so its confidence is spread thinner and the tail holds more of it.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="There are 2,048 more pieces, but that alone does not explain it. Each extra piece is individually tiny. What changed is how spread out the confidence is.">Because there are 6,144 pieces now instead of 4,096.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">5. Your parameter count rose from 871,072 to 1,266,336. How much more thinking can it do?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Check where the growth went. Attention plus feed-forward is 55,968 parameters today, byte for byte what it was last session.">About 45% more, in line with the parameter count.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. All 395,264 new parameters went into the two word tables. The reasoning part is unchanged at 55,968, which is why Session 3 is about layers and not vocabulary.">None at all. Every new parameter went into the word tables.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The attention heads never changed. Raising n_head would not help either: with n_embd fixed at 96, more heads just slice the same 96 numbers thinner, for zero extra parameters.">Twice as much, because the attention heads grew with the vocabulary.</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="rule-callout" style="background:rgba(16,185,129,.1); border-left-color:#10b981;">
+          <h4><i class="fas fa-star"></i> Today's Biggest Takeaway</h4>
+          <h2 style="text-align:center; margin:25px 0;">You taught it sixteen new subjects. Then you taught it to speak clearly &mdash; and that part took fifteen lines and no training at all.</h2>
+          <p>Two very different kinds of fix in one session. The book, the vocabulary and the steps all needed eleven minutes on a GPU. The four dials needed nothing: the knowledge was already in the weights, and your code was throwing it away. <b>Always check whether the problem is what the model knows, or what your code does with it.</b></p>
+        </div>
+
+        <!-- ============================================================
+             HOMEWORK
+             ============================================================ -->
+        <section class="session-block homework-block">
+          <h2>Homework / Extension</h2>
+          <div class="homework-item standard">
+            <h3>Standard Task: Find The Temperature Where It Breaks</h3>
+            <p>Leave everything else alone. Set <code>TEMPERATURE</code> to <strong>0.3</strong>, then <strong>0.6</strong>, then <strong>1.0</strong>, then <strong>1.4</strong>. Ask the same question each time and save the answers.</p>
+            <ul>
+              <li>At which value do made-up words start appearing?</li>
+              <li>At 0.3, what goes wrong in a different way? Ask the same question five times and compare.</li>
+            </ul>
+            <p><strong>Prediction first:</strong> is there a single best temperature, or are you trading one problem for another?</p>
+          </div>
+          <div class="homework-item advanced">
+            <h3>Advanced Task: Prove Which Dial Is Doing The Work</h3>
+            <p>You turned all four on at once, so you do not actually know which one fixed the broken words. Turn them on one at a time, counting invented words over twenty answers each run: penalty only, then temperature only, then top-k only, then top-p only. Rank them.</p>
+          </div>
+
+          <div class="homework-collapsible">
+            <div class="homework-toggle">
+              <span>Need Help? View Solutions &amp; Explanation</span>
+              <i class="fas fa-chevron-down toggle-arrow"></i>
+            </div>
+            <div class="homework-content">
+              <h4>Standard Task &mdash; what to expect</h4>
+              <p>Somewhere between 0.9 and 1.0 the made-up words return, because above that the long shots get enough probability to be picked. Going the other way costs you something different: at 0.3 the writing is clean but the <i>same question gives nearly the same answer every time</i>, and the model starts looping on safe phrases. Low temperature is not "more correct", it is more timid. There is no single best value &mdash; you are trading variety against reliability, and 0.6 is where this model sits comfortably.</p>
+              <hr>
+              <h4>Advanced Task &mdash; what you should find</h4>
+              <p><b>Top-k does most of the work</b> on broken words, because it deletes the 6,104 worst options outright and invented pieces live almost entirely in that tail. Temperature helps by shrinking the tail from 18.4% to 1.85% before top-k even looks at it. Top-p matters most when the model is <i>confident</i> &mdash; at the first word of a known answer it cut 40 down to 6. The repetition penalty fixes a different problem and will barely change your invented-word count; to see its effect, generate 300 tokens instead of 110 and watch for looping.</p>
+              <div class="rule-callout">
+                <strong>Engineering Takeaway</strong><br><br>
+                You changed four things at once and it worked. That feels good and tells you nothing. Changing one thing at a time is slower and is the only way to learn which thing mattered.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="did-you-know-box">
+          <div class="dyk-icon"><i class="fas fa-lightbulb"></i></div>
+          <div class="dyk-text">
+            <h3>Did You Know?</h3>
+            <p>Those four dials are not a teaching simplification &mdash; they are the real controls. Every commercial model API exposes <code>temperature</code> and <code>top_p</code> to developers, and the defaults sit close to the numbers you just used. When someone complains that an AI "got more creative and started making things up", they are usually describing a temperature set too high. You now know exactly what that means, because you watched it happen on your own model.</p>
+          </div>
+        </div>
+
+        <div class="rule-callout" style="background:rgba(14,165,233,.1); border-left-color:#0ea5e9;">
+          <h4><i class="fas fa-arrow-right"></i> Next Session</h4>
+          <p style="margin-bottom:0;">Your model writes clean sentences about twenty subjects and gets the facts muddled &mdash; a question about bulbs answered with prisms, DNA answered with atoms. No dial fixes that, and no number of steps either. It has <b>one</b> block of thinking, 55,968 parameters wide, trying to hold twenty subjects apart. Next session you stack six.</p>
+        </div>
+
+        <details class="collapsible-box">
+          <summary><strong>&#9881; Troubleshooting &amp; FAQs</strong></summary>
+          <div class="activity-box">
+            <div class="faq-item">
+              <h5>&#10067; RuntimeError: size mismatch &hellip; loading qa_model_v4.pth</h5>
+              <p>Session 1's model was built for 4,096 pieces. Today's engine builds itself for 6,144, so the two word tables are different shapes and the old weights will never fit. Load <code>qa_model_v5.pth</code> instead. To run the old model again you need its old tokenizer too.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>&#10067; My run says "No saved tokenizer. Learning the rules"</h5>
+              <p><code>tokenizer.json</code> did not upload, or landed in a different folder from <code>data_pipeline.py</code>. Stop the cell &mdash; otherwise you will wait about ninety minutes. Check the file is there and is around 154 KB, then run again.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>&#10067; Training started but the loss is stuck above 5</h5>
+              <p>Almost always <code>tokens.pt</code> arriving incomplete. Check its size: it should be about 84 MB. A partial upload loads without error and gives the model nonsense to read.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>&#10067; The answers are still full of broken words after I added the dials</h5>
+              <p>Check that <code>generate()</code> actually calls <code>sample_next()</code>. It is easy to add the four constants and the new method and then forget to replace the old <code>torch.multinomial</code> line inside the loop &mdash; in which case nothing you added is ever used.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>&#10067; Every answer is now almost identical</h5>
+              <p>Your <code>TEMPERATURE</code> is too low, or <code>TOP_K</code> is very small. Both narrow the field; together they can narrow it to one. Put temperature back to 0.6 and top-k to 40, then change only one at a time.</p>
+            </div>
+          </div>
+        </details>
+
+      </section>
+
+      <div class="completion-zone">
+        <div class="completion-card">
+          <label class="checkbox-container">
+            <input type="checkbox" id="session-check">
+            <span class="checkmark"></span>
+            I trained on the twenty-subject book with 6,144 pieces and 14,000 steps, added the four sampling dials, and heard the broken words stop.
+          </label>
+        </div>
+      </div>
+
+      <div class="session-nav" style="display:flex;justify-content:space-between;margin-top:30px;">
+        <a href="t3_session1.html" class="btn-secondary">Previous Session</a>
+        <button class="btn-primary" id="next-btn">Mark Complete &amp; Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </main>
+  </div>
+
+  <div id="mcq-modal" class="mcq-modal">
+    <div class="mcq-modal-content">
+      <div id="mcq-modal-status-bar"></div>
+      <div class="mcq-modal-body">
+        <div id="mcq-modal-icon"></div>
+        <h3 id="mcq-modal-title">Checking Logic...</h3>
+        <p id="mcq-modal-feedback"></p>
+        <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../nexus-core.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    (function () {
+      function $(id) { return document.getElementById(id); }
+
+      /* ---------- 1. ask the old model ---------- */
+      var ASK = [
+        {
+          old: 'Gravity is the force that pulls objects toward each other, like how a <span class="bad">magnetic field</span> protects us from solar radiation. If two objects have lots of different materials, they pull each other.',
+          want: 'Photosynthesis is how a plant uses sunlight to make its own food. The green stuff in its leaves catches the light, and the plant turns that energy, water and air into sugar.',
+          cap: 'It has never read the word <span class="hi">photosynthesis</span>. So it answers with the only subjects it has: gravity and magnets.'
+        },
+        {
+          old: 'The harder you push an object the <span class="bad">more friction</span> it has, so it is easier to get moving. That is why a car speeds up when the air pushes against them.',
+          want: 'Electricity flows through the thin wire inside the bulb. The wire resists the current, gets white hot, and that heat is what you see as light.',
+          cap: 'Asked about a bulb, it reaches for <span class="hi">friction</span> &mdash; one of its four topics. It is not confused. It genuinely has nothing else.'
+        },
+        {
+          old: 'Gravity is the force that pulls objects toward each other. It is like a team where you do not want to pull them down, but they also play a role in physics class.',
+          want: 'Gravity is a pull between any two things that have mass. The Earth is enormous, so its pull is the one you notice.',
+          cap: 'On one of its <span class="good">own four topics</span> it does fine. The problem was never the engine.'
+        }
+      ];
+      function showAsk(i) {
+        $('t3-ask-old').innerHTML = ASK[i].old;
+        $('t3-ask-want').innerHTML = ASK[i].want;
+        $('t3-ask-cap').innerHTML = ASK[i].cap;
+      }
+      var askChips = [].slice.call(document.querySelectorAll('#t3-ask-chips .t3-chip'));
+      askChips.forEach(function (c) {
+        c.addEventListener('click', function () {
+          askChips.forEach(function (x) { x.classList.remove('on'); });
+          c.classList.add('on');
+          showAsk(+c.dataset.i);
+        });
+      });
+      if ($('t3-ask-old')) showAsk(0);
+
+      /* ---------- 2. word splitter (measured on both real tokenizers) ---------- */
+      var WORDS = [
+        { w: 'photosynthesis', old: ['ph','ot','os','y','nt','hes','is'], neu: ['photosynthesis'] },
+        { w: 'chlorophyll',    old: ['ch','l','or','op','hy','ll'],       neu: ['chlorophyll'] },
+        { w: 'mitochondria',   old: ['m','it','o','ch','ond','ri','a'],   neu: ['mitochondria'] },
+        { w: 'evaporation',    old: ['ev','ap','ora','tion'],             neu: ['evaporation'] },
+        { w: 'voltage',        old: ['v','olt','age'],                    neu: ['voltage'] },
+        { w: 'ecosystem',      old: ['e','cos','y','stem'],               neu: ['ecosystem'] },
+        { w: 'gravity',        old: ['gravity'],                          neu: ['gravity'] },
+        { w: 'friction',       old: ['friction'],                         neu: ['friction'] }
+      ];
+      var wc = $('t3-word-chips');
+      if (wc) {
+        WORDS.forEach(function (o, i) {
+          var b = document.createElement('button');
+          b.className = 't3-chip' + (i === 0 ? ' on' : '');
+          b.textContent = o.w;
+          b.dataset.i = i;
+          wc.appendChild(b);
+        });
+        var fill = function (el, list) {
+          el.innerHTML = '';
+          list.forEach(function (p) {
+            var s = document.createElement('span');
+            s.className = 't3-pc';
+            s.textContent = p;
+            el.appendChild(s);
+          });
+        };
+        var showWord = function (i) {
+          var o = WORDS[i];
+          fill($('t3-split-old'), o.old);
+          fill($('t3-split-new'), o.neu);
+          $('t3-split-old-n').textContent = o.old.length + (o.old.length === 1 ? ' piece' : ' pieces');
+          $('t3-split-new-n').textContent = o.neu.length + (o.neu.length === 1 ? ' piece' : ' pieces');
+          if (o.old.length === o.neu.length) {
+            $('t3-split-cap').innerHTML = '<span class="good">' + o.w + '</span> was already one piece at 4,096 &mdash; it is one of the four old topics. Those words were always fine.';
+          } else {
+            $('t3-split-cap').innerHTML = o.old.length + ' scraps became <span class="good">' + o.neu.length + ' piece</span>. Across these eight words: <span class="hi">46 pieces</span> at 4,096, <span class="good">14</span> at 6,144.';
+          }
+        };
+        [].slice.call(wc.children).forEach(function (c) {
+          c.addEventListener('click', function () {
+            [].slice.call(wc.children).forEach(function (x) { x.classList.remove('on'); });
+            c.classList.add('on');
+            showWord(+c.dataset.i);
+          });
+        });
+        showWord(0);
+      }
+
+      /* ---------- 3. steps calculator ---------- */
+      var TOKENS = 44144438, PER_STEP = 64 * 256, MS = 48.7;
+      var stepChips = [].slice.call(document.querySelectorAll('#t3-steps-chips .t3-chip'));
+      stepChips.forEach(function (c) {
+        c.addEventListener('click', function () {
+          stepChips.forEach(function (x) { x.classList.remove('on'); });
+          c.classList.add('on');
+          var s = +c.dataset.v;
+          var passes = s * PER_STEP / TOKENS;
+          var mins = s * MS / 1000 / 60;
+          $('t3-pass-fill').style.width = Math.min(passes / 6 * 100, 100) + '%';
+          $('t3-pass-fill').className = 'fill' + (passes < 2 || passes > 7 ? ' warn' : ' good');
+          $('t3-pass-val').textContent = passes.toFixed(1) + ' passes';
+          $('t3-time-fill').style.width = Math.min(mins / 35 * 100, 100) + '%';
+          $('t3-time-fill').className = 'fill' + (mins > 25 ? ' warn' : '');
+          $('t3-time-val').textContent = mins.toFixed(1) + ' min';
+          var cap;
+          if (s === 2500) cap = '<span class="bad">0.9 passes.</span> It would not finish the book even once. Twenty subjects read once each and forgotten.';
+          else if (s === 6000) cap = '<span class="hi">2.2 passes.</span> Better, but less than half of what Session 1 got. Under-read.';
+          else if (s === 14000) cap = '<span class="good">5.2 passes</span> in 11.4 minutes &mdash; a little more than Session 1\'s 4.6. This is the one we used.';
+          else cap = '<span class="hi">14.8 passes</span> and 32 minutes. The loss keeps falling, but barely: the model is full, not under-trained.';
+          $('t3-steps-cap').innerHTML = cap;
+        });
+      });
+
+      /* ---------- 4. the new model answering ---------- */
+      var NEW = [
+        { q: 'what is photosynthesis?',
+          old: 'Gravity is the force that pulls objects toward each other, like how a <span class="bad">magnetic field</span> protects us from solar radiation.',
+          now: '<span class="ok">Photosynthesis</span> is how plants use sunlight, and light. It helps them capture the food we eat for your body\'s energy production! Without this, starch cannot be made.',
+          cap: 'It knows what the word means, and which subject it belongs to. The sentence is not perfect &mdash; but an hour ago it had never seen the word.' },
+        { q: 'what does the heart do?',
+          old: 'The harder the object has more mass, so it is easier to get moving when you push it.',
+          now: 'Your <span class="ok">heart</span> is like a pump, but the lungs are designed to carry oxygen. When you hear your ribcage, it keeps going until they keep your body running smoothly!',
+          cap: 'Right subject, right idea &mdash; a pump that moves blood and oxygen. The middle of the sentence wanders. That is the capacity problem, not the data.' },
+        { q: 'what is a food chain?',
+          old: 'Friction and air resistance are forces that slow down objects, like when the object moves through it.',
+          now: 'When a rabbit eats grass, it moves down the <span class="ok">food chain</span>. This is like nature\'s energy from plants to animals! You can see this in action with other organisms.',
+          cap: 'A real example, the right direction of energy flow, and the book\'s own warm register. This is the model at its best today.' },
+        { q: 'why does a bulb light up?',
+          old: 'The harder you push an object the more friction it has, so it is easier to get moving.',
+          now: 'When light shines through a <span class="bad">prism</span>, it creates the illuster of light. This is what causes the colour and can change how much sunlight reflects!',
+          cap: 'And here it fails. <span class="hi">Bulb &rarr; light &rarr; prism.</span> It grabbed a neighbouring subject. This is what 55,968 thinking parameters looks like.' }
+      ];
+      var nc = $('t3-new-chips');
+      if (nc) {
+        NEW.forEach(function (o, i) {
+          var b = document.createElement('button');
+          b.className = 't3-chip' + (i === 0 ? ' on' : '');
+          b.textContent = o.q;
+          b.dataset.i = i;
+          nc.appendChild(b);
+        });
+        var showNew = function (i) {
+          $('t3-new-old').innerHTML = NEW[i].old;
+          $('t3-new-now').innerHTML = NEW[i].now;
+          $('t3-new-cap').innerHTML = NEW[i].cap;
+        };
+        [].slice.call(nc.children).forEach(function (c) {
+          c.addEventListener('click', function () {
+            [].slice.call(nc.children).forEach(function (x) { x.classList.remove('on'); });
+            c.classList.add('on');
+            showNew(+c.dataset.i);
+          });
+        });
+        showNew(0);
+      }
+
+
+      /* ---------- 7. the sampling dials, on real measured numbers ---------- */
+      (function () {
+        var mount = $('t3-sampling');
+        if (!mount) return;
+
+        // Measured from qa_model_v5.pth after "Photosynthesis is how plants".
+        // count > 1 means the row stands for a whole group of pieces.
+        var ROWS = [
+          { name: "' grow'",     p: 0.1842, count: 1 },
+          { name: "' and'",      p: 0.1342, count: 1 },
+          { name: "' produce'",  p: 0.0669, count: 1 },
+          { name: "' create'",   p: 0.0553, count: 1 },
+          { name: "' are'",      p: 0.0542, count: 1 },
+          { name: "' use'",      p: 0.0499, count: 1 },
+          { name: "' convert'",  p: 0.0345, count: 1 },
+          { name: "' make'",     p: 0.0284, count: 1 },
+          { name: "' have'",     p: 0.0228, count: 1 },
+          { name: "' work'",     p: 0.0219, count: 1 },
+          { name: "' can'",      p: 0.0163, count: 1 },
+          { name: "' in'",       p: 0.0163, count: 1 },
+          { name: 'ranks 13-31', p: 0.1720, count: 19,   kind: 'group' },
+          { name: 'ranks 32-40', p: 0.0300, count: 9,    kind: 'group' },
+          { name: 'ranks 41+',   p: 0.1132, count: 6104, kind: 'junk' }
+        ];
+
+        var MODES = [
+          { key: 'raw',  label: 'No dials (what you have now)',
+            note: 'The model&rsquo;s honest numbers &mdash; and your code rolls a dice over <span class="hi">all 6,144</span> of them.' },
+          { key: 't06',  label: 'Temperature 0.6',
+            note: 'The favourite gets bolder and the junk <span class="good">all but disappears</span>. This is the setting we want.' },
+          { key: 't16',  label: 'Temperature 1.6',
+            note: 'Flattens everything. More variety &mdash; and <span class="hi">far more nonsense</span>. This is the wrong way to turn the dial.' },
+          { key: 'topk', label: 'Top-k = 40',
+            note: 'Keep the best 40 pieces, delete the other 6,104 outright. <span class="good">The junk tail becomes exactly 0%.</span>' },
+          { key: 'topp', label: 'Top-p = 0.92',
+            note: 'Add up percentages down the list, stop at 92%. Here the model is unsure, so it <span class="good">keeps 54 options open</span>.' }
+        ];
+
+        // turn the measured percentages back into scores we can re-temperature
+        ROWS.forEach(function (r) { r.logit = Math.log(r.p / r.count); });
+
+        function compute(mode) {
+          var t = mode === 't06' ? 0.6 : mode === 't16' ? 1.6 : 1.0;
+          var w = ROWS.map(function (r) { return r.count * Math.exp(r.logit / t); });
+          var sum = w.reduce(function (a, b) { return a + b; }, 0);
+          var p = w.map(function (v) { return v / sum; });
+          var cut = ROWS.map(function () { return false; });
+
+          if (mode === 'topk') cut[ROWS.length - 1] = true;   // ranks 41+ is the only row outside the best 40
+          if (mode === 'topp') {
+            var run = 0;
+            for (var i = 0; i < ROWS.length; i++) {
+              if (run >= 0.92) cut[i] = true;
+              run += p[i];
+            }
+          }
+          if (cut.some(Boolean)) {                            // re-share the deleted chance
+            var keep = p.reduce(function (a, v, i) { return a + (cut[i] ? 0 : v); }, 0);
+            p = p.map(function (v, i) { return cut[i] ? 0 : v / keep; });
+          }
+          return { p: p, cut: cut };
+        }
+
+        var bar = document.createElement('div'); bar.className = 't3-sbar';
+        var samp = document.createElement('div'); samp.className = 't3-samp';
+        var cap = document.createElement('div'); cap.className = 't3-cap';
+        mount.appendChild(bar); mount.appendChild(samp); mount.appendChild(cap);
+
+        var rows = ROWS.map(function (r) {
+          var row = document.createElement('div');
+          row.className = 't3-srow' + (r.kind ? ' ' + r.kind : '');
+          var n = document.createElement('div'); n.className = 't3-sname'; n.textContent = r.name;
+          var tr = document.createElement('div'); tr.className = 't3-strack';
+          var fi = document.createElement('div'); fi.className = 't3-sfill';
+          tr.appendChild(fi);
+          var pc = document.createElement('div'); pc.className = 't3-spct';
+          row.appendChild(n); row.appendChild(tr); row.appendChild(pc);
+          samp.appendChild(row);
+          return { row: row, fill: fi, pct: pc };
+        });
+
+        var buttons = MODES.map(function (m, i) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 't3-btn'; b.textContent = m.label;
+          b.addEventListener('click', function () { render(i); });
+          bar.appendChild(b);
+          return b;
+        });
+
+        function render(mi) {
+          var m = MODES[mi], out = compute(m.key);
+          var max = Math.max.apply(null, out.p);
+          rows.forEach(function (r, i) {
+            r.fill.style.width = (out.p[i] / max * 100) + '%';
+            r.pct.textContent = out.cut[i] ? 'cut' : (out.p[i] * 100).toFixed(1) + '%';
+            r.row.classList.toggle('cut', out.cut[i]);
+          });
+          cap.innerHTML = m.note;
+          buttons.forEach(function (b, i) {
+            b.style.borderColor = i === mi ? '#0ea5e9' : '#334155';
+            b.style.color = i === mi ? '#7dd3fc' : '#cbd5e1';
+          });
+        }
+        render(0);
+      })();
+
+
+      /* ---------- bars and counters, when they scroll into view ---------- */
+      function fillBars(root) {
+        [].slice.call(root.querySelectorAll('.fill')).forEach(function (f, i) {
+          var w = f.dataset.w;
+          if (w === undefined) return;
+          f.style.width = '0%';
+          setTimeout(function () { f.style.width = w + '%'; }, 90 * i + 60);
+        });
+      }
+      function runCounters(root) {
+        [].slice.call(root.querySelectorAll('.t3-scale-num')).forEach(function (el) {
+          var to = +el.dataset.to, t0 = null;
+          function tick(ts) {
+            if (!t0) t0 = ts;
+            var p = Math.min((ts - t0) / 900, 1);
+            el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+        [].slice.call(root.querySelectorAll('.t3-dots')).forEach(function (d) {
+          if (d.children.length) return;
+          var n = +d.dataset.dots;
+          for (var i = 0; i < n; i++) {
+            var s = document.createElement('span');
+            s.className = 't3-dot';
+            d.appendChild(s);
+          }
+        });
+      }
+      var watch = [].slice.call(document.querySelectorAll(
+        '.t3-scale, #t3-tok-bars, #t3-score-bars, #t3-param-bars'));
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            io.unobserve(e.target);
+            if (e.target.classList.contains('t3-scale')) runCounters(e.target);
+            else fillBars(e.target);
+          });
+        }, { threshold: 0.3 });
+        watch.forEach(function (el) { io.observe(el); });
+      } else {
+        watch.forEach(function (el) {
+          if (el.classList.contains('t3-scale')) runCounters(el); else fillBars(el);
+        });
+      }
+
+    })();
+  </script>
+
+</body>
+
+</html>

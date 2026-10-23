@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Finishing the Transformer Block</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* Session 7 only. Shared styles and the development code are untouched. */
+    :root { --s7-blue:#2563eb; --s7-green:#16a34a; --s7-amber:#d97706; --s7-purple:#9333ea; --s7-ink:#172033; --s7-muted:#526075; --s7-line:#dbe4ef; }
+    .s7-map,.s7-three,.s7-slices,.s7-results{display:grid;gap:14px;margin:18px 0}.s7-map,.s7-three,.s7-results{grid-template-columns:repeat(3,1fr)}
+    .s7-map-card,.s7-mini-card{background:#fff;border:1px solid var(--s7-line);border-radius:14px;padding:16px}.s7-map-card{position:relative;padding-top:48px}
+    .s7-map-card .s7-num{position:absolute;top:14px;left:16px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--s7-blue);color:#fff;font-weight:800;font-size:.82rem}
+    .s7-map-card h3,.s7-mini-card h4{margin:0 0 6px;color:var(--s7-ink)}.s7-map-card p,.s7-mini-card p{margin:0;color:var(--s7-muted);line-height:1.55}
+    .s7-code-note{display:inline-flex;align-items:center;gap:8px;margin-top:8px;color:#166534;font-weight:700;font-size:.9rem}
+    .s7-demo{border:1px solid #bfdbfe;border-radius:16px;overflow:hidden;margin:20px 0;background:linear-gradient(150deg,#f8fbff,#fff);box-shadow:0 8px 26px rgba(37,99,235,.08)}
+    .s7-demo-head{padding:14px 18px;background:#eff6ff;border-bottom:1px solid #bfdbfe}.s7-demo-head h3{margin:0 0 3px;color:#1e3a8a;font-size:1.05rem}.s7-demo-head p{margin:0;color:#475569;font-size:.9rem}.s7-demo-body{padding:18px}
+    .s7-token-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;padding:14px;border-radius:12px;background:#f1f5f9}.s7-token{border:2px solid transparent;border-radius:8px;padding:7px 9px;background:#fff;color:#334155;transition:transform .25s ease,background .25s ease,border-color .25s ease}
+    .s7-token.is-query{border-color:#f59e0b;background:#fffbeb}.s7-token.is-focus{border-color:var(--head-colour,var(--s7-blue));background:var(--head-soft,#dbeafe);transform:translateY(-5px);box-shadow:0 6px 12px rgba(15,23,42,.12)}
+    .s7-head-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.s7-head-btn{cursor:pointer;border:2px solid #cbd5e1;border-radius:9px;padding:9px 6px;background:#fff;color:#334155;font:inherit;font-size:.88rem;font-weight:700}.s7-head-btn[aria-pressed="true"]{color:#fff;border-color:var(--head-colour);background:var(--head-colour)}
+    .s7-head-readout{min-height:44px;margin:12px 0 0;padding:10px 13px;border-left:4px solid var(--head-colour,var(--s7-blue));border-radius:0 8px 8px 0;background:#fff;color:#334155}
+    .s7-slices{grid-template-columns:repeat(4,1fr);align-items:stretch}.s7-slice{border:2px solid var(--slice-colour);border-radius:12px;padding:14px 8px;text-align:center;background:var(--slice-soft);animation:s7-breathe 3.2s ease-in-out infinite}.s7-slice:nth-child(2){animation-delay:.25s}.s7-slice:nth-child(3){animation-delay:.5s}.s7-slice:nth-child(4){animation-delay:.75s}.s7-slice b{display:block;font-family:monospace;font-size:1rem}.s7-slice span{display:block;margin-top:5px;color:#475569;font-size:.85rem}
+    .s7-equation{text-align:center;font-family:monospace;font-weight:800;color:#334155;margin:12px 0}.s7-merge{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin:14px 0 4px;color:#334155;font-weight:700}.s7-merge i{color:var(--s7-blue);animation:s7-flow 1.4s ease-in-out infinite}
+    .s7-normalise{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}.s7-bars{height:170px;display:flex;align-items:end;justify-content:center;gap:9px;padding:12px;border-bottom:2px solid #94a3b8}.s7-bar{width:24px;height:var(--before);border-radius:7px 7px 0 0;background:#f97316;transition:height .65s cubic-bezier(.2,.8,.2,1),background .4s ease}.s7-bars.is-normal .s7-bar{height:var(--after);background:#22c55e}.s7-bar-label{text-align:center;margin-top:7px;color:#475569;font-size:.86rem}.s7-demo-button{cursor:pointer;border:0;border-radius:999px;padding:10px 14px;background:var(--s7-blue);color:#fff;font:inherit;font-weight:800}
+    .s7-file-steps{border:1px solid var(--s7-line);border-radius:12px;overflow:hidden;margin:14px 0}.s7-file-step{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:13px 15px;border-bottom:1px solid #e8eef5}.s7-file-step:last-child{border-bottom:0}.s7-file-step>b{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--s7-blue);color:#fff}.s7-file-step p{margin:2px 0}
+    .s7-table{width:100%;border-collapse:collapse;margin:12px 0}.s7-table th,.s7-table td{padding:9px;border:1px solid #cbd5e1;text-align:left}.s7-table th{background:#f1f5f9}.s7-table tr.s7-win{background:#ecfdf5}
+    .s7-reveal{border:1px solid var(--s7-line);border-radius:11px;margin:13px 0;background:#fbfdff}.s7-reveal>summary{cursor:pointer;padding:12px 15px;color:#1e3a5f;font-weight:800}.s7-reveal>div{padding:0 15px 15px}
+    .s7-pipeline{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin:18px 0}.s7-pipe{border:2px solid #cbd5e1;border-radius:10px;padding:11px 13px;background:#fff;text-align:center;min-width:110px}.s7-pipe.today{border-color:#22c55e;background:#f0fdf4}.s7-pipe small{display:block;color:#64748b;margin-top:3px}.s7-arrow{color:#64748b}
+    .s7-result{border-radius:13px;padding:15px;border:1px solid var(--s7-line);background:#fff}.s7-result strong{font-size:1.35rem;color:var(--s7-blue)}.s7-result span{display:block;color:#64748b;font-size:.85rem}.s7-meter{height:8px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-top:9px}.s7-meter i{display:block;height:100%;width:var(--width);background:var(--meter,#2563eb)}
+    .s7-position-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.s7-sentence-card{border-radius:12px;padding:15px;background:#fff;border:1px solid var(--s7-line);text-align:center}.s7-slot{display:inline-grid;place-items:center;min-width:34px;height:22px;padding:0 5px;margin:5px 2px 0;border-radius:5px;background:#dbeafe;color:#1d4ed8;font-family:monospace;font-size:.74rem}
+    .s7-compact-note{border-left:4px solid #6366f1;border-radius:0 9px 9px 0;background:#eef2ff;padding:12px 15px;margin:14px 0;color:#3730a3}.s7-compact-note p{margin:0}
+    .s7-residual-card{border:1px solid #c7d2fe;border-radius:15px;overflow:hidden;margin:18px 0;background:#fafaff}.s7-residual-title{padding:13px 17px;background:#eef2ff;border-bottom:1px solid #c7d2fe}.s7-residual-title h3{margin:0 0 3px;color:#3730a3;font-size:1.05rem}.s7-residual-title p{margin:0;color:#526075;font-size:.9rem}
+    .s7-residual-flow{display:grid;grid-template-columns:140px 1fr 44px 150px;gap:12px;align-items:center;padding:18px}.s7-flow-node{border:2px solid #93c5fd;border-radius:11px;padding:13px 10px;background:#eff6ff;text-align:center}.s7-flow-node b{display:block;color:#1d4ed8}.s7-flow-node small{display:block;margin-top:4px;color:#64748b}.s7-flow-node.s7-new{border-color:#86efac;background:#f0fdf4}.s7-flow-node.s7-new b{color:#166534}
+    .s7-two-paths{display:grid;gap:9px}.s7-path{position:relative;border:2px solid #cbd5e1;border-radius:10px;padding:10px 12px;background:#fff;color:#334155}.s7-path::before{content:"→";position:absolute;left:-14px;top:50%;transform:translateY(-50%);color:#64748b;font-weight:900}.s7-path::after{content:"→";position:absolute;right:-15px;top:50%;transform:translateY(-50%);color:#64748b;font-weight:900}.s7-path b{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:#64748b}.s7-path.s7-work{border-color:#c4b5fd;background:#f5f3ff}.s7-path.s7-work b{color:#6d28d9}.s7-plus{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#172033;color:#fff;font-size:1.25rem;font-weight:900}
+    .s7-code-map{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 18px}.s7-code-map div{border-radius:9px;padding:10px 12px;background:#fff;border:1px solid #e2e8f0}.s7-code-map code{display:block;margin-bottom:5px;color:#1d4ed8}.s7-code-map span{font-size:.88rem;color:#526075}
+    @keyframes s7-breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}@keyframes s7-flow{0%,100%{transform:translateX(0);opacity:.45}50%{transform:translateX(4px);opacity:1}}
+    @media(prefers-reduced-motion:reduce){.s7-slice,.s7-merge i{animation:none}.s7-token,.s7-bar{transition:none}}
+    @media(max-width:760px){.s7-map,.s7-three,.s7-results{grid-template-columns:1fr}.s7-slices{grid-template-columns:1fr 1fr}.s7-normalise{grid-template-columns:1fr}.s7-normalise>i{transform:rotate(90deg);text-align:center}.s7-position-pair{grid-template-columns:1fr}.s7-residual-flow{grid-template-columns:1fr}.s7-path::before,.s7-path::after{display:none}.s7-plus{margin:auto}.s7-code-map{grid-template-columns:1fr}}
+  </style>
+</head>
+<body class="page-session" data-current-session="t2_s7">
+  <nav class="navbar"><a href="../index.html" class="site-logo"><img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" /></a><div class="nav-links"><span class="user-status">Status: <strong>AI Architect</strong></span><a href="term2.html" class="btn-primary">My Dashboard</a></div></nav>
+  <div class="container">
+    <aside class="sidebar"><div class="sidebar-section" data-sidebar-term="2"><h3 style="display:flex;justify-content:space-between;align-items:center;user-select:none;"><span>TERM 2: THE BRAIN</span><i class="fas fa-chevron-down" style="transition:transform .3s ease;"></i></h3><ul style="display:block;">
+      <li data-session-id="t2_s1"><a href="t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li><li data-session-id="t2_s2"><a href="t2_session2.html"><i class="fas fa-font"></i> S2: The Encoding Pipeline</a></li><li data-session-id="t2_s3"><a href="t2_session3.html"><i class="fas fa-dice"></i> S3: The First Prediction Engine</a></li><li data-session-id="t2_s4"><a href="t2_session4.html"><i class="fas fa-window-maximize"></i> S4: Context Windows &amp; Sequence Processing</a></li><li data-session-id="t2_s5"><a href="t2_session5.html"><i class="fas fa-highlighter"></i> S5: Self-Attention Mechanism</a></li><li data-session-id="t2_s6"><a href="t2_session6.html"><i class="fas fa-comments"></i> S6: Teaching It To Answer</a></li><li data-session-id="t2_s7" class="active"><a href="t2_session7.html"><i class="fas fa-layer-group"></i> S7: The Transformer Block</a></li><li data-session-id="t2_s8"><a href="t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+    </ul></div></aside><div id="sidebar-resizer" class="resizer"></div>
+    <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 2 / Session 7 / The Transformer Block</nav>
+      <section id="lesson-header">
+        <h1>Session 7: Finish the Transformer Block</h1><p class="lead">Upgrade one attention head to four, steady the numbers with LayerNorm, and test whether the new engine is actually better.</p>
+        <div class="stats-bar"><span><i class="far fa-clock"></i> 60 Minutes</span><span><i class="fas fa-signal"></i> Level: AI Architect</span></div>
+        <div class="outcome-box"><h4><i class="fas fa-bullseye"></i> By the end</h4><p>You will have one complete Transformer Block—the reusable unit inside modern language models.</p></div>
+        <div class="s7-map" aria-label="Lesson roadmap"><div class="s7-map-card"><span class="s7-num">1</span><h3>Split attention</h3><p>Four heads can notice different relationships.</p><span class="s7-code-note"><i class="fas fa-code"></i> Build it</span></div><div class="s7-map-card"><span class="s7-num">2</span><h3>Steady the numbers</h3><p>LayerNorm stops one feature drowning out the rest.</p><span class="s7-code-note"><i class="fas fa-code"></i> Add 3 lines</span></div><div class="s7-map-card"><span class="s7-num">3</span><h3>Test the upgrade</h3><p>Train, inspect the heads, and race both engines.</p><span class="s7-code-note"><i class="fas fa-flask"></i> Measure it</span></div></div>
+      </section>
+      <section class="lesson-body">
+        <h2>1. Why Use More Than One Head?</h2>
+        <div class="info-box"><p style="margin:0;">Last session changed the <b>data</b> and tokenizer. Today they stay fixed. We change only the <b>engine</b>, so the comparison is fair.</p></div>
+        <div class="s7-demo" id="head-demo"><div class="s7-demo-head"><h3><i class="fas fa-eye"></i> Click each head: same sentence, different clue</h3><p>The highlighted word is what that head pays most attention to when reading “it”.</p></div><div class="s7-demo-body">
+          <div class="s7-token-row" aria-live="polite"><span class="s7-token" data-token="the1">The</span><span class="s7-token" data-token="magnet">magnet</span><span class="s7-token" data-token="pulls">pulls</span><span class="s7-token" data-token="the2">the</span><span class="s7-token" data-token="iron">iron</span><span class="s7-token" data-token="because">because</span><span class="s7-token is-query" data-token="it">it</span><span class="s7-token" data-token="is">is</span><span class="s7-token" data-token="magnetic">magnetic</span></div>
+          <div class="s7-head-controls"><button class="s7-head-btn" style="--head-colour:#2563eb;" data-focus="pulls" data-colour="#2563eb" data-soft="#dbeafe" data-message="Head 1 points to pulls—a possible action clue." aria-pressed="true">Head 1</button><button class="s7-head-btn" style="--head-colour:#16a34a;" data-focus="magnet" data-colour="#16a34a" data-soft="#dcfce7" data-message="Head 2 links “it” back to magnet—a possible pronoun link." aria-pressed="false">Head 2</button><button class="s7-head-btn" style="--head-colour:#d97706;" data-focus="the2" data-colour="#d97706" data-soft="#fef3c7" data-message="Head 3 points to the—a weaker or less obvious pattern." aria-pressed="false">Head 3</button><button class="s7-head-btn" style="--head-colour:#9333ea;" data-focus="because" data-colour="#9333ea" data-soft="#f3e8ff" data-message="Head 4 notices because—a possible reason or sentence-shape clue." aria-pressed="false">Head 4</button></div><p class="s7-head-readout" id="head-readout">Head 1 points to pulls—a possible action clue.</p>
+        </div></div>
+        <div class="s7-compact-note"><p><b>Important:</b> we do not assign these jobs. Each head starts with different random numbers; training decides which patterns become useful. The demo shows possible specialisms, not fixed rules.</p></div>
+
+        <h2>2. Build Four Heads</h2><p>Each head reads the same token with <code>n_embd = 96</code> inputs, but produces a smaller <b>24-number report</b>. Four reports restore the 96-number output the engine expects:</p>
+        <div class="s7-slices" aria-label="Ninety-six numbers divided into four groups of twenty-four"><div class="s7-slice" style="--slice-colour:#60a5fa;--slice-soft:#eff6ff;"><b>Head 1</b><span>24 numbers</span></div><div class="s7-slice" style="--slice-colour:#4ade80;--slice-soft:#f0fdf4;"><b>Head 2</b><span>24 numbers</span></div><div class="s7-slice" style="--slice-colour:#fbbf24;--slice-soft:#fffbeb;"><b>Head 3</b><span>24 numbers</span></div><div class="s7-slice" style="--slice-colour:#c084fc;--slice-soft:#faf5ff;"><b>Head 4</b><span>24 numbers</span></div></div>
+        <p class="s7-equation">96 ÷ 4 = 24 &nbsp; → &nbsp; 4 × 24 = 96</p><div class="s7-merge"><span>four separate reports</span><i class="fas fa-arrow-right"></i><code>torch.cat</code><i class="fas fa-arrow-right"></i><code>self.proj</code><i class="fas fa-arrow-right"></i><span>one mixed result</span></div>
+        <div class="rule-callout"><h4><i class="fas fa-triangle-exclamation"></i> The one rule</h4><p style="margin:0;"><code>n_head</code> must divide <code>n_embd</code> evenly. Four works because <code>96 ÷ 4 = 24</code>. Five fails because <code>96 ÷ 5 = 19.2</code>.</p></div>
+        <div class="activity-box"><h4><i class="fas fa-wrench"></i> Activity 1: Build Multi-Head Attention</h4>
+          <div class="s7-file-steps"><div class="s7-file-step"><b>1</b><p>Copy <code>attention_engine.py</code> to <code>engine_v1.py</code>. Keep this old version for the showdown.</p></div><div class="s7-file-step"><b>2</b><p>Add <code>n_head = 4</code> just below <code>batch_size</code>.</p></div><div class="s7-file-step"><b>3</b><p>Add the class below <code>SelfAttentionHead</code>.</p></div><div class="s7-file-step"><b>4</b><p>Replace the one-head line inside <code>PredictionEngine.__init__</code>.</p></div></div>
+          <div class="code-block python"><div class="code-header">attention_engine.py — the new class</div><pre>
+class MultiHeadAttention(nn.Module):
+    """Several Attention Heads running side by side.
+
+    Each head gets a SMALLER slice of the numbers to work with, and
+    goes hunting for its own kind of relationship. We stick their
+    answers back together at the end."""
+    def __init__(self, num_heads, head_size):
+        super().__init__()
+
+        # Build num_heads copies of the head you already wrote.
+        self.heads = nn.ModuleList(
+            [SelfAttentionHead(head_size) for _ in range(num_heads)]
+        )
+
+        # Sticking together is not the same as mixing together.
+        # This layer lets what the heads found blend into each other.
+        self.proj = nn.Linear(n_embd, n_embd)
+
+    def forward(self, x):
+        # Each head hands back head_size numbers per token.
+        # 4 heads x 24 numbers = the 96 we started with.
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+
+        return self.proj(out)
+          </pre></div>
+          <table class="s7-table"><tr><th>Was</th><td><code>self.sa_head = SelfAttentionHead(n_embd)</code></td></tr><tr><th>Now</th><td><code>self.sa_head = MultiHeadAttention(n_head, n_embd // n_head)</code></td></tr></table><p style="margin-bottom:0;"><code>//</code> means whole-number division, so <code>96 // 4</code> is <code>24</code>.</p>
+        </div>
+
+        <h2>3. Add LayerNorm</h2>
+        <div class="info-box"><h4><i class="fas fa-route"></i> First: what is a residual connection?</h4><p>At this point, <code>x</code> holds <b>96 numbers for every token</b>. Those numbers already contain what the engine knows about the word and its position.</p><p>Attention should add useful context to that information—not throw the original away. The engine therefore sends <code>x</code> along <b>two paths</b>:</p><ol><li><b>Shortcut path:</b> keep the original <code>x</code> unchanged.</li><li><b>Working path:</b> send a copy through LayerNorm and attention to calculate new information.</li></ol><p style="margin-bottom:0;">The two paths meet at the <code>+</code> sign. This shortcut from a layer’s input to its output is the <b>residual connection</b>. The layer only has to learn the remaining change—the “residual”—that should be added.</p></div>
+        <div class="s7-compact-note"><p><b>Think of a worksheet and a sticky note:</b> the original worksheet travels along the shortcut unchanged. Attention writes a useful hint on the sticky note. The <code>+</code> attaches the hint to the original instead of replacing the worksheet.</p></div>
+        <div class="s7-residual-card"><div class="s7-residual-title"><h3><i class="fas fa-code-branch"></i> One attention layer, seen as two paths</h3><p>The model keeps its earlier knowledge and adds attention’s update.</p></div><div class="s7-residual-flow"><div class="s7-flow-node"><b>original x</b><small>word + position information</small></div><div class="s7-two-paths"><div class="s7-path"><b>Shortcut path</b><code>x</code> stays unchanged</div><div class="s7-path s7-work"><b>Working path</b><code>LayerNorm → Attention</code></div></div><div class="s7-plus">+</div><div class="s7-flow-node s7-new"><b>new x</b><small>original + useful context</small></div></div><div class="s7-code-map"><div><code>x = x + ...</code><span>The first <code>x</code> after the equals sign is the unchanged shortcut.</span></div><div><code>self.sa_head(self.ln1(x))</code><span>This is the working copy that produces the attention update.</span></div></div></div>
+        <div class="s7-three"><div class="s7-mini-card"><h4>Why keep the shortcut?</h4><p>The layer learns only a useful correction, not how to rebuild everything. If an update is unhelpful, the earlier information is still available.</p></div><div class="s7-mini-card"><h4>Why two residuals?</h4><p>Attention adds a context update. Feed-forward adds a thinking update. Each update gets its own shortcut and <code>+</code>.</p></div><div class="s7-mini-card"><h4>Why LayerNorm?</h4><p>Repeated additions can make some features huge and others tiny. LayerNorm steadies the working copy before each update.</p></div></div>
+        <p><b>Now the LayerNorm problem makes sense:</b> every block adds two updates. Stack many blocks and those numbers can drift onto very different scales. LayerNorm puts one token’s 96 features back on a workable scale before attention or feed-forward uses them.</p>
+        <div class="s7-demo"><div class="s7-demo-head"><h3><i class="fas fa-sliders"></i> Watch LayerNorm steady one token</h3><p>These bars represent a few of the token’s 96 feature numbers.</p></div><div class="s7-demo-body s7-normalise"><div><div class="s7-bars" id="norm-bars"><span class="s7-bar" style="--before:18%;--after:46%;"></span><span class="s7-bar" style="--before:92%;--after:63%;"></span><span class="s7-bar" style="--before:34%;--after:52%;"></span><span class="s7-bar" style="--before:70%;--after:58%;"></span><span class="s7-bar" style="--before:8%;--after:42%;"></span></div><p class="s7-bar-label" id="norm-label">Before: uneven features</p></div><button class="s7-demo-button" id="norm-toggle">Apply LayerNorm</button><div class="s7-mini-card"><h4>What changes?</h4><p>The average becomes about 0 and the spread about 1. Useful differences remain, but no feature shouts over all the others.</p></div></div></div>
+        <div class="activity-box"><h4><i class="fas fa-wrench"></i> Activity 2: Add LayerNorm (3 lines)</h4><p>Inside <code>PredictionEngine.__init__</code>, add:</p><div class="code-block python"><pre>self.ln1 = nn.LayerNorm(n_embd)   # tidy up before attention
+self.ln2 = nn.LayerNorm(n_embd)   # tidy up before thinking</pre></div><p>Then update these two lines in <code>forward</code>:</p><div class="code-block python"><div class="code-header">attention_engine.py — inside forward()</div><pre>
+        x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
+        x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+          </pre></div><p><b>Read the first line from the inside out:</b> <code>ln1</code> steadies a copy of <code>x</code> → the attention heads calculate an update → <code>+</code> adds that update to the untouched shortcut → <code>x =</code> stores the combined result.</p><p style="margin-bottom:0;">The second line repeats the same pattern for feed-forward. Normalising <em>before</em> each working layer is called <b>pre-norm</b>.</p></div>
+
+        <h2>4. Train the New Engine</h2>
+        <div class="activity-box"><h4><i class="fas fa-play"></i> Activity 3: Save and Train</h4><p>Change only the save name in <code>train_qa.py</code>. Keep the same data, learning rate, and 1,500 steps.</p><div class="code-block python"><div class="code-header">train_qa.py — the only change</div><pre>
+# --- Save it under a NEW name, so last session's model survives ---
+# We need both files side by side for the showdown later.
+torch.save(model.state_dict(), "qa_model_v2.pth")
+print("\nSaved qa_model_v2.pth")
+          </pre></div><div class="code-block"><div class="code-header">Terminal</div><pre>python Term_2/train_qa.py</pre></div><p style="margin-bottom:0;">Expected time: about <b>6 minutes</b>. Your final number can vary slightly. Look for a clear improvement over Session 6, not an exact match.</p></div>
+        <div class="s7-three"><div class="s7-mini-card"><h4>Same</h4><p>Data, tokenizer, learning rate, and training steps.</p></div><div class="s7-mini-card"><h4>Changed</h4><p>One head → four heads, plus two LayerNorms.</p></div><div class="s7-mini-card"><h4>Fair test</h4><p>Any measured difference comes from the engine.</p></div></div>
+
+        <h2>5. Look Inside the Heads</h2><p>If every head produced the same pattern, the extra heads would be wasted. This script asks each head which earlier word it focused on most.</p>
+        <div class="activity-box"><h4><i class="fas fa-magnifying-glass"></i> Activity 4: Create <code>see_the_heads.py</code></h4><details class="s7-reveal"><summary>Show the complete script</summary><div><div class="code-block python"><div class="code-header">see_the_heads.py</div><pre>
+import torch
+
+from data_pipeline import encode, itos
+from attention_engine import model, n_head
+
+# Load the model you just trained.
+model.load_state_dict(torch.load("qa_model_v2.pth"))
+model.eval()
+
+SENTENCE = "The magnet pulls the iron because it is magnetic"
+
+ids = encode(SENTENCE)
+words = [itos[i] for i in ids]
+
+# Running the model fills in .last_weights inside every head.
+with torch.no_grad():
+    model(torch.tensor([ids]))
+
+print("Sentence:", " ".join(words))
+print()
+print("Each column is one head. For every word, we show the word it")
+print("paid the MOST attention to.")
+print()
+
+header = f"{'word':&lt;12}" + "".join(f"head {h+1:&lt;8}" for h in range(n_head))
+print(header)
+print("-" * len(header))
+
+for pos, word in enumerate(words):
+    row = f"{word:&lt;12}"
+    for h in range(n_head):
+        wei = model.sa_head.heads[h].last_weights[0]   # (T, T)
+        best = torch.argmax(wei[pos]).item()           # who did it look at?
+        row += f"{words[best]:&lt;13}"
+    print(row)
+
+print()
+print("If every column were identical, the extra heads would be pointless.")
+              </pre></div></div></details><div class="code-block"><div class="code-header">Terminal</div><pre>python Term_2/see_the_heads.py</pre></div></div>
+        <div class="rule-callout"><h4><i class="fas fa-binoculars"></i> How to read the output</h4><p style="margin:0;">Read <b>down each head’s column</b>. Different columns mean the heads learned different patterns. Some links may look meaningful and some random; do not claim that one small head “understands grammar.”</p></div>
+
+        <h2>6. Race the Two Engines</h2>
+        <div class="activity-box"><h4><i class="fas fa-flag-checkered"></i> Activity 5: Create <code>showdown.py</code></h4><p>This loads both saved models and gives them the same questions and random seeds.</p><details class="s7-reveal"><summary>Show the complete script</summary><div><div class="code-block python"><div class="code-header">showdown.py</div><pre>
+import torch
+
+from data_pipeline import encode, decode
+
+# engine_v1.py is the copy you made BEFORE editing -- one head, no LayerNorm.
+from engine_v1 import model as model_v1
+from attention_engine import model as model_v2
+
+model_v1.load_state_dict(torch.load("qa_model.pth"))
+model_v2.load_state_dict(torch.load("qa_model_v2.pth"))
+model_v1.eval()
+model_v2.eval()
+
+QUESTIONS = [
+    "Why do kitchen fridge doors snap shut tightly on their own when you get them close?",
+    "Why do garbage recycling centers use giant magnets above their conveyor belts?",
+    "Does friction depend on surface area?",
+]
+
+
+def ask(model, question, seed):
+    torch.manual_seed(seed)          # same seed for both, so it is a fair race
+    prompt = f"&lt;|user|&gt; {question} &lt;|assistant|&gt;"
+    ids = encode(prompt)
+    out = model.generate(torch.tensor([ids]), max_new_tokens=45)[0].tolist()
+    answer = decode(out[len(ids):])
+    for tag in ("&lt;|endoftext|&gt;", "&lt;|user|&gt;", "&lt;|assistant|&gt;"):
+        answer = answer.split(tag)[0]
+    return answer.strip()
+
+
+p1 = sum(p.numel() for p in model_v1.parameters())
+p2 = sum(p.numel() for p in model_v2.parameters())
+
+print("=" * 60)
+print("SHOWDOWN: Session 6 engine  vs  Session 7 engine")
+print("=" * 60)
+print(f"v1  1 head,  no LayerNorm : {p1:,} parameters")
+print(f"v2  4 heads, LayerNorm    : {p2:,} parameters")
+print(f"difference                : {p2 - p1:,} more  ({(p2-p1)/p1*100:.1f}%)")
+
+for n, q in enumerate(QUESTIONS):
+    print("\n" + "-" * 60)
+    print(f"Q: {q}")
+    print("-" * 60)
+    print(f"v1: {ask(model_v1, q, 100 + n)}")
+    print()
+    print(f"v2: {ask(model_v2, q, 100 + n)}")
+              </pre></div></div></details><div class="code-block"><div class="code-header">Terminal</div><pre>python Term_2/showdown.py</pre></div></div>
+        <div class="s7-results" aria-label="Measured results"><div class="s7-result"><strong>1.2%</strong><span>more parameters</span><div class="s7-meter"><i style="--width:12%;--meter:#94a3b8;"></i></div></div><div class="s7-result"><strong>28%</strong><span>lower final loss (0.551 → 0.398)</span><div class="s7-meter"><i style="--width:72%;--meter:#22c55e;"></i></div></div><div class="s7-result"><strong>5.0%</strong><span>copied word-for-word (down from 8.2%)</span><div class="s7-meter"><i style="--width:50%;--meter:#8b5cf6;"></i></div></div></div>
+        <div class="info-box"><h4><i class="fas fa-scale-balanced"></i> Read both measurements</h4><p><b>Loss</b> asks, “How surprised was the model by the correct next word?” Lower is better.</p><p style="margin-bottom:0;"><b>Copying rate</b> checks whether low loss came from memorising. Here loss and copying both fell, so the upgrade is a genuine improvement. Generated answers can still wander—the model has read only 399 questions.</p></div>
+        <details class="s7-reveal"><summary>Optional evidence: full measured table</summary><div><table class="s7-table"><tr><th>Engine</th><th>Parameters</th><th>Final loss</th><th>Copied</th></tr><tr><td>1 head</td><td>842,751</td><td>0.551</td><td>8.2%</td></tr><tr><td>4 heads</td><td>852,063</td><td>0.443</td><td>2.8%</td></tr><tr class="s7-win"><td><b>4 heads + LayerNorm</b></td><td>852,447</td><td><b>0.398</b></td><td>5.0%</td></tr></table><p>The step-1,500 training printout may be higher because it averages the last 300 steps while the model is still improving. The table measures 40 fresh batches after training. Compare the same measurement between models.</p></div></details>
+
+        <h2>7. See the Finished Block</h2>
+        <div class="s7-pipeline" aria-label="Transformer block flow"><div class="s7-pipe">Token + position<small>what + where</small></div><i class="fas fa-arrow-right s7-arrow"></i><div class="s7-pipe today">LayerNorm<small>steady</small></div><i class="fas fa-arrow-right s7-arrow"></i><div class="s7-pipe today">4-head attention<small>focus</small></div><i class="fas fa-plus s7-arrow"></i><div class="s7-pipe">Residual<small>remember</small></div><i class="fas fa-arrow-right s7-arrow"></i><div class="s7-pipe today">LayerNorm<small>steady</small></div><i class="fas fa-arrow-right s7-arrow"></i><div class="s7-pipe">Feed-forward<small>think</small></div><i class="fas fa-plus s7-arrow"></i><div class="s7-pipe">Residual<small>remember</small></div></div>
+        <div class="rule-callout" style="background:rgba(34,197,94,.1);border-left-color:#22c55e;"><h4><i class="fas fa-trophy"></i> You built the whole unit</h4><p style="margin:0;">This is one complete Transformer Block. Larger language models repeat the same basic unit many times and train it on vastly more data.</p></div>
+        <details class="s7-reveal"><summary>Bonus concept: why position embeddings matter</summary><div><p>Attention compares words but does not automatically know their order. These sentences contain the same words but mean opposite things:</p><div class="s7-position-pair"><div class="s7-sentence-card"><b>the dog bit the man</b><br><span class="s7-slot">0</span><span class="s7-slot">1</span><span class="s7-slot">2</span><span class="s7-slot">3</span><span class="s7-slot">4</span></div><div class="s7-sentence-card"><b>the man bit the dog</b><br><span class="s7-slot">0</span><span class="s7-slot">1</span><span class="s7-slot">2</span><span class="s7-slot">3</span><span class="s7-slot">4</span></div></div><div class="code-block python"><pre>tok_emb = self.token_embedding_table(idx)                # what word is this?
+pos_emb = self.position_embedding_table(torch.arange(T)) # where does it sit?
+x = tok_emb + pos_emb                                    # combine both cards</pre></div><p style="margin-bottom:0;">There is nothing new to type: this code is already in your engine. The token card says <b>what</b>; the position card says <b>where</b>.</p></div></details>
+        <details class="s7-reveal"><summary>Bonus engineering lesson: famous techniques still need testing</summary><div><p><b>Top-k</b> lets generation choose only from the <code>k</code> most likely next words. On this small, over-confident model, top-k 40 and top-k 100 produced identical measured results—the discarded words already had almost no chance.</p><p><b>Temperature</b> did change the output. Lowering it to 0.6 made word pairs more sensible (92.7%) but increased copying (8.3%). Cleaner text came with more memorisation.</p><p style="margin-bottom:0;"><b>Takeaway:</b> a technique can be useful in general and useless for your current problem. Measure before you keep it.</p></div></details>
+
+        <section class="knowledge-check"><div class="check-header"><i class="fas fa-microchip"></i><h2>Mission Diagnostic: Level 2.07</h2></div><div class="mcq-container">
+          <div class="mcq-item q-purple"><p class="mcq-question">1. With <code>n_embd = 96</code> and <code>n_head = 4</code>, how many numbers does each head produce?</p><div class="mcq-options"><button class="mcq-btn" data-correct="false" data-feedback="Four heads do not each receive all 96 output dimensions.">96</button><button class="mcq-btn" data-correct="true" data-feedback="Correct! 96 divided by 4 is 24.">24</button><button class="mcq-btn" data-correct="false" data-feedback="That would multiply the embedding size instead of dividing it.">384</button></div></div>
+          <div class="mcq-item q-green"><p class="mcq-question">2. Why is <code>self.proj</code> needed after <code>torch.cat</code>?</p><div class="mcq-options"><button class="mcq-btn" data-correct="false" data-feedback="torch.cat already places the outputs side by side.">To place the outputs side by side.</button><button class="mcq-btn" data-correct="true" data-feedback="Correct! Projection mixes information across the separate head slices.">To mix the heads’ separate findings.</button><button class="mcq-btn" data-correct="false" data-feedback="Projection is 96 in and 96 out here.">To shrink the embedding.</button></div></div>
+          <div class="mcq-item q-blue"><p class="mcq-question">3. What is LayerNorm doing in this block?</p><div class="mcq-options"><button class="mcq-btn" data-correct="true" data-feedback="Correct! It keeps a token’s feature values on a workable scale.">Keeping one token’s features on a comparable scale.</button><button class="mcq-btn" data-correct="false" data-feedback="Tokenisation decides spelling and vocabulary.">Correcting misspelled words.</button><button class="mcq-btn" data-correct="false" data-feedback="LayerNorm does not choose which token comes next.">Selecting the next token.</button></div></div>
+          <div class="mcq-item q-amber"><p class="mcq-question">4. Why check copying as well as loss?</p><div class="mcq-options"><button class="mcq-btn" data-correct="false" data-feedback="Loss is useful, but it cannot distinguish learning patterns from memorising on its own.">Because loss is never useful.</button><button class="mcq-btn" data-correct="true" data-feedback="Correct! Memorisation can also create a low loss.">Because memorising the training data can also lower loss.</button><button class="mcq-btn" data-correct="false" data-feedback="The two engines can be compared because the experiment controls the other variables.">Because different models cannot be compared.</button></div></div>
+        </div></section>
+        <div class="rule-callout" style="background:rgba(99,102,241,.08);border-left-color:#6366f1;"><h4>Today’s Biggest Takeaway</h4><h2 style="margin:6px 0 0;">Several small attention heads can learn different clues—and together they complete your Transformer Block.</h2></div>
+        <section class="session-block homework-block"><h2>Homework / Extension</h2><div class="homework-item standard"><h3>Standard: Find the Best Number of Heads</h3><p>Try <code>n_head = 2</code> and <code>n_head = 8</code>. Record final loss and check whether the columns in <code>see_the_heads.py</code> still differ. Does more always mean better?</p></div><div class="homework-item advanced"><h3>Advanced: Remove Position Information</h3><p>Change <code>x = tok_emb + pos_emb</code> to <code>x = tok_emb</code>, retrain, and compare loss with the answers you read. Explain why visual inspection and measurement may disagree.</p></div><div class="homework-collapsible"><div class="homework-toggle"><span>Need Help? View Expected Results</span><i class="fas fa-chevron-down toggle-arrow"></i></div><div class="homework-content"><p><b>Head count:</b> more heads is not automatically better. Two heads get 48 dimensions each; four get 24; eight get 12. Very thin heads may lack room to learn useful patterns.</p><p><b>No position:</b> our four-head test worsened from 0.443 to 0.541 loss, even though some generated text looked smooth. Without order information, the model can produce vague but plausible-sounding phrases.</p></div></div></section>
+        <details class="collapsible-box"><summary><strong><i class="fas fa-gear"></i> Troubleshooting</strong></summary><div class="activity-box"><h5>Size mismatch loading <code>qa_model.pth</code></h5><p>Load the old weights with <code>engine_v1.py</code> and the new weights with <code>attention_engine.py</code>. Their shapes are different.</p><hr><h5><code>qa_model_v2.pth</code> not found</h5><p>Run <code>train_qa.py</code> to completion before the inspection or showdown scripts.</p><hr><h5>My loss is not exactly 0.398</h5><p>Small differences across machines are normal. Compare your new loss with your own Session 6 result.</p><hr><h5>The answers still wander</h5><p>Expected. Better attention does not add more physics knowledge; the dataset still contains only 399 questions.</p></div></details>
+      </section>
+      <div class="completion-zone"><div class="completion-card"><label class="checkbox-container"><input type="checkbox" id="session-check"><span class="checkmark"></span>I built four attention heads, added LayerNorm, inspected the heads, and compared the new engine with the old one.</label></div></div>
+      <div class="session-nav" style="display:flex;justify-content:space-between;margin-top:30px;"><a href="t2_session6.html" class="btn-secondary">Previous Session</a><button class="btn-primary" id="next-btn">Mark Complete &amp; Next <i class="fas fa-arrow-right"></i></button></div>
+    </main>
+  </div>
+  <div id="mcq-modal" class="mcq-modal"><div class="mcq-modal-content"><div id="mcq-modal-status-bar"></div><div class="mcq-modal-body"><div id="mcq-modal-icon"></div><h3 id="mcq-modal-title">Checking Logic...</h3><p id="mcq-modal-feedback"></p><button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button></div></div></div>
+  <script src="../nexus-core.js"></script><script src="../script.js"></script>
+  <script>
+    (() => {
+      const demo=document.getElementById("head-demo"),readout=document.getElementById("head-readout");
+      if(demo&&readout){const buttons=[...demo.querySelectorAll(".s7-head-btn")],tokens=[...demo.querySelectorAll(".s7-token")];const selectHead=(button)=>{buttons.forEach(item=>item.setAttribute("aria-pressed",String(item===button)));tokens.forEach(token=>token.classList.toggle("is-focus",token.dataset.token===button.dataset.focus));demo.style.setProperty("--head-colour",button.dataset.colour);demo.style.setProperty("--head-soft",button.dataset.soft);readout.textContent=button.dataset.message};buttons.forEach(button=>button.addEventListener("click",()=>selectHead(button)));selectHead(buttons[0])}
+      const normButton=document.getElementById("norm-toggle"),normBars=document.getElementById("norm-bars"),normLabel=document.getElementById("norm-label");
+      if(normButton&&normBars&&normLabel){normButton.addEventListener("click",()=>{const normal=normBars.classList.toggle("is-normal");normButton.textContent=normal?"Reset numbers":"Apply LayerNorm";normLabel.textContent=normal?"After: balanced, not identical":"Before: uneven features"})}
+    })();
+  </script>
+</body>
+</html>

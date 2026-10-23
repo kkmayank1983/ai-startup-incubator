@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | Context Windows</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="page-session" data-current-session="t2_s4">
+    <nav class="navbar">
+      <a href="../index.html" class="site-logo">
+        <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status">Status: <strong>AI Architect</strong></span>
+        <a href="term2.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+    
+
+        <!-- TERM 2 ACTIVE -->
+        <div class="sidebar-section" data-sidebar-term="2">
+          <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+            <span>TERM 2: THE BRAIN</span>
+            <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+          </h3>
+          <ul style="display: block;">
+            <li data-session-id="t2_s1"><a href="t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li>
+            <li data-session-id="t2_s2"><a href="t2_session2.html"><i class="fas fa-font"></i> S2: The Encoding Pipeline</a></li>
+            <li data-session-id="t2_s3"><a href="t2_session3.html"><i class="fas fa-dice"></i> S3: The First Prediction Engine</a></li>
+            <li data-session-id="t2_s4" class="active"><a href="t2_session4.html"><i class="fas fa-window-maximize"></i> S4: Context Windows & Sequence Processing</a></li>
+            <li data-session-id="t2_s5"><a href="t2_session5.html"><i class="fas fa-highlighter"></i> S5: Self-Attention Mechanism</a></li>
+            <li data-session-id="t2_s6"><a href="t2_session6.html"><i class="fas fa-dumbbell"></i> S6: Parameter Optimization</a></li>
+            <li data-session-id="t2_s7"><a href="t2_session7.html"><i class="fas fa-save"></i> S7: Weight Persistence</a></li>
+            <li data-session-id="t2_s8"><a href="t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+          </ul>
+        </div>
+
+       
+      </aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 2 / Session 4 / Context Windows & Sequence Processing
+        </nav>
+
+        <section id="lesson-header">
+          <h1>Session 4: The Context Window</h1>
+          <p class="lead">
+            Session 3's AI could only see one character at a time. Today we give it a memory — and then we run an experiment to prove it matters.
+          </p>
+          <div class="stats-bar">
+            <span><i class="far fa-clock"></i> 60 Minutes</span>
+            <span><i class="fas fa-signal"></i> Level: Junior Architect</span>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+            <p>
+              Load a real book as training data, cut it into <strong>context windows</strong>, then train
+              the same AI three times — with a memory of 1, 2 and 4 characters — and read the
+              difference in what it writes.
+            </p>
+          </div>
+        </section>
+
+        <section class="lesson-body">
+
+          <!-- ============================================================
+               0. QUICK RECAP
+               ============================================================ -->
+          <h2>0. Quick Recap: Where We Are</h2>
+
+          <div class="tool-info-box">
+            <p>Your AI is learning to write by guessing one character at a time.</p>
+            <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1px solid #cbd5e1; line-height:2.1;">
+              <b>Session 2 — we taught it the alphabet.</b> Every character became a number.<br>
+              <b>Session 3 — we taught it to guess.</b> It looks at <u>one</u> character and guesses the next.<br>
+              <b style="color:#0ea5e9;">Session 4 — today — we give it a memory.</b> Now it can look back at many.
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h4>📙 From Session 2 — the Tokenizer (you will paste this again today)</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px; text-align:left; width:24%;">Piece</th>
+                <th style="border:1px solid #cbd5e1; padding:8px; text-align:left;">What it does</th>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>chars</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">A list of every different character in the text.</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>stoi</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><b>S</b>tring <b>to</b> <b>I</b>nteger: <code>"F"</code> → <code>18</code></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>itos</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">The same thing backwards: <code>18</code> → <code>"F"</code></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>encode()</code><br><code>decode()</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">Do it to a whole sentence.<br><code>encode("First")</code> → <code>[18, 47, 56, 57, 58]</code></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="rule-callout">
+            <h4>📘 From Session 3 — and the problem it left behind</h4>
+            <p>
+              Session 3 built the guesser: a <b>Score Table</b> of opinions, <b>softmax</b> to turn
+              those into percentages, and a <b>weighted dice roll</b> to pick the next character.
+            </p>
+            <p>
+              But it could only ever see <strong>one character</strong>. Shown an <code>"h"</code>,
+              it had no idea whether the word so far was <code>"T-h"</code> or <code>"s-h"</code>.
+            </p>
+            <p style="margin-bottom:0;">
+              <strong>That is the one problem we fix today — and then we prove it worked.</strong>
+            </p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               1. THE PROBLEM
+               ============================================================ -->
+          <h2>1. Why One Letter Is Never Enough</h2>
+
+          <div class="tool-info-box">
+            <p>Try it yourself. What letter comes next?</p>
+            <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1px solid #cbd5e1; font-family:monospace; font-size:1.15em; line-height:2.3;">
+              <b>h</b> &nbsp;→&nbsp; next letter? &nbsp;<span style="color:#b91c1c;">No idea. Could be anything.</span><br>
+              <b>he</b> &nbsp;→&nbsp; next letter? &nbsp;<span style="color:#d97706;">Maybe "l"... or "r"... or "y".</span><br>
+              <b>hel</b> &nbsp;→&nbsp; next letter? &nbsp;<span style="color:#65a30d;">Probably "l".</span><br>
+              <b>hell</b> &nbsp;→&nbsp; next letter? &nbsp;<span style="color:#15803d;"><b>Almost certainly "o".</b></span>
+            </div>
+            <p style="margin-top:15px;">
+              Every extra letter made your guess better. Nothing about you got smarter —
+              you just got <strong>more to go on</strong>.
+            </p>
+            <p style="margin-bottom:0;">
+              The number of characters the AI is allowed to look back at is called the
+              <strong>context window</strong>. In code we call it <code>block_size</code>.
+              Session 3's AI had a context window of <b>1</b>. Today we make it bigger,
+              and see what that does.
+            </p>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-flag-checkered"></i> Today's plan — four steps</h4>
+            <ol style="line-height:2; margin-bottom:0;">
+              <li><b>Load Shakespeare</b> — a real 1 MB book as training data.</li>
+              <li><b>Cut it into context windows</b> — and see the practice questions inside them.</li>
+              <li><b>Run the experiment</b> — train the same AI with a context window of 1, then 2, then 4, and read what it writes.</li>
+              <li><b>Talk to it</b> — type your own text and watch your AI respond.</li>
+            </ol>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               2. ACTIVITY 1
+               ============================================================ -->
+          <h2>2. Load the Training Data</h2>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 1: Load Shakespeare</h4>
+
+            <ol>
+              <li>Open <strong>VS Code</strong> and your <strong>Term_2</strong> folder.</li>
+              <li>
+                Activate your Virtual Environment in the terminal:<br />
+                <code>venv\Scripts\activate</code> (Windows) &nbsp;·&nbsp;
+                <code>source venv/bin/activate</code> (Mac/Linux)
+              </li>
+              <li>Put <code>input.txt</code> (from your instructor) inside <code>Term_2</code>. This is our book — about a million characters of Shakespeare.</li>
+              <li>Create a new file called <code>data_pipeline.py</code> and copy in the code below.</li>
+            </ol>
+
+            <div class="code-block python">
+              <div class="code-header">data_pipeline.py</div>
+              <pre>
+import os
+import torch
+
+# --- Open the book ---
+current_dir = os.path.dirname(__file__)
+input_file = os.path.join(current_dir, "input.txt")
+
+with open(input_file, 'r', encoding='utf-8') as f:
+    text = f.read()
+
+# --- The tokenizer from Session 2 ---
+chars = sorted(list(set(text)))
+stoi = { ch:i for i,ch in enumerate(chars) }
+encode = lambda s: [stoi[c] for c in s]
+itos = { i:ch for i,ch in enumerate(chars) }
+
+def decode(ids):
+    return ''.join([itos[i] for i in ids])
+
+vocab_size = len(chars)      # how many different characters exist
+
+# --- Turn the WHOLE book into numbers ---
+data = torch.tensor(encode(text), dtype=torch.long)
+
+print(f"Dataset Size: {len(data)} tokens.")
+print(f"Different characters: {vocab_size}")
+print(f"First 10 tokens: {data[:10]}")
+print("Decoded:", decode(data[:10].tolist()))
+              </pre>
+            </div>
+
+            <figure class="screenshot">
+              <img src="../images/Session 4/Activity 1_code.png" alt="data_pipeline.py in VS Code" />
+            </figure>
+
+            <ol start="5">
+              <li>Save, then run it:
+                <pre><code>python Term_2/data_pipeline.py</code></pre>
+              </li>
+            </ol>
+
+            <div class="code-block">
+              <div class="code-header">Expected output</div>
+              <pre>
+Dataset Size: 1115394 tokens.
+Different characters: 65
+First 10 tokens: tensor([18, 47, 56, 57, 58,  1, 15, 47, 58, 47])
+Decoded: First Citi
+              </pre>
+            </div>
+
+            <figure class="screenshot">
+              <img src="../images/Session 4/Activity 1_output.png" alt="Activity 1 output in the terminal" />
+            </figure>
+
+            <p>
+              Those 10 numbers <b>are</b> the first 10 characters of the book.
+              <code>18</code> is <code>"F"</code>, <code>47</code> is <code>"i"</code>, and so on.
+              Your AI never sees letters — only numbers.
+            </p>
+            <p style="margin-bottom:0;">
+              <strong>65</strong> is your AI's entire alphabet. Every character it can ever read or write.
+            </p>
+          </div>
+
+          <details class="collapsible-box">
+            <summary><strong>🔍 Stuck on the tokenizer code? Open this for a line-by-line explanation</strong></summary>
+            <div class="activity-box">
+              <table style="width:100%; border-collapse:collapse;">
+                <tr style="background:#f1f5f9;">
+                  <th style="border:1px solid #cbd5e1; padding:8px; text-align:left; width:42%;">The line</th>
+                  <th style="border:1px solid #cbd5e1; padding:8px; text-align:left;">What it does</th>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #cbd5e1; padding:8px;"><code>chars = sorted(list(set(text)))</code></td>
+                  <td style="border:1px solid #cbd5e1; padding:8px;">
+                    Read it <b>inside-out</b>. <code>set()</code> throws away duplicates
+                    (1 million characters → 65). <code>list()</code> puts them in a list.
+                    <code>sorted()</code> fixes the order so everyone gets the same numbers.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #cbd5e1; padding:8px;"><code>stoi = { ch:i for i,ch in enumerate(chars) }</code></td>
+                  <td style="border:1px solid #cbd5e1; padding:8px;">
+                    <code>enumerate</code> hands you a position and a character:
+                    <code>(0,'\n')</code>, <code>(1,' ')</code>, <code>(2,'!')</code>…
+                    We save each as <code>character → number</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #cbd5e1; padding:8px;"><code>encode = lambda s: [stoi[c] for c in s]</code></td>
+                  <td style="border:1px solid #cbd5e1; padding:8px;">
+                    <code>lambda</code> is a short way to write a small function. This one says:
+                    <i>for every character, look up its number</i>.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #cbd5e1; padding:8px;"><code>itos = { i:ch for i,ch in enumerate(chars) }</code></td>
+                  <td style="border:1px solid #cbd5e1; padding:8px;">
+                    Same as <code>stoi</code>, stored the other way round: <code>number → character</code>.
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </details>
+
+          <hr />
+
+          <!-- ============================================================
+               3. ACTIVITY 2
+               ============================================================ -->
+          <h2>3. Cut the Book Into Context Windows</h2>
+
+          <div class="info-box">
+            <p>
+              We cannot hand the AI a million characters at once. So we take a small chunk —
+              <code>block_size</code> characters long — and turn it into a practice question.
+            </p>
+            <p style="margin-bottom:0;">
+              The clever bit: <strong>we never have to write the answers.</strong> They are already
+              in the book, one step to the right.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 2: The Question and the Answer</h4>
+
+            <ol>
+              <li>Keep everything in <code>data_pipeline.py</code>. Add this at the bottom:</li>
+            </ol>
+
+            <div class="code-block python">
+              <div class="code-header">Add to data_pipeline.py</div>
+              <pre>
+block_size = 8
+
+x = data[:block_size]         # the QUESTION  (characters 0 to 7)
+y = data[1:block_size+1]      # the ANSWER    (characters 1 to 8)
+
+print("Input IDs  :", x.tolist())
+print("Input Text :", decode(x.tolist()))
+print("Target IDs :", y.tolist())
+print("Target Text:", decode(y.tolist()))
+              </pre>
+            </div>
+
+            <figure class="screenshot">
+              <img src="../images/Session 4/Activity 2_code.png" alt="Activity 2 code in VS Code" />
+            </figure>
+
+            <ol start="2">
+              <li>Save and run again.</li>
+            </ol>
+
+            <div class="code-block">
+              <div class="code-header">Expected output</div>
+              <pre>
+Input IDs  : [18, 47, 56, 57, 58, 1, 15, 47]
+Input Text : First Ci
+Target IDs : [47, 56, 57, 58, 1, 15, 47, 58]
+Target Text: irst Cit
+              </pre>
+            </div>
+
+            <figure class="screenshot">
+              <img src="../images/Session 4/Activity 2_output.png" alt="Activity 2 output showing input and target" />
+            </figure>
+
+            <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #cbd5e1; font-family:monospace; font-size:1.15em; line-height:2; margin-top:15px;">
+              x (question): &nbsp;F &nbsp;i &nbsp;r &nbsp;s &nbsp;t &nbsp;␣ &nbsp;C &nbsp;i<br>
+              y (answer)&nbsp;&nbsp;: &nbsp;i &nbsp;r &nbsp;s &nbsp;t &nbsp;␣ &nbsp;C &nbsp;i &nbsp;t
+            </div>
+            <p style="margin-top:15px;">
+              <strong>Same text, slid over by one.</strong> Read it column by column:
+              <i>after "F" comes "i"</i>, <i>after "i" comes "r"</i>, <i>after "t" comes a space</i>.
+            </p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-key"></i> The bit that surprises everyone</h4>
+            <p>
+              That block of 8 characters is not <b>one</b> practice question.
+              It is <strong>eight</strong>, hiding inside each other:
+            </p>
+            <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #cbd5e1; font-family:monospace; line-height:2.1;">
+              Show it <b>"F"</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ guess <b>"i"</b><br>
+              Show it <b>"Fi"</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ guess <b>"r"</b><br>
+              Show it <b>"Fir"</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ guess <b>"s"</b><br>
+              Show it <b>"Firs"</b> &nbsp;&nbsp;&nbsp;&nbsp;→ guess <b>"t"</b><br>
+              Show it <b>"First"</b> &nbsp;&nbsp;&nbsp;→ guess <b>a space</b>
+            </div>
+            <p style="margin-top:15px; margin-bottom:0;">
+              Notice each round gives the AI <b>one more character of history</b>.
+              That is the context window growing in front of your eyes.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 2b: See All 8 Questions</h4>
+
+            <p>Add this loop at the bottom of <code>data_pipeline.py</code> and run it:</p>
+
+            <div class="code-block python">
+              <div class="code-header">Add to data_pipeline.py</div>
+              <pre>
+for t in range(block_size):
+
+    context = x[:t+1]     # everything the AI can see this round
+    target = y[t]         # the one character it must guess
+
+    print("Context:", repr(decode(context.tolist())), " ->  Target:", repr(decode([target.item()])))
+              </pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">Expected output</div>
+              <pre>
+Context: 'F'  -&gt;  Target: 'i'
+Context: 'Fi'  -&gt;  Target: 'r'
+Context: 'Fir'  -&gt;  Target: 's'
+Context: 'Firs'  -&gt;  Target: 't'
+Context: 'First'  -&gt;  Target: ' '
+Context: 'First '  -&gt;  Target: 'C'
+Context: 'First C'  -&gt;  Target: 'i'
+Context: 'First Ci'  -&gt;  Target: 't'
+              </pre>
+            </div>
+
+            <!-- Screenshot omitted: "Session 4/Activity 3_output.png" shows the older
+                 multi-line print format. Retake against the compact print above if wanted. -->
+
+            <p>
+              <b>Look at round 5.</b> Having seen <code>"First"</code>, the correct answer is a space.
+              Nobody told the AI that "First" is a whole word — but show it that pattern enough times
+              and it will work it out.
+            </p>
+            <p style="margin-bottom:0;">
+              <code>x[:t+1]</code> means "the first <b>t+1</b> characters". The <code>+1</code> is there
+              because <code>t</code> starts at <b>0</b>, and we want 1 character on the first round, not zero.
+            </p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               4. THE EXPERIMENT
+               ============================================================ -->
+          <h2>4. The Experiment: Does a Bigger Context Window Actually Help?</h2>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-flask"></i> This is the whole point of today</h4>
+            <p>
+              We have been <i>told</i> that more context makes better predictions. Now we prove it.
+            </p>
+            <p style="margin-bottom:0;">
+              You will train the <b>same AI</b>, on the <b>same book</b>, for the <b>same amount of time</b> —
+              three times. The <strong>only</strong> difference will be how far back it is allowed to look.
+              Then you read what it writes.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 3: Train It Three Times</h4>
+
+            <ol>
+              <li>Create a new file called <code>context_experiment.py</code> in <code>Term_2</code>.</li>
+              <li>Copy in the code below. <b>You do not need to understand every line</b> — we build all of this properly in Sessions 5 and 6. Today you are running an experiment.</li>
+            </ol>
+
+            <div class="code-block python">
+              <div class="code-header">context_experiment.py</div>
+              <pre>
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from data_pipeline import data, vocab_size, decode
+
+# =========================================================
+#  THE ONLY LINE YOU CHANGE.  Run with 1, then 2, then 4.
+# =========================================================
+CONTEXT_SIZE = 1
+# =========================================================
+
+
+class ContextModel(nn.Module):
+    """Looks at CONTEXT_SIZE characters and guesses the next one."""
+
+    def __init__(self):
+        super().__init__()
+        self.embed  = nn.Embedding(vocab_size, 24)
+        self.hidden = nn.Linear(CONTEXT_SIZE * 24, 128)
+        self.output = nn.Linear(128, vocab_size)
+
+    def forward(self, idx):
+        e = self.embed(idx)              # each character becomes 24 numbers
+        e = e.view(idx.shape[0], -1)     # lay the whole window out in one row
+        h = torch.tanh(self.hidden(e))   # think about them all together
+        return self.output(h)            # score every possible next character
+
+
+torch.manual_seed(1337)
+model = ContextModel()
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+
+print(f"Training with CONTEXT_SIZE = {CONTEXT_SIZE} ...")
+
+running_loss = 0
+average_loss = 0
+
+for step in range(1, 6001):
+
+    # Grab 64 random windows from the book
+    ix = torch.randint(0, len(data) - CONTEXT_SIZE - 1, (64,))
+    x = torch.stack([data[i : i + CONTEXT_SIZE] for i in ix])   # the context
+    y = torch.stack([data[i + CONTEXT_SIZE] for i in ix])       # the next character
+
+    loss = F.cross_entropy(model(x), y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    running_loss += loss.item()
+
+    if step % 1500 == 0:
+        average_loss = running_loss / 1500
+        print(f"  step {step:5d} | average loss {average_loss:.3f}")
+        running_loss = 0
+
+print(f"\n>>> FINAL LOSS with CONTEXT_SIZE = {CONTEXT_SIZE}  is  {average_loss:.3f}")
+
+
+# --- Now let it write ---
+print(f"\n===== SHAKESPEARE, WRITTEN WITH CONTEXT_SIZE = {CONTEXT_SIZE} =====\n")
+
+window = [0] * CONTEXT_SIZE
+result = []
+
+for _ in range(300):
+    xb = torch.tensor([window[-CONTEXT_SIZE:]], dtype=torch.long)
+    probs = F.softmax(model(xb), dim=-1)
+    next_char = torch.multinomial(probs, num_samples=1).item()
+    result.append(next_char)
+    window.append(next_char)
+
+print(decode(result))
+              </pre>
+            </div>
+          </div>
+
+          <div class="tool-info-box" style="background: rgba(14, 165, 233, 0.08); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-project-diagram"></i> What is this file actually doing?</h4>
+
+            <p>
+              Before you run it, let's follow the file from top to bottom. It does
+              <strong>two completely separate jobs</strong>, one after the other.
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:20px;">
+
+              <!-- ================= PHASE 1 ================= -->
+              <div style="background:#e0f2fe; border:2px solid #0ea5e9; border-radius:10px; padding:15px;">
+                <div style="text-align:center; font-weight:bold; color:#075985; font-size:1.05em; margin-bottom:12px;">
+                  PHASE 1 — LEARNING<br>
+                  <span style="font-weight:normal; font-size:0.85em;">(takes ~30 seconds)</span>
+                </div>
+
+                <div style="background:#fef3c7; border:1px solid #f59e0b; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  <b>input.txt</b><br>1,115,394 characters<br>of Shakespeare
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#0369a1;">↓</div>
+
+                <div style="background:#fff; border:1px solid #7dd3fc; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Open the book at<br><b>64 random spots</b>
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#0369a1;">↓</div>
+
+                <div style="background:#fff; border:1px solid #7dd3fc; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Model <b>guesses</b><br>the next character
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#0369a1;">↓</div>
+
+                <div style="background:#fff; border:1px solid #7dd3fc; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Compare the guess with<br>the <b>real</b> next character
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#0369a1;">↓</div>
+
+                <div style="background:#fff; border:1px solid #7dd3fc; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  <b>Nudge</b> the model's numbers<br>so it is less wrong
+                </div>
+
+                <div style="margin-top:12px; background:#0ea5e9; color:#fff; border-radius:6px; padding:8px; text-align:center; font-size:0.9em; font-weight:bold;">
+                  ⟳ repeat 6,000 times
+                </div>
+              </div>
+
+              <!-- ================= PHASE 2 ================= -->
+              <div style="background:#dcfce7; border:2px solid #16a34a; border-radius:10px; padding:15px;">
+                <div style="text-align:center; font-weight:bold; color:#166534; font-size:1.05em; margin-bottom:12px;">
+                  PHASE 2 — WRITING<br>
+                  <span style="font-weight:normal; font-size:0.85em;">(takes ~1 second)</span>
+                </div>
+
+                <div style="background:#fee2e2; border:2px dashed #ef4444; border-radius:6px; padding:10px; text-align:center; font-size:0.9em; color:#b91c1c;">
+                  <b>input.txt is CLOSED</b><br>Not used at all here
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#15803d;">↓</div>
+
+                <div style="background:#fff; border:1px solid #86efac; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Start with an<br><b>empty window</b>
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#15803d;">↓</div>
+
+                <div style="background:#fff; border:1px solid #86efac; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Model <b>guesses</b><br>the next character
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#15803d;">↓</div>
+
+                <div style="background:#fff; border:1px solid #86efac; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  <b>Add</b> that character<br>to the window
+                </div>
+                <div style="text-align:center; font-size:1.5em; color:#15803d;">↓</div>
+
+                <div style="background:#fff; border:1px solid #86efac; border-radius:6px; padding:10px; text-align:center; font-size:0.9em;">
+                  Slide the window along<br>and guess again
+                </div>
+
+                <div style="margin-top:12px; background:#16a34a; color:#fff; border-radius:6px; padding:8px; text-align:center; font-size:0.9em; font-weight:bold;">
+                  ⟳ repeat 300 times
+                </div>
+              </div>
+            </div>
+
+            <p style="margin-top:20px;">
+              <strong>The most important thing on this page:</strong> when your AI writes,
+              <u>it is not looking at <code>input.txt</code> at all</u>. The book is only used in
+              Phase 1, to set the model's numbers. In Phase 2 the book is shut and the AI writes
+              from what it learned.
+            </p>
+          </div>
+
+          <div class="info-box">
+            <h4>🔬 Zoom in: what ONE training example looks like</h4>
+
+            <p>
+              Step 1 of Phase 1 says "open the book at a random spot". Here is what that means,
+              with <code>CONTEXT_SIZE = 4</code>:
+            </p>
+
+            <div style="overflow-x:auto;">
+              <pre style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:18px; line-height:1.8;">
+input.txt   ├────────────────────────────────────────────────┤   1,115,394 characters
+                              ▲
+                        a random spot
+                              │
+                    ┌─────────┴─────────┐
+                    │  t   h   e   ␣    │   c        &lt;-- ONE training example
+                    └───────────────────┘   ▲
+                       the CONTEXT (x)      │
+                       4 characters      the ANSWER (y)
+                                         1 character
+              </pre>
+            </div>
+
+            <p>
+              The AI is shown <code>"the "</code> and has to guess <code>"c"</code>.
+              It is <b>never told the answer in advance</b> — it guesses first, then finds out.
+            </p>
+            <p style="margin-bottom:0;">
+              That is all a training example is. The code does 64 of these at once, 6,000 times over.
+            </p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-calculator"></i> So how much of the book actually gets used?</h4>
+
+            <p>Let's do the arithmetic — it is simpler than it looks.</p>
+
+            <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:18px; font-family:monospace; line-height:2;">
+              6,000 steps &nbsp;×&nbsp; 64 windows each &nbsp;=&nbsp; <b>384,000 training examples</b><br>
+              384,000 examples &nbsp;×&nbsp; 5 characters each &nbsp;=&nbsp; <b>1,920,000 characters read</b>
+            </div>
+
+            <p style="margin-top:15px;">
+              The book is 1,115,394 characters long. So your AI reads
+              <strong>about 1.7 times the whole book</strong> — but never front-to-back.
+              It reads it as <b>384,000 tiny 5-character snippets</b>, grabbed at random from
+              everywhere in the text.
+            </p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px;">CONTEXT_SIZE</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">Characters per example</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">Total characters read</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">How many times the book</th>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1 + 1 = 2</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">768,000</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">0.7 ×</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;">2</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">2 + 1 = 3</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1,152,000</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1.0 ×</td>
+              </tr>
+              <tr style="background:#dcfce7;">
+                <td style="border:1px solid #cbd5e1; padding:8px;">4</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">4 + 1 = 5</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1,920,000</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">1.7 ×</td>
+              </tr>
+            </table>
+
+            <p style="margin-top:15px; margin-bottom:0;">
+              This is a real reason bigger context windows cost more: the same 6,000 steps
+              force the computer to read <b>more of the book</b> every single step.
+            </p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-compress-arrows-alt"></i> It cannot be copying — here's the proof</h4>
+
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:15px; align-items:center; text-align:center; margin:15px 0;">
+              <div style="background:#fef3c7; border:1px solid #f59e0b; border-radius:8px; padding:15px;">
+                <div style="font-size:1.5em; font-weight:bold; color:#92400e;">1,115,394</div>
+                characters of Shakespeare go IN
+              </div>
+              <div style="font-size:2em; color:#64748b;">→</div>
+              <div style="background:#dcfce7; border:1px solid #16a34a; border-radius:8px; padding:15px;">
+                <div style="font-size:1.5em; font-weight:bold; color:#166534;">22,361</div>
+                numbers come OUT
+              </div>
+            </div>
+
+            <p>
+              Everything your AI learned is squeezed into about <b>22,000 numbers</b> — roughly
+              <b>50 times smaller</b> than the book. There is nowhere to hide a copy of Shakespeare
+              in there.
+            </p>
+            <p style="margin-bottom:0;">
+              So it cannot memorise and replay the text. All it can store are <b>patterns</b>:
+              which characters tend to follow which. That is why the output looks like Shakespeare
+              without being any actual line from the play.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 3 continued: Now Run It Three Times</h4>
+
+            <ol start="3">
+              <li>
+                Run it three times. Each run takes about <b>30 seconds</b>.
+                Change <b>only</b> the <code>CONTEXT_SIZE</code> line between runs:
+                <pre><code>python Term_2/context_experiment.py</code></pre>
+              </li>
+              <li><b>Write the final loss and a line of its writing into the table below, each time.</b></li>
+            </ol>
+
+            <p><strong>Each run looks like this on screen:</strong></p>
+            <div class="code-block">
+              <div class="code-header">Terminal — the CONTEXT_SIZE = 1 run</div>
+              <pre>
+Training with CONTEXT_SIZE = 1 ...
+  step  1500 | average loss 2.689
+  step  3000 | average loss 2.528
+  step  4500 | average loss 2.511
+  step  6000 | average loss 2.500
+
+&gt;&gt;&gt; FINAL LOSS with CONTEXT_SIZE = 1  is  2.500
+              </pre>
+            </div>
+            <p>
+              <b>Loss</b> is simply "how wrong the AI is" — lower is better. It is the number
+              you will compare between your three runs. (We build it properly in Session 5.)
+            </p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:15px;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px; width:18%;">CONTEXT_SIZE</th>
+                <th style="border:1px solid #cbd5e1; padding:8px; width:18%;">Final loss</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">What the writing looks like</th>
+              </tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;"><b>1</b></td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;"><b>2</b></td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;"><b>4</b></td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td><td style="border:1px solid #cbd5e1; padding:8px;">&nbsp;</td></tr>
+            </table>
+          </div>
+
+          <div class="info-box">
+            <h4>🔍 Here is what we got — compare it with yours</h4>
+            <p>
+              Because the script sets <code>torch.manual_seed(1337)</code>, everyone starts from the
+              same random numbers — so your output should look <b>very close to this</b>, possibly
+              identical. If it is wildly different, check you copied the code exactly.
+            </p>
+
+            <div style="background:#fee2e2; padding:15px; border-radius:8px; border:1px solid #fecaca; margin-bottom:15px;">
+              <strong style="color:#b91c1c;">CONTEXT_SIZE = 1 &nbsp;·&nbsp; final loss ≈ 2.500</strong>
+              <pre style="white-space:pre-wrap; font-size:0.85em; margin-top:10px; background:transparent; border:none;">go t heik
+S: the to us s thod bost an G:
+Tondrs!
+
+BUCI ms, ce, ccoody
+HI:
+
+chea nan iell te s t&#x27;d ch y ntoofr, had wan crathandeeasschy
+V:
+AUSThe wirs; selderitheau bl ishhim, hicer fare r
+
+TENGLO: I:
+Therer, binouricird
+IOUCEw she s way, fre f&#x27;d ot oustow frkince&#x27; an EDULorin an sis airsthethope in</pre>
+              <b>Verdict:</b> letters and spaces, but hardly any real words. It only ever sees one character, so it can never know which word it is in the middle of.
+            </div>
+
+            <div style="background:#fef9c3; padding:15px; border-radius:8px; border:1px solid #fde68a; margin-bottom:15px;">
+              <strong style="color:#a16207;">CONTEXT_SIZE = 2 &nbsp;·&nbsp; final loss ≈ 2.099</strong>
+              <pre style="white-space:pre-wrap; font-size:0.85em; margin-top:10px; background:transparent; border:none;">DUKE wur nw; oe you bed&#x27;t itagince ter,
+Whe se.
+
+RI:
+That ton, my ancas int alceng swplaslempy ber ENENESTEND
+ALINDYSAS:
+HRIETWA pas whaver gains, vartibionguay some so fat ten yes sont wer rand, spes&#x27;, Hers nestrathithos benciot beres, I mathavebenou limes calt, ODEYSENTAULO:
+Se
+con ead wolf so iti</pre>
+              <b>Verdict:</b> short real words start appearing. Just one extra character of memory made a big difference.
+            </div>
+
+            <div style="background:#dcfce7; padding:15px; border-radius:8px; border:1px solid #bbf7d0;">
+              <strong style="color:#15803d;">CONTEXT_SIZE = 4 &nbsp;·&nbsp; final loss ≈ 1.932</strong>
+              <pre style="white-space:pre-wrap; font-size:0.85em; margin-top:10px; background:transparent; border:none;">MERRETHARIONTELSAB:
+Hith:
+Whow, whis is that hore from of deciom-cond
+But as you.
+
+MEONELLAMant, bece, broRe.
+I have apbe, my cour grout; apive to yad not sorn that and give?
+
+HALe were my prond geeasue that I speachimy wencwe poost me so stoul welt morcecunce mored:
+What to, gire wering.
+
+KANGLARI:</pre>
+              <b>Verdict:</b> plenty of real English words, and the NAME-and-colon layout of a Shakespeare play.
+            </div>
+
+            <p style="margin-top:15px; margin-bottom:0;">
+              The loss went <b>down</b> every time, and the writing got <b>better</b> every time.
+              Same AI. Same book. Same 6,000 training steps. Only the memory changed.
+            </p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-star"></i> What you just proved</h4>
+            <p>
+              You changed <strong>one number</strong>. You did not make the AI bigger, or smarter,
+              or train it for longer. You did not give it a dictionary or a grammar rule.
+            </p>
+            <p>
+              You only let it <strong>look further back</strong> — and the writing got better.
+            </p>
+            <p style="margin-bottom:0;">
+              That is the context window. It is why "how much can this AI remember?" is one of the
+              first questions engineers ask about any language model.
+            </p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               5. THE COST
+               ============================================================ -->
+          <h2>5. So Why Not Use a Massive Context Window?</h2>
+
+          <div class="info-box">
+            <p>
+              Fair question. If 8 beats 1, why not 1,000,000 and be done with it?
+            </p>
+            <p style="margin-bottom:0;">
+              Let's calculate the cost instead of guessing. To work out which characters matter, the AI
+              has to compare <strong>every character in its memory with every other one</strong>
+              (you build exactly that in Session 5). So 8 characters means 8 × 8 comparisons.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Mini Activity: Calculate the Real Cost</h4>
+            <p>Create <code>memory_cost.py</code>, paste this in, and run it. It finishes instantly.</p>
+
+            <div class="code-block python">
+              <div class="code-header">memory_cost.py</div>
+              <pre>
+for block_size in [8, 64, 256, 2048, 1000000]:
+
+    comparisons = block_size * block_size
+    gigabytes = comparisons * 4 / 1_000_000_000
+
+    print(f"block_size = {block_size:>9,}  ->  {comparisons:>19,} comparisons  =  {gigabytes:>12,.4f} GB")
+              </pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">Output</div>
+              <pre>
+block_size =         8  -&gt;                   64 comparisons  =        0.0000 GB
+block_size =        64  -&gt;                4,096 comparisons  =        0.0000 GB
+block_size =       256  -&gt;               65,536 comparisons  =        0.0003 GB
+block_size =     2,048  -&gt;            4,194,304 comparisons  =        0.0168 GB
+block_size = 1,000,000  -&gt;    1,000,000,000,000 comparisons  =    4,000.0000 GB
+              </pre>
+            </div>
+
+            <p>
+              <b>4,000 GB = 4 terabytes</b> — for one chunk of text. A good laptop has 16 GB.
+              You would need about <b>250 laptops</b> to handle a single sentence.
+            </p>
+            <p style="margin-bottom:0;">
+              Notice the shape of it: double the context window and the cost goes up
+              <b>four times</b>, not two. That is why bigger context windows are a headline
+              feature companies charge more for.
+            </p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               6. TALK TO YOUR AI
+               ============================================================ -->
+          <h2>6. Talk to Your AI</h2>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-hand-paper"></i> Read this before you get excited</h4>
+            <p>
+              You are about to type into an AI that <b>you built from nothing</b>. That is genuinely
+              worth being proud of. But be clear about what you have made:
+            </p>
+            <p style="margin-bottom:0;">
+              <strong>It will not answer your questions.</strong> It has never seen a question and an
+              answer. It has only ever done one thing — look at
+              <code>CONTEXT_SIZE</code> characters and guess the next one. So it will take whatever
+              you type and <b>continue it in the style of Shakespeare</b>. That is the whole trick,
+              and watching it fail at questions teaches you more than watching it succeed.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 4: Give It Something to Continue</h4>
+
+            <ol>
+              <li>
+                Open <code>context_experiment.py</code> and set
+                <code>CONTEXT_SIZE = 4</code> (your best model). Save it.
+              </li>
+              <li>Create a new file called <code>talk_to_your_ai.py</code> and copy in the code below.</li>
+            </ol>
+
+            <div class="code-block python">
+              <div class="code-header">talk_to_your_ai.py</div>
+              <pre>
+import torch
+import torch.nn.functional as F
+
+# This runs context_experiment.py first, so your AI trains before you talk to it.
+from context_experiment import model, CONTEXT_SIZE
+from data_pipeline import stoi, encode, decode
+
+print("\n" + "=" * 55)
+print("TALK TO YOUR AI")
+print("=" * 55)
+print("Type some text and your AI will try to continue it.")
+print("Type  quit  to stop.\n")
+
+while True:
+
+    prompt = input("You: ")
+
+    if prompt.lower() == "quit":
+        break
+
+    # Your AI only knows the 65 characters that appear in Shakespeare.
+    # Anything else has to be removed before it can read your text.
+    clean = ''.join(c for c in prompt if c in stoi)
+
+    if clean != prompt:
+        print("   (some characters aren't in Shakespeare's alphabet - removed)")
+
+    if clean == "":
+        print("   (nothing left for the AI to read - try letters only)\n")
+        continue
+
+    # Put your text into the AI's memory window
+    window = [0] * CONTEXT_SIZE + encode(clean)
+
+    # Let it continue for 200 characters
+    result = []
+    for _ in range(200):
+        xb = torch.tensor([window[-CONTEXT_SIZE:]], dtype=torch.long)
+        probs = F.softmax(model(xb), dim=-1)
+        next_char = torch.multinomial(probs, num_samples=1).item()
+        result.append(next_char)
+        window.append(next_char)
+
+    print("\nAI: " + clean + decode(result) + "\n")
+              </pre>
+            </div>
+
+            <ol start="3">
+              <li>
+                Run it:
+                <pre><code>python Term_2/talk_to_your_ai.py</code></pre>
+              </li>
+              <li>
+                <b>Wait about 30 seconds.</b> Your AI has to train first — that is the
+                <code>step 1500 / 3000 / 4500 / 6000</code> output scrolling past. When you see
+                <code>TALK TO YOUR AI</code>, it is ready.
+              </li>
+              <li>Type something and press Enter. Type <code>quit</code> when you are done.</li>
+            </ol>
+          </div>
+
+          <div class="info-box">
+            <h4>🧪 Four things to try — in this order</h4>
+
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px; width:34%;">Type this</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">What you are testing</th>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>ROMEO:</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">Does it know what comes after a character name? This is the pattern it has seen most.</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;">Paste a real line from <code>input.txt</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">Does it continue in the right style? Does it copy the real next line, or make up something new?</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>What is gravity?</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">Can it answer a question? (Predict the answer before you press Enter.)</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><code>What is 5+5?</code></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">What happens to characters Shakespeare never used?</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="info-box">
+            <h4>🔍 Here is what we got</h4>
+
+            <div style="background:#dcfce7; padding:15px; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:15px;">
+              <b>You:</b> <code>ROMEO:</code>
+              <pre style="white-space:pre-wrap; font-size:0.85em; margin-top:10px; background:transparent; border:none;">AI: ROMEO:
+I&#x27;ll have afle minit: he hastive me that vithangracsto with he lawer&#x27;s
+me, I will, pakem In, my lith gurrlugh bour woos lord, I shopectro so
+eo the mare forhas
+&#x27;ttrefry, love ou loverland ban I will;</pre>
+              <b>Verdict:</b> it knew a speech follows a name and a colon. Real words everywhere —
+              <i>I'll have</i>, <i>he</i>, <i>me that</i>, <i>with</i>, <i>my</i>, <i>lord</i>,
+              <i>love</i>, <i>I will</i>. It <b>looks</b> like Shakespeare.
+            </div>
+
+            <div style="background:#fee2e2; padding:15px; border-radius:8px; border:1px solid #fecaca;">
+              <b>You:</b> <code>What is gravity?</code>
+              <pre style="white-space:pre-wrap; font-size:0.85em; margin-top:10px; background:transparent; border:none;">AI: What is gravity?
+IThe&#x27;s shose flom&#x27;d.
+
+PORTTIG KICGORETHARWARD:
+I and deftrrence, whely, Inverk hove may
+Sapppes
+Whe nelcestr! ly endry: and by Hisings.</pre>
+              <b>Verdict:</b> it completely ignored the question and carried on writing a play.
+              It does not know what a question <i>is</i>.
+            </div>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-lightbulb"></i> The three things you just learned</h4>
+
+            <ol style="line-height:2;">
+              <li>
+                <strong>It continues text — it does not answer.</strong>
+                Every single training example was "here are 4 characters, guess the next one."
+                So that is all it can do. It was never shown a question with an answer attached.
+              </li>
+              <li>
+                <strong>It writes new text, it does not copy.</strong>
+                Paste a real line from <code>input.txt</code> and it will <u>not</u> give you the
+                real next line. It cannot — the whole book was squeezed into ~22,000 numbers.
+                It only kept the patterns.
+              </li>
+              <li>
+                <strong>It can only read its own alphabet.</strong>
+                Type <code>5</code> or <code>+</code> and they get stripped out, because Shakespeare
+                never used them. Your AI's whole world is those 65 characters.
+              </li>
+            </ol>
+
+            <p style="margin-bottom:0;">
+              ChatGPT does the same "guess the next token" trick — but with a context window of
+              <b>thousands</b> instead of 4, trained on a huge slice of the internet instead of one
+              play, and then specifically taught to answer questions. You have built the engine.
+              The rest of the course makes it bigger and smarter.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>💬 Discuss with the person next to you</h4>
+            <ul style="line-height:1.9; margin-bottom:0;">
+              <li>Your AI writes text that <i>looks</i> like English but means nothing. Is it "intelligent"? Why or why not?</li>
+              <li>What would you have to change to make it answer questions instead of continuing them?</li>
+              <li>Try <code>CONTEXT_SIZE = 1</code> and talk to it again. How quickly does it forget what you typed?</li>
+            </ul>
+          </div>
+
+          <details class="collapsible-box">
+            <summary><strong>⚙ Troubleshooting &amp; FAQs</strong></summary>
+            <div class="activity-box">
+
+              <h4>❓ FileNotFoundError: input.txt</h4>
+              <p><code>input.txt</code> must be in the <b>same folder</b> as <code>data_pipeline.py</code> — both inside <code>Term_2</code>.</p>
+              <hr />
+
+              <h4>❓ ImportError: cannot import name 'vocab_size'</h4>
+              <p>Your <code>data_pipeline.py</code> is missing the line <code>vocab_size = len(chars)</code>. Add it just above the <code>data = ...</code> line.</p>
+              <hr />
+
+              <h4>❓ NameError: name 'decode' is not defined</h4>
+              <p>You put new code <b>above</b> the tokenizer. Python reads a file top to bottom, so <code>decode</code> must exist before anything uses it. Move your new code to the very bottom.</p>
+              <hr />
+
+              <h4>❓ My experiment prints all the data_pipeline output too</h4>
+              <p>That is normal — importing a file runs it. You can comment out the <code>print()</code> lines in <code>data_pipeline.py</code> if you want a cleaner screen. Only the prints; leave everything else.</p>
+              <hr />
+
+              <h4>❓ My generated text is slightly different from my friend's</h4>
+              <p>
+                The fixed seed (<code>torch.manual_seed(1337)</code>) means everyone should get very
+                similar text, but different PyTorch versions can still shift things a little.
+                Compare the <b>quality</b> — real words, spaces, play layout — not the exact wording.
+              </p>
+              <hr />
+
+              <h4>❓ Why is the target (y) shifted by one?</h4>
+              <p>Because the AI's job is always to predict the <i>next</i> character. Shifting by one lines up every question with its answer automatically.</p>
+              <hr />
+
+              <h4>❓ talk_to_your_ai.py just sits there doing nothing</h4>
+              <p>
+                It is training first — that takes about 30 seconds. Watch for the
+                <code>step 1500 / 3000 / 4500 / 6000</code> lines. When
+                <code>TALK TO YOUR AI</code> appears, type and press Enter.
+              </p>
+              <hr />
+
+              <h4>❓ Why does it retrain every time I want to chat?</h4>
+              <p>
+                Because we never saved the trained model to disk — it only exists in memory while the
+                program runs. Saving and reloading a model is exactly what Session 7 is about.
+                For now, keep the program open and chat as long as you like before typing <code>quit</code>.
+              </p>
+              <hr />
+
+              <h4>❓ My AI ignores my question completely</h4>
+              <p>
+                That is the correct result, not a bug. It has only ever been trained to continue text,
+                never to answer anything. See section 6 — this is the point of the activity.
+              </p>
+              <hr />
+
+              <h4>❓ Each run takes ages</h4>
+              <p>About 30 seconds is normal. If it is minutes, close other apps. You can also lower <code>6001</code> to <code>3001</code> — the effect still shows, just less clearly.</p>
+              <hr />
+
+              <h4>❓ My token IDs differ from my friend's</h4>
+              <p>Then you are using different <code>input.txt</code> files. With the same file, <code>sorted()</code> guarantees identical numbers.</p>
+
+            </div>
+          </details>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-check-circle"></i> SESSION COMPLETE</h4>
+            <p>
+              You gave your AI a memory, <b>proved it mattered</b> with an experiment you ran
+              yourself, and then <b>talked to it</b>.
+            </p>
+            <p>
+              But notice something. Your AI treats <b>every</b> character in its window as
+              equally important. When you read
+              <i>"The cat sat on the mat because <u>it</u> was tired"</i>, your brain instantly
+              links "it" to "cat" and ignores everything else. Your AI cannot do that.
+            </p>
+            <p style="margin-bottom:0;">
+              That is why the improvement runs out (as you will find in the homework). Extra memory
+              is useless if you cannot tell the important parts from the noise.
+              Teaching it to <strong>focus</strong> is Session 5: <b>Self-Attention</b>.
+            </p>
+          </div>
+
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-microchip"></i>
+              <h2>Mission Diagnostic: Level 2.04</h2>
+            </div>
+            <div class="mcq-container">
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">1. What does the context window (block_size) control?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="No. Block size has nothing to do with speed or volume.">How fast the AI writes.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! It is how many previous characters the AI may use when making its guess.">How many previous characters the AI can look back at.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. That is the vocabulary size — how many different characters exist.">How many different characters exist in the book.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-green">
+                <p class="mcq-question">2. If the input (x) is [1, 5, 8], what is the target (y)?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Not quite. The target is not identical to the input — it is shifted one step forward.">[1, 5, 8]</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Exactly. The target is the input slid one step to the right.">[5, 8, next_token]</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Every target comes straight out of the book — nothing is random.">A random list of numbers.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">3. In your experiment, what was the ONLY thing that changed between the three runs?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="No — every run trained for exactly 6000 steps.">How long it trained for.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="No — all three runs used the same input.txt.">The training data.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. Same AI, same book, same training time. Only the size of the context window changed — and the writing still improved.">How far back the AI could look.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">4. How many practice questions hide inside one block of 8 characters?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. Remember the loop — the AI makes a guess at every position in the block.">Only 1.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. One guess at every position, so 8 separate learning moments.">8.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. The block is not just storage — every position is a chance to learn.">None, it is just storage.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">5. Why can't we simply set block_size to 1,000,000?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. That is not a technical limitation.">The AI gets too smart and refuses to work.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Incorrect. The tokenizer handles long sequences fine.">The tokenizer doesn't support long words.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. You calculated it: memory grows with block_size squared — about 4 terabytes.">The memory needed grows with block_size squared — about 4 terabytes.</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="session-block homework-block">
+            <h2>Homework / Extension</h2>
+
+            <div class="homework-item standard">
+              <h3>Standard Task: Where Does It Stop Helping?</h3>
+              <p>
+                Going 1 → 2 → 4 improved things every time. So keep going:
+                run the experiment with <code>CONTEXT_SIZE = 8</code>, then <code>16</code>.
+              </p>
+              <p>Record the final loss for each, then answer in your own words:</p>
+              <ul>
+                <li>Was 8 much better than 4? Was 16 much better than 8?</li>
+                <li>How long did each run take?</li>
+                <li>If you were paying for the computing time, where would you stop?</li>
+              </ul>
+              <p>
+                <b>Prediction first:</b> before you run them, write down whether you expect
+                16 to be twice as good as 8.
+              </p>
+            </div>
+
+            <div class="homework-item advanced">
+              <h3>Advanced Task: Give It a Prompt</h3>
+              <p>
+                Right now the AI starts from nothing. Make it continue <i>your</i> text instead.
+                Replace the <code>window = [0] * CONTEXT_SIZE</code> line with the code below,
+                and add <code>encode</code> to your import line at the top.
+              </p>
+              <div class="code-block python">
+                <pre>
+prompt = "ROMEO:"
+window = [0] * CONTEXT_SIZE + encode(prompt)
+                </pre>
+              </div>
+              <p>
+                Try it with <code>CONTEXT_SIZE = 1</code> and then <code>4</code>.
+                Which one stays on topic longer? Why do you think that is?
+              </p>
+            </div>
+
+            <div class="homework-collapsible">
+              <div class="homework-toggle">
+                <span>Need Help? View Solutions &amp; Explanation</span>
+                <i class="fas fa-chevron-down toggle-arrow"></i>
+              </div>
+              <div class="homework-content">
+                <h4>Standard Task — what to expect</h4>
+                <p>Here are the losses we measured:</p>
+                <table style="width:100%; border-collapse:collapse;">
+                  <tr style="background:#f1f5f9;">
+                    <th style="border:1px solid #cbd5e1; padding:8px;">CONTEXT_SIZE</th>
+                    <th style="border:1px solid #cbd5e1; padding:8px;">Final loss</th>
+                    <th style="border:1px solid #cbd5e1; padding:8px;">Improvement</th>
+                  </tr>
+                  <tr><td style="border:1px solid #cbd5e1; padding:8px;">1</td><td style="border:1px solid #cbd5e1; padding:8px;">2.500</td><td style="border:1px solid #cbd5e1; padding:8px;">—</td></tr>
+                  <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;">2</td><td style="border:1px solid #cbd5e1; padding:8px;">2.099</td><td style="border:1px solid #cbd5e1; padding:8px;"><b>big jump</b></td></tr>
+                  <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;">4</td><td style="border:1px solid #cbd5e1; padding:8px;">1.932</td><td style="border:1px solid #cbd5e1; padding:8px;"><b>good jump</b></td></tr>
+                  <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;">8</td><td style="border:1px solid #cbd5e1; padding:8px;">1.935</td><td style="border:1px solid #cbd5e1; padding:8px;">none — and slower</td></tr>
+                  <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;">16</td><td style="border:1px solid #cbd5e1; padding:8px;">1.958</td><td style="border:1px solid #cbd5e1; padding:8px;">slightly <b>worse</b></td></tr>
+                </table>
+                <p style="margin-top:15px;">
+                  <b>Surprise:</b> it stops helping after about 4. Going to 8 changed nothing,
+                  and 16 was actually <u>worse</u> — while taking about 45 seconds per run
+                  instead of 30.
+                </p>
+                <p><strong>Why?</strong> Look at what our model does with the window:</p>
+                <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
+                  It lays all the characters out in <b>one flat row</b> and treats every position
+                  as equally important.
+                </div>
+                <p style="margin-top:15px;">
+                  With 16 characters, most of them are irrelevant noise — and our model has no way
+                  to tell the useful ones from the junk. Extra memory it cannot use is just extra cost.
+                </p>
+                <p>
+                  It gets worse the further you push. At a window of <b>64</b> the flat model reaches
+                  a loss of about <b>2.13</b> — worse than it managed with only 4 characters.
+                  It is drowning in its own memory.
+                </p>
+                <p>
+                  <strong>That is the problem Session 5 solves.</strong> You will build
+                  <b>attention</b> — a way for the AI to decide which characters in its window
+                  actually matter — and run it head-to-head against this model on that same
+                  64-character window. Attention wins, using about 3.2× fewer numbers.
+                </p>
+                <hr />
+                <h4>Advanced Task — what to expect</h4>
+                <p>
+                  With <code>CONTEXT_SIZE = 1</code>, the AI forgets your prompt immediately —
+                  after one character it can only see the character it just wrote.
+                </p>
+                <p>
+                  With <code>CONTEXT_SIZE = 4</code>, the prompt influences the next several characters,
+                  so the opening looks far more like a genuine continuation.
+                </p>
+                <p>
+                  This is exactly why a chatbot with a small context window "forgets" what you said
+                  earlier in a conversation.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="did-you-know-box">
+            <div class="dyk-icon"><i class="fas fa-microchip"></i></div>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                GPT-3 had a context window of 2,048 tokens. GPT-4 handles up to 128,000.
+                That is the difference between remembering a single page and remembering an
+                entire bookshelf — and you just measured why that is so expensive.
+              </p>
+            </div>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-arrow-right"></i> Next Mission: The Self-Attention Mechanism</h4>
+            <p>
+              Your AI has a desk full of characters, but treats them all as equally important.
+              In Session 5 we add the <strong>secret sauce</strong> of modern AI: <b>attention</b> —
+              teaching it to highlight only what matters.
+            </p>
+          </div>
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I have engineered the Context Window pipeline and successfully sliced the dataset into Input/Target sequences.
+            </label>
+          </div>
+        </div>
+
+        <div class="navigation-footer">
+          <a href="t2_session3.html" class="btn-secondary">Previous Session</a>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete & Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- REUSABLE MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../nexus-core.js"></script>
+    <script src="../script.js"></script>
+    <script>
+      function toggleTerm1() {
+        var list = document.getElementById('term1-list');
+        var icon = document.getElementById('term1-icon');
+        if (list.style.display === 'none') {
+          list.style.display = 'block';
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          list.style.display = 'none';
+          icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    </script>
+  </body>
+</html>

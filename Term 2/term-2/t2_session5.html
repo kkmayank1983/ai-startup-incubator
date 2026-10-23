@@ -1,0 +1,1959 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | Self-Attention Mechanism</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* Session 5 only. Small, self-contained visuals — style.css is not touched. */
+
+      /* Every animated visual sits inside .s5-anim. Animations only run once
+         .s5-play is added (on scroll, or by the Replay button), so any of them
+         can be watched again without reloading the page. */
+      .s5-replay-bar { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap; }
+      .s5-btn { font-family:inherit; font-size:0.78em; padding:5px 14px; border-radius:999px; border:1px solid #cbd5e1;
+                background:#fff; color:#475569; cursor:pointer; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+      .s5-btn:hover { background:#0ea5e9; border-color:#0ea5e9; color:#fff; }
+      .s5-hint { font-size:0.78em; color:#94a3b8; }
+
+      .s5-flow { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:18px 0; }
+      .s5-flow-box { background:#fff; border:2px solid #cbd5e1; border-radius:8px; padding:12px 16px; text-align:center; font-family:monospace; font-size:0.9em; opacity:0; }
+      .s5-play .s5-flow-box { animation: s5fadein 0.6s ease forwards; }
+      .s5-flow-box.tok { border-color:#64748b; color:#334155; animation-delay:0.05s; }
+      .s5-flow-box.q { border-color:#2563eb; color:#2563eb; animation-delay:0.35s; }
+      .s5-flow-box.k { border-color:#d97706; color:#d97706; animation-delay:0.6s; }
+      .s5-flow-box.v { border-color:#059669; color:#059669; animation-delay:0.85s; }
+      .s5-flow-box.out { border-color:#7c3aed; color:#7c3aed; animation-delay:1.9s; font-weight:bold; }
+      .s5-flow-arrow { font-size:1.3em; color:#94a3b8; opacity:0; }
+      .s5-play .s5-flow-arrow { animation: s5fadein 0.4s ease forwards; }
+      @keyframes s5fadein { from { opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
+
+      .s5-spotlight-row { display:flex; gap:6px; justify-content:center; margin:20px 0; flex-wrap:wrap; }
+      .s5-word { padding:8px 12px; border-radius:6px; background:#f1f5f9; border:2px solid #e2e8f0; font-family:monospace; font-size:1.05em; }
+      .s5-play .s5-word.s5-sweep { animation: s5sweep 2.8s ease-in-out 1; }
+      @keyframes s5sweep {
+        0%   { background:#f1f5f9; border-color:#e2e8f0; transform:scale(1); }
+        10%  { background:#fde68a; border-color:#f59e0b; transform:scale(1.08); }
+        20%  { background:#f1f5f9; border-color:#e2e8f0; transform:scale(1); }
+        100% { background:#f1f5f9; border-color:#e2e8f0; transform:scale(1); }
+      }
+      .s5-play .s5-word.s5-land { animation: s5land 0.6s ease 2.3s forwards; }
+      /* separates the sentence from the answer, so "cat" doesn't read as the next word */
+      .s5-eqsign { display:flex; align-items:center; font-size:1.5em; font-weight:bold; color:#10b981;
+                   margin-left:12px; opacity:0; }
+      .s5-play .s5-eqsign { animation: s5fadein 0.4s ease 2.2s forwards; }
+      @keyframes s5land {
+        0%   { background:#f1f5f9; border-color:#e2e8f0; }
+        100% { background:#bbf7d0; border-color:#10b981; transform:scale(1.1); box-shadow:0 0 14px rgba(16,185,129,0.5); }
+      }
+
+      .s5-card-row { display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin:18px 0; }
+      .s5-card { background:#fff; border:2px solid #cbd5e1; border-radius:10px; padding:14px; width:200px; font-family:monospace; font-size:0.82em; }
+      .s5-card-title { font-weight:bold; text-align:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px dashed #cbd5e1; font-family: inherit; }
+      .s5-plus, .s5-eq { font-size:1.8em; color:#94a3b8; }
+
+      .s5-mask-wrap { display:flex; justify-content:center; margin:18px 0; }
+      .s5-mask-grid { display:inline-grid; gap:3px; font-family:monospace; font-size:0.75em; }
+      .s5-mask-cell { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:4px; opacity:0; }
+      .s5-play .s5-mask-cell { animation: s5pop 0.4s ease forwards; }
+      .s5-mask-cell.allow { background:#bbf7d0; color:#15803d; }
+      .s5-mask-cell.block { background:#e2e8f0; color:#94a3b8; }
+      .s5-mask-label { font-family:monospace; font-size:0.75em; color:#64748b; display:flex; align-items:center; justify-content:center; width:32px; height:32px; }
+      @keyframes s5pop { 0% { opacity:0; transform:scale(0.3);} 65% { opacity:1; transform:scale(1.18);} 100% { opacity:1; transform:scale(1);} }
+
+      .s5-heat-wrap { overflow-x:auto; margin:18px 0; }
+      .s5-heat-row { display:flex; align-items:center; gap:4px; font-family:monospace; font-size:0.8em; margin-bottom:4px; }
+      .s5-heat-label { width:34px; text-align:right; color:#334155; flex-shrink:0; }
+      .s5-heat-cell { min-width:52px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:4px; font-size:0.8em; color:#0f172a;
+                      opacity:0; transform-origin:left center; }
+      .s5-play .s5-heat-cell { animation: s5grow 0.45s ease forwards; }
+      @keyframes s5grow { from { opacity:0; transform:scaleX(0.1);} to { opacity:1; transform:scaleX(1);} }
+
+      /* the worked-math walkthrough */
+      /* ============================================================
+         THE WORKED-MATH WALKTHROUGH — night theme.
+         The maths steps run dark so the numbers, the highlighted rows and
+         the highlighted columns pop out instead of washing into the page.
+         Steps fade in once on scroll (.s5-in). They are NOT .s5-anim, so the
+         replayable widgets nested inside them keep full control of .s5-play.
+         ============================================================ */
+      .s5-step { border:1px solid #1e293b; border-radius:14px; padding:26px 30px; margin:22px 0;
+                 background:#0f172a; opacity:0; box-shadow:0 8px 26px rgba(2,6,23,0.28); }
+      .s5-step.s5-in { animation: s5fadein 0.5s ease forwards; }
+      .s5-step, .s5-step p, .s5-step li { color:#cbd5e1; }
+      .s5-step p { font-size:1.02em; line-height:1.7; }
+      .s5-step b, .s5-step strong { color:#f8fafc; }
+      .s5-step code { background:#1e293b; color:#7dd3fc; padding:2px 7px; border-radius:4px; }
+      .s5-step-badge { display:inline-block; background:#0ea5e9; color:#04222f; font-weight:bold;
+                       font-size:0.85em; letter-spacing:0.05em; padding:5px 16px; border-radius:999px; margin-bottom:12px; }
+      /* the light-pink callout from style.css would glare on a dark card */
+      .s5-step .rule-callout { background:rgba(14,165,233,0.09); border-left:4px solid #0ea5e9; }
+      .s5-step .rule-callout h4 { color:#38bdf8; }
+      .s5-step .rule-callout p { color:#cbd5e1; }
+
+      .s5-matrix-row { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-top:14px; }
+      .s5-matrix { border-collapse:collapse; font-family:monospace; font-size:1em; }
+      .s5-matrix caption { font-family: inherit; font-weight:bold; margin-bottom:8px; color:#94a3b8; font-size:0.95em; }
+      .s5-matrix th, .s5-matrix td { border:1px solid #334155; padding:10px 18px; text-align:center; }
+      .s5-matrix th { background:#1e293b; color:#94a3b8; font-weight:normal; }
+      .s5-matrix td { background:#0b1526; color:#e2e8f0; }
+      .s5-matrix td.blocked { background:#172033; color:#475569; }
+
+      /* ---- the animated "which block times which block" multiplier (dark) ---- */
+      .s5-mm { margin:18px 0; }
+      .s5-mm-stage { display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; }
+      .s5-mm-op { font-size:1.9em; color:#475569; font-family:monospace; padding-top:22px; }
+      .s5-mm-tbl { border-collapse:collapse; font-family:monospace; font-size:0.95em; }
+      .s5-mm-tbl caption { font-family:inherit; font-weight:bold; font-size:0.92em; margin-bottom:7px; color:#94a3b8; white-space:nowrap; }
+      .s5-mm-tbl th { background:#1e293b; border:1px solid #334155; padding:6px 10px; font-size:0.88em; color:#94a3b8; font-weight:normal; }
+      .s5-mm-tbl td { border:1px solid #334155; padding:9px 14px; text-align:center; min-width:54px; background:#0b1526; color:#e2e8f0;
+                      transition:background .18s ease, color .18s ease; }
+      .s5-mm-tbl td.lit-a { background:#1d4ed8; color:#eff6ff; font-weight:bold; }
+      .s5-mm-tbl td.lit-b { background:#b45309; color:#fffbeb; font-weight:bold; }
+      .s5-mm-tbl td.lit-c { background:#6d28d9; color:#f5f3ff; font-weight:bold; }
+      .s5-mm-tbl td.done  { color:#cbd5e1; }
+      .s5-mm-tbl td.wait  { color:#334155; }
+      .s5-mm-tbl td span { display:inline-block; }
+      .s5-mm-tbl td.lit-c span { animation: s5pop 0.35s ease; }
+      .s5-mm-working { text-align:center; font-family:monospace; font-size:1em; margin-top:16px; min-height:3.4em; color:#94a3b8; line-height:1.9; }
+      .s5-mm-working .a { color:#93c5fd; font-weight:bold; }
+      .s5-mm-working .b { color:#fcd34d; font-weight:bold; }
+      .s5-mm-working .c { color:#c4b5fd; font-weight:bold; font-size:1.2em; }
+      .s5-mm-tabs { display:flex; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+      .s5-tab { font-family:inherit; font-size:0.85em; padding:7px 20px; border-radius:999px; border:1px solid #334155;
+                background:#1e293b; color:#cbd5e1; cursor:pointer; }
+      .s5-tab:hover { border-color:#0ea5e9; color:#7dd3fc; }
+      .s5-tab.on { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; font-weight:bold; }
+
+      /* progress read-out next to the transport controls */
+      .s5-count { font-family:monospace; font-size:0.8em; color:#64748b; padding:0 4px; }
+      .s5-btn[disabled] { opacity:0.35; cursor:default; }
+      .s5-btn[disabled]:hover { background:#1e293b; border-color:#334155; color:#cbd5e1; }
+
+      /* controls sitting on a dark step */
+      .s5-step .s5-btn { background:#1e293b; border-color:#334155; color:#cbd5e1; }
+      .s5-step .s5-btn:hover:not([disabled]) { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+      .s5-step .s5-hint { color:#64748b; }
+
+      /* the softmax bars live on a dark step, unlike the Focus Map further down */
+      .s5-step .s5-heat-label { color:#94a3b8; }
+      .s5-step .s5-heat-cell { min-width:66px; height:34px; font-size:0.9em; }
+
+      @media (max-width: 640px) {
+        .s5-step { padding:18px 14px; }
+        .s5-mm-tbl { font-size:0.78em; }
+        .s5-mm-tbl td { min-width:38px; padding:6px 8px; }
+        .s5-mm-op { font-size:1.3em; padding-top:16px; }
+        .s5-matrix { font-size:0.85em; }
+        .s5-matrix th, .s5-matrix td { padding:7px 10px; }
+      }
+    </style>
+    <noscript>
+      <style>
+        /* If scripts are off, show every animated visual in its finished state. */
+        .s5-step, .s5-flow-box, .s5-flow-arrow, .s5-mask-cell, .s5-heat-cell, .s5-eqsign { opacity:1 !important; }
+      </style>
+    </noscript>
+  </head>
+  <body class="page-session" data-current-session="t2_s5">
+    <nav class="navbar">
+      <a href="../index.html" class="site-logo">
+        <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status">Status: <strong>AI Architect</strong></span>
+        <a href="term2.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+        <!-- TERM 2 ACTIVE -->
+        <div class="sidebar-section" data-sidebar-term="2">
+          <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+            <span>TERM 2: THE BRAIN</span>
+            <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+          </h3>
+          <ul style="display: block;">
+            <li data-session-id="t2_s1"><a href="t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li>
+            <li data-session-id="t2_s2"><a href="t2_session2.html"><i class="fas fa-font"></i> S2: The Encoding Pipeline</a></li>
+            <li data-session-id="t2_s3"><a href="t2_session3.html"><i class="fas fa-dice"></i> S3: The First Prediction Engine</a></li>
+            <li data-session-id="t2_s4"><a href="t2_session4.html"><i class="fas fa-window-maximize"></i> S4: Context Windows &amp; Sequence Processing</a></li>
+            <li data-session-id="t2_s5" class="active"><a href="t2_session5.html"><i class="fas fa-highlighter"></i> S5: Self-Attention Mechanism</a></li>
+            <li data-session-id="t2_s6"><a href="t2_session6.html"><i class="fas fa-dumbbell"></i> S6: Parameter Optimization</a></li>
+            <li data-session-id="t2_s7"><a href="t2_session7.html"><i class="fas fa-save"></i> S7: Weight Persistence</a></li>
+            <li data-session-id="t2_s8"><a href="t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 2 / Session 5 / Self-Attention Mechanism
+        </nav>
+
+        <section id="lesson-header">
+          <h1>Session 5: The Self-Attention Mechanism</h1>
+          <p class="lead">
+            Session 4 proved that more memory helps — until it doesn't. Today we find out why it stopped helping, and build the real mechanism that fixes it: Queries, Keys, and Values.
+          </p>
+          <div class="stats-bar">
+            <span><i class="far fa-clock"></i> 60 Minutes</span>
+            <span><i class="fas fa-signal"></i> Level: Junior Architect</span>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+            <p>
+              Build a real, working Self-Attention head — the actual matrix math, not just the idea — and prove it beats every model Session 4 produced — head-to-head, on the exact same data, with a third of the numbers.
+            </p>
+          </div>
+        </section>
+
+        <section class="lesson-body">
+
+          <!-- ============================================================
+               0. QUICK RECAP
+               ============================================================ -->
+          <h2>0. Quick Recap: Where We Are</h2>
+
+          <div class="tool-info-box">
+            <div style="background:#f8fafc; padding:20px; border-radius:10px; border:1px solid #cbd5e1; line-height:2.1;">
+              <b>Session 2 — the tokenizer.</b> Every character became a number.<br>
+              <b>Session 3 — the guesser.</b> A Score Table, wrapped in a <code>PredictionEngine</code> class and a <code>generate()</code> loop, looks at one character and guesses the next.<br>
+              <b>Session 4 — memory.</b> A context window (<code>block_size</code>) lets it look back at several characters at once.<br>
+              <b style="color:#0ea5e9;">Session 5 — today — focus.</b> We teach it which of those characters actually matter.
+            </div>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-flask"></i> The cliffhanger Session 4 left behind</h4>
+            <p>You ran the context experiment three times, then the homework pushed it further, to <code>block_size = 8</code> and <code>16</code>. Here is what happened:</p>
+            <table style="width:100%; border-collapse:collapse; margin:12px 0;">
+              <tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1; padding:8px;">block_size</th><th style="border:1px solid #cbd5e1; padding:8px;">Final loss</th></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;">1</td><td style="border:1px solid #cbd5e1; padding:8px;">2.500</td></tr>
+              <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;">4</td><td style="border:1px solid #cbd5e1; padding:8px;">1.932</td></tr>
+              <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;">8</td><td style="border:1px solid #cbd5e1; padding:8px;">1.935 — no improvement</td></tr>
+              <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;">16</td><td style="border:1px solid #cbd5e1; padding:8px;">1.958 — worse</td></tr>
+              <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;"><b>64</b></td><td style="border:1px solid #cbd5e1; padding:8px;"><b>2.127 — worse still</b></td></tr>
+            </table>
+            <p>More memory made things <b>worse</b> past a point. That sounds backwards — so here is the actual reason, in plain terms:</p>
+            <ol style="margin:12px 0 0 0; padding-left:22px; line-height:1.8; font-weight:500;">
+              <li><b>Every extra slot is a brand new thing to learn.</b> Session 4's model kept a completely separate set of weights for "the character 1 step back", another set for "2 steps back", another for "3 steps back", and so on. Going from 4 characters to 64 didn't make it cleverer — it made it <b>16 times bigger</b>, with 16 times more to work out.</li>
+              <li><b>Most of those extra characters are useless.</b> To guess the letter after <code>th</code>, a letter from 40 characters ago almost never helps. But the flat model has no way to say "ignore that one". It is forced to give <i>every</i> slot a weight and just hope training sorts it out.</li>
+              <li><b>Same practice time, far more to learn.</b> Every run trained for the same 6,000 steps. Spread that same effort across a much bigger pile of mostly-junk connections and each one ends up learned worse. So the loss goes <i>up</i>.</li>
+            </ol>
+            <p style="margin-top:14px; margin-bottom:0;">So the problem was never "not enough memory". It was having <b>no way to choose what to pay attention to</b>. A bigger window just handed the model more noise to wade through. That is exactly what we fix today.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-layer-group"></i> One more word you'll need: <code>batch_size</code></h4>
+            <p><code>block_size</code> is the size of <b>one</b> flashcard — how many characters make up a single practice question. <code>batch_size</code> is a different number: <b>how many flashcards the AI looks at together, in one go, before it updates itself.</b></p>
+            <p>You have actually already used this, without a name for it. In Session 4's <code>context_experiment.py</code>, this line grabbed 64 random windows at once:</p>
+            <pre style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px; font-size:0.9em;">ix = torch.randint(0, len(data) - CONTEXT_SIZE - 1, (64,))</pre>
+            <p style="margin-bottom:0;">That <code>64</code> is the batch size. Training on one flashcard at a time works, but it is slow and each update is noisy — one lucky or unlucky example can push the AI the wrong way. A bigger batch means each update is based on an average over many examples, so it moves in a steadier, more reliable direction. Today's code calls it exactly what it is: <code>batch_size = 64</code>.</p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               1. THE HIGHLIGHTER PROBLEM
+               ============================================================ -->
+          <h2>1. The "Highlighter" Problem</h2>
+          <div class="info-box">
+            <p>Session 4 gave our AI a big desk full of papers — up to 64 characters at once. But it treats every single paper as equally important. It is overwhelmed by noise.</p>
+            <p><strong>To be intelligent, the AI can't just remember... it must learn what matters.</strong></p>
+          </div>
+
+          <hr />
+          <h2>2. Engineering Discovery: The Missing Connection</h2>
+          <div class= "tool-info-box">
+            <h4>🔍 Mission: Human vs. Machine</h4>
+            <p>Read the following sentence carefully:</p>
+            <p style="font-family: monospace; font-size: 1.2em; text-align: center; background: #f1f5f9; padding: 15px; border-radius: 8px;">
+                "The cat sat on the mat because <b>it</b> was tired."
+            </p>
+            <p><strong>The Challenge:</strong> To a computer, the word <b>"it"</b> could refer to anything. As a human, which word does your brain immediately "highlight"?</p>
+
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button class="btn-secondary" onclick="alert('Try again! Is the mat tired?')">Mat</button>
+                <button class="btn-secondary" onclick="alert('Correct! Your brain ignored everything else to connect -it- to -cat-.')">Cat</button>
+                <button class="btn-secondary" onclick="alert('Try again! Is the sitting tired?')">Sat</button>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>The Verdict:</strong> Intelligence is the ability to <b>Pay Attention</b>. Our model needs a mathematical "Highlighter Pen" to focus on relevant words and ignore the junk.</p>
+
+            <p style="margin-top:15px; text-align:center; font-size:0.85em; color:#64748b;">Watch your own brain do this. The spotlight below sweeps every word once, then locks onto the one your brain actually needed.</p>
+            <div class="s5-anim">
+              <div class="s5-spotlight-row">
+                <span class="s5-word s5-sweep">The</span>
+                <span class="s5-word s5-sweep" style="animation-delay:0.28s;">cat</span>
+                <span class="s5-word s5-sweep" style="animation-delay:0.56s;">sat</span>
+                <span class="s5-word s5-sweep" style="animation-delay:0.84s;">on</span>
+                <span class="s5-word s5-sweep" style="animation-delay:1.12s;">the</span>
+                <span class="s5-word s5-sweep" style="animation-delay:1.40s;">mat</span>
+                <span class="s5-word s5-sweep" style="animation-delay:1.68s;">because</span>
+                <span class="s5-word s5-sweep s5-land" style="animation-delay:1.96s;">it</span>
+                <span class="s5-eqsign">=</span>
+                <span class="s5-word s5-land" style="animation-delay:2.3s;">cat</span>
+              </div>
+              <div class="s5-replay-bar">
+                <button type="button" class="s5-btn" onclick="s5Replay(this)"><i class="fas fa-redo"></i> Watch again</button>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <h2>3. Intuition First: Queries, Keys, and Values</h2>
+          <div class="tool-info-box">
+            <p>To perform Self-Attention, every character on our "Digital Desk" plays three roles:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 15px; text-align: center;">
+                <div style="background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                    <strong style="color: #2563eb;">Query</strong><br>
+                    <small>"What am I looking for?"</small>
+                </div>
+                <div style="background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                    <strong style="color: #d97706;">Key</strong><br>
+                    <small>"What do I contain?"</small>
+                </div>
+                <div style="background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                    <strong style="color: #059669;">Value</strong><br>
+                    <small>"The info I share."</small>
+                </div>
+            </div>
+            <p style="margin-top: 15px;">Think of it like a <b>Detective (Query)</b> checking a <b>Clue (Key)</b>. If the Query matches the Key, the Detective takes the <b>Evidence (Value)</b> from that clue and adds it to the case.</p>
+
+            <p style="text-align:center; font-size:0.85em; color:#64748b; margin-top:15px;">Here is that same idea as a flow. Watch it build left to right.</p>
+            <div class="s5-anim">
+              <div class="s5-flow">
+                <div class="s5-flow-box tok">Character</div>
+                <span class="s5-flow-arrow" style="animation-delay:0.2s;">→</span>
+                <div class="s5-flow-box q">Query</div>
+                <div class="s5-flow-box k">Key</div>
+                <div class="s5-flow-box v">Value</div>
+                <span class="s5-flow-arrow" style="animation-delay:1.1s;">→</span>
+                <div class="s5-flow-box" style="border-color:#94a3b8; color:#475569; animation-delay:1.3s;">Match Score</div>
+                <span class="s5-flow-arrow" style="animation-delay:1.6s;">→</span>
+                <div class="s5-flow-box out">Focused Output</div>
+              </div>
+              <div class="s5-replay-bar">
+                <button type="button" class="s5-btn" onclick="s5Replay(this)"><i class="fas fa-redo"></i> Watch again</button>
+              </div>
+            </div>
+            <p style="margin-bottom:0;">That's the idea in one sentence. Nice — but it's not magic, and it's not a metaphor either. It's real arithmetic, and it's small enough to do by hand. Let's actually do it.</p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-search"></i> The Query Experiment — worked on paper</h4>
+            <p>Before we build anything, let's see one attention score actually happen. Two clues are sitting on the desk. Each one is described by just <b>two numbers</b>:</p>
+
+            <div class="s5-card-row">
+              <div class="s5-card">
+                <div class="s5-card-title">Clue 1 (Key)</div>
+                how vowel-ish : <b>0.9</b><br>
+                how space-ish : <b>0.1</b>
+                <div style="margin-top:8px; font-family:inherit; font-size:0.95em; color:#475569;">"I contain a vowel."</div>
+              </div>
+              <div class="s5-card">
+                <div class="s5-card-title">Clue 2 (Key)</div>
+                how vowel-ish : <b>0.1</b><br>
+                how space-ish : <b>0.9</b>
+                <div style="margin-top:8px; font-family:inherit; font-size:0.95em; color:#475569;">"I contain a space."</div>
+              </div>
+            </div>
+
+            <p>Now a character asks a question — that question is the <b>Query</b>, and it is also just two numbers. To score a question against a clue you <b>multiply the numbers that line up, then add them up</b>. Bigger answer = better match.</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:15px;">
+              <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <strong style="color:#2563eb;">Question A: "find me a vowel"</strong>
+                <div style="font-family:monospace; font-size:0.85em; margin-top:8px;">Query = [ 1.0 , 0.2 ]</div>
+                <hr style="margin:10px 0; border:none; border-top:1px dashed #cbd5e1;">
+                <div style="font-family:monospace; font-size:0.85em; line-height:1.9;">
+                  vs Clue 1: 1.0×0.9 + 0.2×0.1 = <b style="color:#059669;">0.92</b> ✓<br>
+                  vs Clue 2: 1.0×0.1 + 0.2×0.9 = <b>0.28</b>
+                </div>
+                <p style="margin:10px 0 0; font-size:0.9em;">Clue 1 wins.</p>
+              </div>
+              <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #ddd;">
+                <strong style="color:#d97706;">Question B: "find me a space"</strong>
+                <div style="font-family:monospace; font-size:0.85em; margin-top:8px;">Query = [ 0.1 , 1.0 ]</div>
+                <hr style="margin:10px 0; border:none; border-top:1px dashed #cbd5e1;">
+                <div style="font-family:monospace; font-size:0.85em; line-height:1.9;">
+                  vs Clue 1: 0.1×0.9 + 1.0×0.1 = <b>0.19</b><br>
+                  vs Clue 2: 0.1×0.1 + 1.0×0.9 = <b style="color:#059669;">0.91</b> ✓
+                </div>
+                <p style="margin:10px 0 0; font-size:0.9em;">Clue 2 wins.</p>
+              </div>
+            </div>
+
+            <p style="margin-top:15px; margin-bottom:0;"><b>What that means:</b> the clues never changed — the same four numbers sat there the whole time. Only the <b>question</b> changed, and a different clue won. That is the entire trick: attention is the model asking "what am I looking for right now?" and scoring everything on the desk against it.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-lightbulb"></i> Engineering Insight</h4>
+            <p>We just <strong>chose</strong> those Query and Key numbers to make the point. A real model is never told them — it has to <strong>learn</strong> what they should be, from the data. And it has to do it for every character against every other character at once, not one pair at a time. That is exactly what we build next.</p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               4. THE REAL MATH, WORKED BY HAND
+               ============================================================ -->
+          <h2>4. How The Math Actually Works</h2>
+          <div class="info-box">
+            <p>Forget code for a minute. Here is the entire mechanism, worked out with real numbers, on three tiny characters: <b>T</b>, <b>H</b>, <b>E</b>. Each one is described by just 2 numbers, so every step fits on screen and you can check the arithmetic yourself.</p>
+            <p style="margin-bottom:0;"><i class="fas fa-redo" style="color:#0ea5e9;"></i> <strong>Every diagram on this page moves.</strong> They start playing when you scroll to them, and each one has a <b>Watch again</b> button underneath — no need to reload the page. Watch them as many times as you like.</p>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 0</span>
+            <p>Each character already has a small card of numbers (from the token + position embeddings you met last time). Here are the three we'll use:</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Character cards (x)</caption>
+                <tr><th></th><th>num 1</th><th>num 2</th></tr>
+                <tr><th>T</th><td>1.0</td><td>0.0</td></tr>
+                <tr><th>H</th><td>0.0</td><td>1.0</td></tr>
+                <tr><th>E</th><td>1.0</td><td>1.0</td></tr>
+              </table>
+            </div>
+            <p style="margin-bottom:0;"><b>What do "num 1" and "num 2" mean?</b> Nothing we chose. In the last section we <i>pretended</i> two numbers meant "vowel-ish" and "space-ish" to make the idea concrete — but a real model invents its own two traits during training, and they almost never have tidy English names. All that matters is that each character ends up with its own pair: <b>T</b> is all trait 1, <b>H</b> is all trait 2, <b>E</b> is a bit of both. From here we'll just call them <b>trait 1</b> and <b>trait 2</b>.</p>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 1</span>
+            <p>Every character asks three questions of itself: "What am I looking for?" (<b>Query</b>), "What do I contain?" (<b>Key</b>), "What can I offer?" (<b>Value</b>). It answers all three the same way — by taking its own card and <b>rewriting it three different ways</b>.</p>
+            <p>The rewriting is done by three small tables of numbers: <code>Wq</code>, <code>Wk</code> and <code>Wv</code>. <strong>These three tables are the only things in the whole mechanism that the AI learns.</strong> Everything after Step 1 is fixed arithmetic that never changes.</p>
+
+            <div class="rule-callout" style="margin:14px 0;">
+              <h4><i class="fas fa-question-circle"></i> Where do the numbers in Wq, Wk and Wv actually come from?</h4>
+              <p><b>Nobody chooses them.</b> They start as <b>random noise</b> — on the model's first ever step they are meaningless. Then, every training step, the model makes a guess, finds out how wrong it was, and <b>every number in these three tables gets a tiny nudge</b> in whatever direction would have made that guess less wrong. Do that a few thousand times and the tables settle into a pattern that works.</p>
+              <p style="margin-bottom:0;">That means no human can say in advance what they <i>should</i> be. The tidy numbers below were picked <b>by us</b>, so the arithmetic stays checkable on paper. A real trained table is an ugly mess of numbers like <code>0.0473</code> and <code>-0.2811</code> that nobody can read at a glance — but it does exactly the same job.</p>
+            </div>
+
+            <div class="rule-callout" style="margin:14px 0;">
+              <h4><i class="fas fa-ruler-combined"></i> The only matrix rule you need</h4>
+              <p style="margin-bottom:0;">Take a <b style="color:#1d4ed8;">row</b> from the left table and a <b style="color:#b45309;">column</b> from the right table. Multiply the numbers that line up, then add those up. That single answer goes in the box where that row and that column <b>cross</b>. Repeat for every crossing. That's it — that's all "matrix multiplication" means.</p>
+            </div>
+
+            <p>Here are the three tables we'll use. <b>Read each one column by column: every column is a recipe for one output number</b> — "take this much of trait 1, plus this much of trait 2."</p>
+
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Wq — makes the Query</caption>
+                <tr><th></th><th>out 1</th><th>out 2</th></tr>
+                <tr><th>trait 1</th><td>1.0</td><td>0.5</td></tr>
+                <tr><th>trait 2</th><td>0.0</td><td>1.0</td></tr>
+              </table>
+              <table class="s5-matrix"><caption>Wk — makes the Key</caption>
+                <tr><th></th><th>out 1</th><th>out 2</th></tr>
+                <tr><th>trait 1</th><td>0.5</td><td>0.0</td></tr>
+                <tr><th>trait 2</th><td>1.0</td><td>1.0</td></tr>
+              </table>
+              <table class="s5-matrix"><caption>Wv — makes the Value</caption>
+                <tr><th></th><th>out 1</th><th>out 2</th></tr>
+                <tr><th>trait 1</th><td>1.0</td><td>0.0</td></tr>
+                <tr><th>trait 2</th><td>0.0</td><td>1.0</td></tr>
+              </table>
+            </div>
+
+            <ul style="margin-top:4px;">
+              <li><b>Wq</b> says: <i>Query number 1 = trait 1, copied straight across. Query number 2 = a half-share of trait 1 plus all of trait 2.</i> So a character's question is built mostly out of trait 2, with a splash of trait 1 mixed in.</li>
+              <li><b>Wk</b> says: <i>Key number 1 = half of trait 1 plus all of trait 2. Key number 2 = trait 2 only.</i> A different recipe, so the same card advertises something different from what it asks for.</li>
+              <li><b>Wv</b> says: <i>hand the card over untouched.</i> This head happened to land on a "pass it straight through" Value table. Real trained heads are never this tidy — we picked easy numbers on purpose.</li>
+            </ul>
+
+            <p style="margin-bottom:0;"><b>So what does the multiplication actually do?</b> The character's card says what it <b>is</b>. Multiplying by <code>Wq</code> turns that into what it is <b>searching for</b>. Multiplying by <code>Wk</code> turns the very same card into what it <b>advertises to others</b>. Multiplying by <code>Wv</code> turns it into what it <b>hands over</b> if chosen. One character, one card, three different jobs — because three different weight tables.</p>
+
+            <p style="text-align:center; font-size:0.85em; color:#64748b; margin-bottom:0;">Watch it happen, one box at a time. Switch tabs to see how the same cards make a different answer each time.</p>
+            <div class="s5-anim">
+              <div class="s5-mm-tabs">
+                <button type="button" class="s5-tab on" onclick="s5Tab(this,'mm-qkv','q')">Make Q (Query)</button>
+                <button type="button" class="s5-tab" onclick="s5Tab(this,'mm-qkv','k')">Make K (Key)</button>
+                <button type="button" class="s5-tab" onclick="s5Tab(this,'mm-qkv','v')">Make V (Value)</button>
+              </div>
+              <div id="mm-qkv"></div>
+              </div>
+
+            <p style="margin-top:16px;">Run all three recipes on all three cards and you get this — the same characters, described three different ways:</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Query (Q)</caption>
+                <tr><th></th><th>num 1</th><th>num 2</th></tr>
+                <tr><th>T</th><td>1.00</td><td>0.50</td></tr>
+                <tr><th>H</th><td>0.00</td><td>1.00</td></tr>
+                <tr><th>E</th><td>1.00</td><td>1.50</td></tr>
+              </table>
+              <table class="s5-matrix"><caption>Key (K)</caption>
+                <tr><th></th><th>num 1</th><th>num 2</th></tr>
+                <tr><th>T</th><td>0.50</td><td>0.00</td></tr>
+                <tr><th>H</th><td>1.00</td><td>1.00</td></tr>
+                <tr><th>E</th><td>1.50</td><td>1.00</td></tr>
+              </table>
+              <table class="s5-matrix"><caption>Value (V)</caption>
+                <tr><th></th><th>num 1</th><th>num 2</th></tr>
+                <tr><th>T</th><td>1.0</td><td>0.0</td></tr>
+                <tr><th>H</th><td>0.0</td><td>1.0</td></tr>
+                <tr><th>E</th><td>1.0</td><td>1.0</td></tr>
+              </table>
+            </div>
+            <p style="margin-top:10px; margin-bottom:0;">In code, this is three lines: <code>q = self.query(x)</code>, <code>k = self.key(x)</code>, <code>v = self.value(x)</code>.</p>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 2</span>
+            <p>Now every character's Query is compared against <b>every</b> character's Key, using exactly the same row-times-column rule. A high number means "this looks like what I'm searching for."</p>
+            <p>In code this is one line for the <i>whole</i> table at once: <code>q @ k.transpose(-2, -1)</code>. We need that <code>.transpose()</code> first, because both Q and K are 3 rows × 2 columns — and our rule needs <b>columns</b> on the right-hand side. So K gets tipped over: its rows become columns.</p>
+
+            <p style="text-align:center; font-size:0.85em; color:#64748b; margin-bottom:0;">K, tipped onto its side. Same six numbers, just rearranged.</p>
+            <div class="s5-anim">
+              <div id="mm-flip"></div>
+              </div>
+
+            <p style="margin-top:16px; text-align:center; font-size:0.85em; color:#64748b; margin-bottom:0;">Now multiply. Nine crossings, so nine answers — every character's Query against every character's Key.</p>
+            <div class="s5-anim">
+              <div id="mm-scores"></div>
+              </div>
+
+            <p style="margin-top:16px;">The finished score table:</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Raw match scores (Q @ Kᵀ)</caption>
+                <tr><th>asking ↓ / about →</th><th>T</th><th>H</th><th>E</th></tr>
+                <tr><th>T</th><td>0.50</td><td>1.50</td><td>2.00</td></tr>
+                <tr><th>H</th><td>0.00</td><td>1.00</td><td>1.00</td></tr>
+                <tr><th>E</th><td>0.50</td><td>2.50</td><td>3.00</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 3</span>
+            <p>Before we go further, these scores get scaled down — divided by the square root of how many numbers are in each Key (here, √2 ≈ 1.41). Without this, scores made of bigger vectors would naturally come out bigger for no meaningful reason, and one score could end up so much larger than the rest that softmax (next step) gives it almost 100% of the attention every time — even when it isn't really that much better a match. Dividing by √(size) keeps scores in a stable, comparable range no matter how big the vectors are.</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Scaled scores (÷ √2)</caption>
+                <tr><th>asking ↓ / about →</th><th>T</th><th>H</th><th>E</th></tr>
+                <tr><th>T</th><td>0.35</td><td>1.06</td><td>1.41</td></tr>
+                <tr><th>H</th><td>0.00</td><td>0.71</td><td>0.71</td></tr>
+                <tr><th>E</th><td>0.35</td><td>1.77</td><td>2.12</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 4</span>
+            <p>"No cheating" — the mask from the diagram you'll see again below. T is only allowed to know about T. H can know about T and H. E can know about all three. We block the rest by setting them to <b>negative infinity</b> — which, after the next step, turns into exactly 0%.</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Masked scores</caption>
+                <tr><th>asking ↓ / about →</th><th>T</th><th>H</th><th>E</th></tr>
+                <tr><th>T</th><td>0.35</td><td class="blocked">−∞</td><td class="blocked">−∞</td></tr>
+                <tr><th>H</th><td>0.00</td><td>0.71</td><td class="blocked">−∞</td></tr>
+                <tr><th>E</th><td>0.35</td><td>1.77</td><td>2.12</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 5</span>
+            <p>Softmax turns each row into percentages that add up to 100% — the same Weighted Dice trick from Session 3. A blocked (−∞) score always becomes exactly 0%.</p>
+            <div class="s5-anim">
+              <div class="s5-heat-wrap" style="justify-content:center; display:flex; flex-direction:column; align-items:center;">
+                <div class="s5-heat-row"><span class="s5-heat-label">T →</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,1.0);color:#04241a; animation-delay:0.10s;">100%</span>
+                  <span class="s5-heat-cell" style="background:#1e293b;color:#64748b; animation-delay:0.25s;">0%</span>
+                  <span class="s5-heat-cell" style="background:#1e293b;color:#64748b; animation-delay:0.40s;">0%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">H →</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.33);color:#e2e8f0; animation-delay:0.55s;">33%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.67);color:#e2e8f0; animation-delay:0.70s;">67%</span>
+                  <span class="s5-heat-cell" style="background:#1e293b;color:#64748b; animation-delay:0.85s;">0%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">E →</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.09);color:#e2e8f0; animation-delay:1.00s;">9%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.37);color:#e2e8f0; animation-delay:1.15s;">37%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.53);color:#e2e8f0; animation-delay:1.30s;">53%</span>
+                </div>
+              </div>
+              <div class="s5-replay-bar">
+                <button type="button" class="s5-btn" onclick="s5Replay(this)"><i class="fas fa-redo"></i> Watch again</button>
+              </div>
+            </div>
+            <p style="margin-top:10px; margin-bottom:0;">Read row "H": when guessing what comes after H, this head puts 33% of its trust in T and 67% in H itself. Row "E" spreads its trust across all three, leaning most on itself (53%).</p>
+          </div>
+
+          <div class="s5-step">
+            <span class="s5-step-badge">STEP 6</span>
+            <p>Last step: use those percentages to blend the Value cards. Row H's output is 33% of T's Value plus 67% of H's Value. That blend is what gets passed on — the character's new, focused understanding of itself.</p>
+            <p>And it is the <b>same row-times-column rule one last time</b>: the percentage table multiplied by the Value table. Watch the blocked 0% boxes contribute exactly nothing.</p>
+
+            <div class="s5-anim">
+              <div id="mm-blend"></div>
+              </div>
+
+            <p style="margin-top:16px;">The finished output — one new card per character:</p>
+            <div class="s5-matrix-row">
+              <table class="s5-matrix"><caption>Context vectors (output)</caption>
+                <tr><th></th><th>num 1</th><th>num 2</th></tr>
+                <tr><th>T</th><td>1.000</td><td>0.000</td></tr>
+                <tr><th>H</th><td>0.330</td><td>0.670</td></tr>
+                <tr><th>E</th><td>0.625</td><td>0.909</td></tr>
+              </table>
+            </div>
+
+            <div class="rule-callout" style="margin:20px 0 0 0;">
+              <h4><i class="fas fa-id-card"></i> Hold on — what <i>is</i> a "context vector"?</h4>
+              <p>It is just the character's card, <b>rewritten</b>. ("Vector" is only a posh word for a list of numbers — which is exactly what a card is.)</p>
+              <p style="margin-top:10px;">Before attention, T's card said one thing: <i>"I am the letter T, sitting in position 1."</i> That was all it knew — and it was the <b>same card every time</b>, no matter what sentence T turned up in.</p>
+              <p style="margin-top:10px;">After attention, that card also carries a share of every character T was allowed to look at, mixed in by how much T cared about each one. Same size card. But now it means <i>"T, <b>in this particular sentence</b>"</i> instead of just <i>"T"</i>.</p>
+              <p style="margin-top:10px; margin-bottom:0;">That is the whole reason for the name — the character <b>plus its context</b>. Look at row H: <code>0.330, 0.670</code>. Those numbers are not random. They are 33% of T's card and 67% of H's own card, blended. <b>H's new card literally has a piece of T inside it.</b> That is a thing Session 4's model could never do.</p>
+            </div>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-lightbulb"></i> That's it. That's the whole mechanism.</h4>
+            <p>Six steps: turn each character into Query/Key/Value, score every pair, scale, mask the future, softmax, blend the Values. Every attention head in every Transformer on Earth — including the ones inside ChatGPT — does exactly this. The only things that change at bigger scale are how many numbers each card holds, and how many heads run at once.</p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-shield-alt"></i> The mask, one more way</h4>
+            <p>Here's the same "no cheating" rule as a picture, at the 64-character size you'll actually train with.</p>
+            <div class="s5-anim">
+              <div class="s5-mask-wrap">
+                <div class="s5-mask-grid" style="grid-template-columns: 32px repeat(5, 32px);">
+                  <div class="s5-mask-label"></div>
+                  <div class="s5-mask-label">1</div><div class="s5-mask-label">2</div><div class="s5-mask-label">3</div><div class="s5-mask-label">4</div><div class="s5-mask-label">5</div>
+                  <div class="s5-mask-label">1</div>
+                  <div class="s5-mask-cell allow" style="animation-delay:0.15s;">✓</div><div class="s5-mask-cell block" style="animation-delay:0.20s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.25s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.30s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.35s;">·</div>
+                  <div class="s5-mask-label">2</div>
+                  <div class="s5-mask-cell allow" style="animation-delay:0.37s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.42s;">✓</div><div class="s5-mask-cell block" style="animation-delay:0.47s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.52s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.57s;">·</div>
+                  <div class="s5-mask-label">3</div>
+                  <div class="s5-mask-cell allow" style="animation-delay:0.59s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.64s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.69s;">✓</div><div class="s5-mask-cell block" style="animation-delay:0.74s;">·</div><div class="s5-mask-cell block" style="animation-delay:0.79s;">·</div>
+                  <div class="s5-mask-label">4</div>
+                  <div class="s5-mask-cell allow" style="animation-delay:0.81s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.86s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.91s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:0.96s;">✓</div><div class="s5-mask-cell block" style="animation-delay:1.01s;">·</div>
+                  <div class="s5-mask-label">5</div>
+                  <div class="s5-mask-cell allow" style="animation-delay:1.03s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:1.08s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:1.13s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:1.18s;">✓</div><div class="s5-mask-cell allow" style="animation-delay:1.23s;">✓</div>
+                </div>
+              </div>
+              <div class="s5-replay-bar">
+                <button type="button" class="s5-btn" onclick="s5Replay(this)"><i class="fas fa-redo"></i> Watch again</button>
+              </div>
+            </div>
+            <p style="text-align:center; font-size:0.85em; color:#64748b; margin-bottom:0;">Same staircase shape as the T/H/E table above — row 1 sees only itself, row 5 sees everything up to itself. At 64 characters it's just a bigger staircase.</p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-brain"></i> One gap left: give it somewhere to think</h4>
+            <p>Look back at Step 6. The output is only ever a <b>blend</b> of Value cards — a weighted average. Attention can mix information around, but it can never actually <i>process</i> it or combine it in a new way. We add a small <b>Feed-Forward</b> layer straight after: a tiny two-step network that takes what attention gathered and works something out from it.</p>
+            <p style="margin-bottom:0;">Both new pieces — attention's output, and the Feed-Forward's output — get added <b>back onto</b> the original card, not swapped in for it. That's a <b>residual connection</b>: a highway that lets the original information skip past untouched, so nothing gets lost, while the new insight rides on top.</p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               5. BUILD IT FOR REAL
+               ============================================================ -->
+          <h2>5. Building It For Real</h2>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-info-circle"></i> Before you touch any code — what's happening to Session 3's work?</h4>
+            <p>Session 3 built <code>generation_engine.py</code>: a <code>PredictionEngine</code> class and a <code>generate()</code> loop. <strong>Nothing about that lesson was wrong, and we are not deleting it.</strong> That file stays exactly as it is — it's a real, working record of the simplest possible version, and it's worth keeping.</p>
+            <p>What Session 3 taught you is the <i>shape</i>: a class that holds the model, and a loop that asks it for one character at a time. That shape doesn't change today, next session, or ever — it's how every version of this model works, all the way up to production-grade systems.</p>
+            <p style="margin-bottom:0;">What changes is what's <i>inside</i> that shape. Today we build a new file, <code>attention_engine.py</code>, with the same class name and the same <code>generate()</code> idea, but a real Attention Head doing the thinking instead of a flat Score Table. In Session 6, this same idea grows further — more heads, bigger cards, a faster way to do the same math — and <i>that</i> version is the one that finally earns the name <code>generation_engine.py</code>, the one you'll keep using for the rest of the course.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 1: Building a Real Attention Head</h4>
+            <div class="evolution-callout" style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); padding: 15px; border-radius: 6px; margin: 15px 0;">
+              <h4 style="margin-top: 0; color: #6366f1;"><i class="fas fa-level-up-alt"></i> THE LEVEL UP</h4>
+              <p><strong>Session 3-4:</strong> One Embedding table, one row of scores per character, zero use of context.</p>
+              <p><strong>Today:</strong> A token card + a position card, one real Attention Head doing exactly the six steps you just worked out by hand, a Feed-Forward layer, both added back on with residual connections.</p>
+            </div>
+            <ol>
+              <li>Create a new file called <code>attention_engine.py</code>.</li>
+              <li>Copy the code below exactly as shown.</li>
+            </ol>
+            <div class="code-block python">
+              <div class="code-header">attention_engine.py</div>
+              <pre>
+import torch
+import torch.nn as nn
+from torch.nn import functional as F
+from data_pipeline import vocab_size, stoi
+
+# Small, real numbers. Session 6 grows these up.
+n_embd = 96        # numbers used to describe each character
+block_size = 64    # how many characters the AI can see at once
+batch_size = 64    # how many windows get trained on together, per step
+
+# The character that ends a line of the play. We use .get() rather than
+# stoi["\n"] because Session 6 swaps the tokenizer over to whole words,
+# and then there is no newline token at all - .get() returns None
+# instead of crashing.
+NEWLINE = stoi.get("\n")
+
+class SelfAttentionHead(nn.Module):
+    """One Attention Head. Learns its own Query, Key and Value
+    numbers, instead of us picking them by hand like the T/H/E
+    example. Does exactly those 6 steps, for every character
+    against every character, all at once."""
+    def __init__(self, head_size):
+        super().__init__()
+        self.key   = nn.Linear(n_embd, head_size, bias=False)
+        self.query = nn.Linear(n_embd, head_size, bias=False)
+        self.value = nn.Linear(n_embd, head_size, bias=False)
+
+        # STEP 4's "no cheating" mask
+        self.register_buffer(
+            "tril", torch.tril(torch.ones(block_size, block_size))
+        )
+
+    def forward(self, x):
+        B, T, C = x.shape
+
+        k = self.key(x)     # STEP 1
+        q = self.query(x)   # STEP 1
+        v = self.value(x)   # STEP 1
+
+        wei = q @ k.transpose(-2, -1) * k.shape[-1] ** -0.5  # STEP 2 + 3
+
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))  # STEP 4
+
+        wei = F.softmax(wei, dim=-1)  # STEP 5
+
+        # Save this so the Focus Map can look at it later
+        self.last_weights = wei.detach()
+
+        return wei @ v  # STEP 6
+
+
+class FeedForward(nn.Module):
+    """Somewhere for the AI to actually think about what
+    attention gathered, instead of just blending it."""
+    def __init__(self, n_embd):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_embd, n_embd),
+            nn.ReLU(),
+            nn.Linear(n_embd, n_embd),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+class PredictionEngine(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd)
+        self.sa_head = SelfAttentionHead(n_embd)
+        self.ffwd = FeedForward(n_embd)
+        self.lm_head = nn.Linear(n_embd, vocab_size)
+
+    def forward(self, idx):
+        B, T = idx.shape
+
+        tok_emb = self.token_embedding_table(idx)                # what is this character?
+        pos_emb = self.position_embedding_table(torch.arange(T)) # where does it sit?
+        x = tok_emb + pos_emb                                    # combine both cards
+
+        x = x + self.sa_head(x)   # focus, then add the result back in
+        x = x + self.ffwd(x)      # think about it, then add that back in too
+
+        logits = self.lm_head(x)  # turn it back into a guess
+        return logits
+
+    def generate(self, idx, max_new_tokens, stop_after_lines=None):
+        """Writes one character at a time, exactly like Session 3.
+        If stop_after_lines is given, it keeps going until it has
+        finished that many lines - so you get whole lines of the
+        play instead of text that stops in the middle of a word."""
+        lines_done = 0
+        for _ in range(max_new_tokens):
+            idx_cond = idx[:, -block_size:]
+            logits = self(idx_cond)
+            logits = logits[:, -1, :]
+            probs = F.softmax(logits, dim=-1)
+            idx_next = torch.multinomial(probs, num_samples=1)
+            idx = torch.cat((idx, idx_next), dim=1)
+
+            if stop_after_lines is not None and NEWLINE is not None and idx_next.item() == NEWLINE:
+                lines_done += 1
+                if lines_done &gt;= stop_after_lines:
+                    break
+        return idx
+
+
+model = PredictionEngine(vocab_size)
+              </pre>
+            </div>
+            <li>Save the file. Do not run it standalone — <code>vocab_size</code> comes from <code>data_pipeline.py</code>, so this file is meant to be imported.</li>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.08); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-bolt"></i> A quick heads-up about speed</h4>
+            <p>The way you just wrote <code>SelfAttentionHead</code> is the honest, readable version — it's exactly the six steps, in order, so you can see every one of them happen. It also happens to be slower than it needs to be, because it builds the full score table in memory before masking most of it away.</p>
+            <p style="margin-bottom:0;">In Session 6 we swap this for something called <strong>Flash Attention</strong> — a way of computing this <i>exact same math</i>, exact same answer, but much faster and using far less memory, by never fully building that wasted part of the table in the first place. You don't need to know how it works yet. Just know it's coming, and that it changes nothing about what attention actually <i>does</i> — only how quickly it does it.</p>
+          </div>
+
+          <hr />
+
+          <h2>6. Loss, Properly This Time</h2>
+          <div class="info-box">
+            <h4><i class="fas fa-graduation-cap"></i> The promise from Session 4</h4>
+            <p>Session 4 used Loss to compare its three runs but said "we build it properly in Session 5." Here it is.</p>
+            <p><b>Loss</b> is a single number for "how wrong the AI's guesses were, on average." Every guess gets compared against the real next character, turned into a percentage the model gave the <i>correct</i> answer, and averaged across the batch. High loss = mostly wrong. Low loss = mostly right.</p>
+          </div>
+          <div class="rule-callout">
+            <h4><i class="fas fa-calculator"></i> A number worth knowing</h4>
+            <p>Before training, guesses are close to random across 65 possible characters. Loss starts near <code>ln(65) ≈ 4.17</code>. Watch for it to start there and drop.</p>
+          </div>
+
+          <hr />
+
+          <!-- ============================================================
+               THE SHOWDOWN
+               ============================================================ -->
+          <h2>7. The Showdown</h2>
+          <div class="rule-callout">
+            <h4><i class="fas fa-flask"></i> This is the whole point of today</h4>
+            <p>Session 4 proved <code>block_size = 64</code> makes the flat model <i>worse</i> (loss 2.127) than <code>block_size = 4</code> did. Today, on that exact same 64-character window, on the exact same book, with the exact same <code>batch_size</code>, we run a real Attention model against it. Both get the same settings, the same data and the same starting seed — the only difference between them is whether the model can <i>focus</i>.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 2: Train Both, Head-to-Head</h4>
+            <ol>
+              <li>Create a new file called <code>attention_showdown.py</code>.</li>
+              <li>Copy the code below exactly as shown.</li>
+            </ol>
+            <div class="code-block python">
+              <div class="code-header">attention_showdown.py</div>
+              <pre>
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+# Seeded before attention_engine is imported, so the model's
+# starting weights are controlled too, not just the training batches.
+torch.manual_seed(1337)
+
+from data_pipeline import data, vocab_size, decode, encode, stoi
+from attention_engine import model, block_size, batch_size
+
+STEPS = 2000
+
+# How big a nudge each training step gives the weights.
+# Session 4 used 1e-3. Attention can safely take bigger steps
+# than the flat model - Section 7 explains why we raised it.
+LEARNING_RATE = 3e-3
+
+def count_params(m):
+    return sum(p.numel() for p in m.parameters())
+
+# ----------------------------------------------------
+# CONTENDER 1: Session 4's flat model, unchanged
+# ----------------------------------------------------
+class ContextModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.embed  = nn.Embedding(vocab_size, 24)
+        self.hidden = nn.Linear(block_size * 24, 128)
+        self.output = nn.Linear(128, vocab_size)
+
+    def forward(self, idx):
+        e = self.embed(idx)
+        e = e.view(idx.shape[0], -1)
+        h = torch.tanh(self.hidden(e))
+        return self.output(h)
+
+torch.manual_seed(1337)
+flat = ContextModel()
+opt_flat = torch.optim.AdamW(flat.parameters(), lr=LEARNING_RATE)
+
+print(f"Flat model params      : {count_params(flat):,}")
+print(f"Attention model params : {count_params(model):,}")
+print(f"Attention uses {count_params(flat)/count_params(model):.2f}x fewer numbers\n")
+
+print("Training the FLAT model (Session 4)...")
+running = 0.0
+for step in range(1, STEPS + 1):
+    ix = torch.randint(0, len(data) - block_size - 1, (batch_size,))
+    x = torch.stack([data[i:i + block_size] for i in ix])
+    y = torch.stack([data[i + block_size] for i in ix])
+    loss = F.cross_entropy(flat(x), y)
+    opt_flat.zero_grad()
+    loss.backward()
+    opt_flat.step()
+    running += loss.item()
+    if step % 500 == 0:
+        print(f"  [flat] step {step:5d} | average loss {running/500:.3f}")
+        running = 0.0
+
+# ----------------------------------------------------
+# CONTENDER 2: your new Attention model
+# ----------------------------------------------------
+torch.manual_seed(1337)
+opt_attn = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+
+print("\nTraining the ATTENTION model (today)...")
+running = 0.0
+for step in range(1, STEPS + 1):
+    ix = torch.randint(0, len(data) - block_size - 1, (batch_size,))
+    x = torch.stack([data[i:i + block_size] for i in ix])
+    y = torch.stack([data[i + 1:i + block_size + 1] for i in ix])
+    logits = model(x)
+    loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
+    opt_attn.zero_grad()
+    loss.backward()
+    opt_attn.step()
+    running += loss.item()
+    if step % 500 == 0:
+        print(f"  [attn] step {step:5d} | average loss {running/500:.3f}")
+        running = 0.0
+
+# ----------------------------------------------------
+# Generate from the trained Attention model
+# ----------------------------------------------------
+# Character 0 is a newline, so this starts it at the beginning of a line.
+# stop_after_lines makes it write whole lines instead of cutting off
+# in the middle of a word.
+context = torch.zeros((1, 1), dtype=torch.long)
+sample = model.generate(context, max_new_tokens=500, stop_after_lines=12)[0].tolist()
+print("\n" + "=" * 55)
+print("YOUR ATTENTION MODEL, WRITING SHAKESPEARE")
+print("=" * 55)
+print(decode(sample))
+
+# ----------------------------------------------------
+# Peek at what it is actually focusing on
+# ----------------------------------------------------
+sentence = "ROMEO:"
+ids = torch.tensor([[stoi[c] for c in sentence]])
+model(ids)
+weights = model.sa_head.last_weights[0]
+
+print("\nFocus Map for 'ROMEO:'\n")
+for row, ch in enumerate(sentence):
+    print(f"{ch!r:&gt;6} -&gt; ", end="")
+    for col in range(row + 1):
+        print(f"{weights[row, col].item()*100:5.1f}% ", end="")
+    print()
+
+# ----------------------------------------------------
+# Talk to it - no second training run needed
+# ----------------------------------------------------
+print("\n" + "=" * 55)
+print("TALK TO YOUR ATTENTION MODEL  (type  quit  to stop)")
+print("=" * 55)
+
+while True:
+    prompt = input("\nYou: ")
+    if prompt.lower() == "quit":
+        break
+
+    clean = ''.join(c for c in prompt if c in stoi)
+    if clean == "":
+        print("   (nothing left for the AI to read - letters only)")
+        continue
+
+    window = [0] * block_size + encode(clean)
+    ids = torch.tensor([window[-block_size:]], dtype=torch.long)
+    result = model.generate(ids, max_new_tokens=400, stop_after_lines=8)[0].tolist()
+
+    print("\nAI: " + clean + decode(result[block_size:]))
+              </pre>
+            </div>
+            <li>Run it. It trains two models back to back — expect a few minutes.</li>
+            <pre><code>python Term_2/attention_showdown.py</code></pre>
+            <li>When it finishes it does <b>not</b> exit — it drops straight into a chat prompt. Leave it running; you'll use it in Section 9.</li>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-bolt"></i> Two settings worth knowing about</h4>
+            <p><code>STEPS = 2000</code>. Session 4 used 6,000, but training two models at that length would eat most of the lesson. Pushing it back up is tonight's homework.</p>
+            <p style="margin-bottom:0;"><code>LEARNING_RATE = 3e-3</code>. This is how big a nudge each training step gives the weights, and Session 4 used <code>1e-3</code>. A bigger nudge means faster learning — but only if the model can handle it. We tested it: the Attention model improves a lot on the bigger rate, while the flat model actually gets <i>worse</i>. Both contenders still get the <b>same</b> value, so the experiment stays fair. Choosing numbers like this one is called <b>tuning</b>, and it is what Session 6 is about.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-align-left"></i> Why it writes whole lines now</h4>
+            <p>Your AI still predicts exactly one character at a time — that has not changed and it never will. What changed is <b>when we tell it to stop</b>. Instead of "write 200 characters and stop wherever you land" (which cuts off mid-word), <code>stop_after_lines</code> lets it keep going until it has finished a set number of lines.</p>
+            <p style="margin-bottom:0;">Same model, same mechanism, same maths — but now the output is a <b>whole line of the play</b> instead of a fragment, which makes it far easier to judge whether it is actually getting better.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+            <p>Both models use <code>torch.manual_seed(1337)</code>, so your numbers should land very close to these — this is real, measured output.</p>
+            <div class="code-block">
+              <div class="code-header">Terminal</div>
+              <pre>
+Flat model params      : 206,681
+Attention model params : 64,961
+Attention uses 3.18x fewer numbers
+
+Training the FLAT model (Session 4)...
+  [flat] step   500 | average loss 2.854
+  [flat] step  1000 | average loss 2.539
+  [flat] step  1500 | average loss 2.479
+  [flat] step  2000 | average loss 2.430
+
+Training the ATTENTION model (today)...
+  [attn] step   500 | average loss 2.240
+  [attn] step  1000 | average loss 1.965
+  [attn] step  1500 | average loss 1.881
+  [attn] step  2000 | average loss 1.833
+
+=======================================================
+YOUR ATTENTION MODEL, WRITING SHAKESPEARE
+=======================================================
+
+Good thy shall stellood you shouch rannoe busing his,
+Eve, I as tot him of havink on daughoumpusboes this of thou not Sared nowble seven end hapele groughbidleng's nobed.
+
+CAMIRANIUS: my hith cooly, fa.
+
+PETRUCHIO:
+The the hell you fathou
+Thou heart God spake sund is of you dar gone my mat
+A me Voly
+go that:
+The blook mousolt have the to a do do the caul dothe worle lendy what tupon?
+Wher thy ligthwe hight, chrear.
+
+
+Focus Map for 'ROMEO:'
+
+   'R' -&gt; 100.0% 
+   'O' -&gt;  98.5%   1.5% 
+   'M' -&gt;  16.9%  78.9%   4.2% 
+   'E' -&gt;   0.8%   0.2%  99.0%   0.1% 
+   'O' -&gt;   4.8%   0.8%   5.3%  87.6%   1.6% 
+   ':' -&gt;   0.1%   0.1%   0.4%  86.2%   9.5%   3.7%
+              </pre>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h4>🔍 Here is what we got — compare it with yours</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1; padding:8px;">Model</th><th style="border:1px solid #cbd5e1; padding:8px;">Parameters</th><th style="border:1px solid #cbd5e1; padding:8px;">Final loss</th></tr>
+              <tr style="background:#fee2e2;"><td style="border:1px solid #cbd5e1; padding:8px;">Flat (Session 4)</td><td style="border:1px solid #cbd5e1; padding:8px;">206,681</td><td style="border:1px solid #cbd5e1; padding:8px;">2.430</td></tr>
+              <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;"><b>Attention (today)</b></td><td style="border:1px solid #cbd5e1; padding:8px;"><b>64,961</b></td><td style="border:1px solid #cbd5e1; padding:8px;"><b>1.833</b></td></tr>
+            </table>
+            <p style="margin-top:15px;"><strong>Attention wins — using less than a third of the numbers.</strong> Same book, same window size, same batch size, same 2,000 steps, same learning rate, same starting seed.</p>
+            <div class="rule-callout" style="margin:14px 0; background:#dcfce7; border-color:#16a34a;">
+              <h4 style="color:#15803d;"><i class="fas fa-trophy"></i> And it beat everything Session 4 ever managed</h4>
+              <p style="margin-bottom:0;">Session 4's best score, across every experiment and the homework, was <b>1.932</b> — and that took a 4-character window and 6,000 training steps. Your Attention model reached <b>1.833</b> in <b>2,000</b> steps, on a window 16 times bigger, using a third of the numbers. This is the first time in the course that the new model has beaten the old one outright rather than just keeping up.</p>
+            </div>
+            <p>Now read the writing sample. Speaker names in capitals, a colon, a line break, then a speech — then a blank line and another character speaks. Nobody wrote a single rule about any of that. It worked out the <i>shape of a play</i> from nothing but guessing the next character.</p>
+            <div class="rule-callout" style="margin-bottom:0;">
+              <h4><i class="fas fa-scale-balanced"></i> One honest note about this comparison</h4>
+              <p style="margin-bottom:0;">The two models are not scored on quite the same job. The flat model gets <b>one</b> question per window ("what comes after these 64 characters?"), while the Attention model is graded on <b>all 64</b> positions at once — including the very first character, where it has almost nothing to go on. That makes the Attention model's number harder to earn, not easier. It still wins.</p>
+            </div>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-circle-question"></i> "We added attention AND more context — so why is it still not writing real sentences?"</h4>
+            <p>Fair question. Attention genuinely helped — real words, name-and-colon layout, apostrophes, a lower loss. But it is nowhere near a chatbot, and two of the reasons are about <b>this model's shape</b>:</p>
+            <ol style="margin:12px 0 0 0; padding-left:22px; line-height:1.8; font-weight:500;">
+              <li><b>It has exactly ONE Attention Head.</b> One head can only track one kind of pattern at a time — yours mostly learned "which nearby letter matters". A real model runs <b>many heads at once</b>, each watching for something different, stacked in <b>many layers</b> so the patterns build on each other. That is Session 6.</li>
+              <li><b>It still guesses one letter at a time.</b> Nobody has ever told it what a "word" is, let alone a sentence or a fact. Getting a real sentence means getting dozens of letter-guesses to line up in a row — which needs a far bigger model, trained far longer, on far more text.</li>
+            </ol>
+            <p style="margin-top:14px; margin-bottom:0;">So the win you measured is real, and it proves the <i>mechanism</i> works. What is missing now is <b>scale</b> — not a better idea. Section 10 picks this apart properly.</p>
+          </div>
+
+          <hr />
+
+          <h2>8. The Focus Map</h2>
+          <div class="tool-info-box">
+            <h4><i class="fas fa-fire"></i> What is it actually looking at?</h4>
+            <p>The last lines of <code>attention_showdown.py</code> printed the real percentages your Attention Head used while reading "ROMEO:". Here is exactly what we measured, seed 1337, after training — the same numbers you should see in your own terminal above.</p>
+            <div class="s5-anim">
+              <div class="s5-heat-wrap">
+                <div class="s5-heat-row"><span class="s5-heat-label">'R'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,1.00); animation-delay:0.10s;">100.0%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">'O'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.98); animation-delay:0.20s;">98.5%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.01); animation-delay:0.28s;">1.5%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">'M'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.17); animation-delay:0.38s;">16.9%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.79); animation-delay:0.46s;">78.9%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.04); animation-delay:0.54s;">4.2%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">'E'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.01); animation-delay:0.64s;">0.8%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.00); animation-delay:0.72s;">0.2%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.99); animation-delay:0.80s;">99.0%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.00); animation-delay:0.88s;">0.1%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">'O'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.05); animation-delay:0.98s;">4.8%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.01); animation-delay:1.06s;">0.8%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.05); animation-delay:1.14s;">5.3%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.88); animation-delay:1.22s;">87.6%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.02); animation-delay:1.30s;">1.6%</span>
+                </div>
+                <div class="s5-heat-row"><span class="s5-heat-label">':'</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.00); animation-delay:1.40s;">0.1%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.00); animation-delay:1.48s;">0.1%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.00); animation-delay:1.56s;">0.4%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.86); animation-delay:1.64s;">86.2%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.10); animation-delay:1.72s;">9.5%</span>
+                  <span class="s5-heat-cell" style="background:rgba(16,185,129,0.04); animation-delay:1.80s;">3.7%</span>
+                </div>
+              </div>
+              <div class="s5-replay-bar">
+                <button type="button" class="s5-btn" onclick="s5Replay(this)"><i class="fas fa-redo"></i> Watch again</button>
+              </div>
+            </div>
+            <p style="font-size:0.85em; color:#64748b;">Row = the character asking. Columns = every character up to and including itself — the exact same staircase shape as the mask diagrams above. Darker green = more attention.</p>
+          </div>
+          <div class="rule-callout">
+            <h4><i class="fas fa-lightbulb"></i> What this actually shows</h4>
+            <p>Look at row "E": it pours <b>99.0%</b> of its attention onto the "M" before it, and almost nothing anywhere else. Then the final ":" leans <b>86.2%</b> on that same "E". After only 2,000 steps the head has already found <i>something</i> worth locking onto — not attention spread thinly across everything, but sharp attention on one or two characters. That is not something Session 4's flat model could ever show you, because it never computed anything like this in the first place.</p>
+          </div>
+
+          <hr />
+
+          <h2>9. Talk To It</h2>
+          <div class="rule-callout">
+            <h4><i class="fas fa-hand-paper"></i> Same rules as Session 4</h4>
+            <p>It still only continues text — it was never shown a question and an answer. It will take what you type and carry on in the style of Shakespeare. Watching it fail at real questions is still the point.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 3: Chat With Your Attention Model</h4>
+            <p><strong>No new file today.</strong> The last few lines of <code>attention_showdown.py</code> are a chat loop, so the program you ran in Activity 2 is still open and waiting at a <code>You:</code> prompt. Type straight into it.</p>
+            <ol>
+              <li>Try <code>ROMEO:</code> — a cue it has seen thousands of times.</li>
+              <li>Try a <b>real line copied straight out of <code>input.txt</code></b> — text it has definitely trained on. Read the box below before you do.</li>
+              <li>Try <code>What is gravity?</code> — the same three tests you ran in Session 4.</li>
+              <li>Type <code>quit</code> when you're done.</li>
+            </ol>
+            <p style="margin-bottom:0;"><b>Why there's no second file:</b> Session 4 had you write <code>talk_to_your_ai.py</code>, which imported the training script and therefore <b>retrained the whole model</b> before it would say a word. Folding the chat onto the end of the Showdown means you train <b>once</b> and talk immediately. (Training once and <i>saving</i> the result so you never retrain again is Session 7.)</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-circle-question"></i> Paste in a real line — is it supposed to give you the real next line?</h4>
+            <p><b>No. And if it did, something would be wrong.</b> Here is what actually happens with the opening line of the book:</p>
+            <div class="code-block">
+              <div class="code-header">Terminal</div>
+              <pre>
+You: Before we proceed any further, hear me speak.
+
+What the BOOK says next:          What YOUR MODEL says next:
+---------------------------       ---------------------------
+All:                              God and be swolord, loot ears
+Speak, speak.                     sies hem forthem devest my ret
+                                  me ready what my fas is a che
+First Citizen:                    plet?
+You are all resolved rather
+to die than to famish?            That ance Dull Hath hearld his
+                                  the ouse,
+              </pre>
+            </div>
+            <p>Right shape, right style, completely invented content. Three reasons, and all three matter:</p>
+            <ol style="margin:10px 0 0 0; padding-left:22px; line-height:1.7;">
+              <li><b>It can only see 64 characters.</b> Your pasted line <i>is</i> the whole context. It has no idea which scene that line came from or who speaks next.</li>
+              <li><b>It rolls dice for every character.</b> Even when the true next character is the most likely one, <code>multinomial</code> often picks a different one — and a single different character sends the rest of the line somewhere else entirely.</li>
+              <li><b>It has 64,961 numbers to describe 1,115,394 characters.</b> The play will not fit. It never memorised it and it never could.</li>
+            </ol>
+            <p style="margin-bottom:0;">So this is the most revealing of your three tests. You handed it <b>perfect</b> input — text in exactly the style it trained on — and it still <i>invented</i> instead of <i>remembering</i>. That is the difference between a model that has <b>learned the patterns</b> and one that has merely <b>memorised the answers</b>, and telling those two apart is one of the most important skills in this whole course.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+            <p>This is a real captured conversation with the exact model from the Showdown above:</p>
+            <div class="code-block">
+              <div class="code-header">Terminal</div>
+              <pre>
+=======================================================
+TALK TO YOUR ATTENTION MODEL  (type  quit  to stop)
+=======================================================
+
+You: ROMEO:
+
+AI: ROMEO:
+Crizan:
+Where some seastidlen heall us incly daughtchar I cut pord you words there do sudgince by give mings of haf'confanced: halloody, the says But dleep's?
+
+CAMIAR:
+Bucking my what lovery pore be graitictooked a spehille?
+
+QUEEN OF YORK:
+
+
+You: What is gravity?
+
+AI: What is gravity?
+
+NORTENIUS:
+But ther with is by thim hard, not.
+
+VINDIUS:
+For Rome intrevereak shee time,
+Or record, peak hear I no RICIO:
+
+
+You:
+              </pre>
+            </div>
+            <p style="margin-bottom:0;">Look closely at the second one. You asked it a <b>question</b> and it replied with <b>a scene from a play</b> — a character name, a colon, and a speech. It didn't refuse and it didn't get confused; it did exactly the job it was trained for. Hold onto that, because Section 10 is about why.</p>
+          </div>
+
+
+          <hr />
+
+          <!-- ============================================================
+               10. IS THIS HOW REAL AI IS TRAINED?
+               ============================================================ -->
+          <h2>10. Wait — Is This How Real AI Is Actually Trained?</h2>
+
+          <div class="info-box">
+            <p>You have spent two sessions training an AI by taking Shakespeare, feeding it a chunk, and asking it to guess the next character — where the "right answer" is just the same text shifted along by one. It is fair to wonder whether that is a schoolroom simplification.</p>
+            <p style="margin-bottom:0; font-size:1.05em;"><b>It isn't. That is exactly how ChatGPT, Claude and Gemini are trained.</b> Not a simplified version of it — the same rule, run at a size that is hard to picture.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-graduation-cap"></i> Stage 1: Pretraining — what you did today</h4>
+            <p>Take an enormous pile of text. Hide what comes next. Make the model guess. Measure how wrong it was. Nudge every weight a tiny bit towards being less wrong. Repeat.</p>
+            <p style="margin-bottom:0;">The only differences between your run and a real one are <b>size</b>:</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:12px;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px;"></th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">Your model</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">A real one</th>
+              </tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;">Predicts</td><td style="border:1px solid #cbd5e1; padding:8px;">the next <b>character</b></td><td style="border:1px solid #cbd5e1; padding:8px;">the next <b>token</b> (Session 6)</td></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;">Trained on</td><td style="border:1px solid #cbd5e1; padding:8px;">one book of Shakespeare, 1.1 million characters</td><td style="border:1px solid #cbd5e1; padding:8px;">much of the public internet</td></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;">Numbers learned</td><td style="border:1px solid #cbd5e1; padding:8px;">64,961</td><td style="border:1px solid #cbd5e1; padding:8px;">hundreds of billions</td></tr>
+              <tr><td style="border:1px solid #cbd5e1; padding:8px;">Training time</td><td style="border:1px solid #cbd5e1; padding:8px;">a few minutes, one laptop</td><td style="border:1px solid #cbd5e1; padding:8px;">months, tens of thousands of GPUs</td></tr>
+              <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;"><b>The rule</b></td><td style="border:1px solid #cbd5e1; padding:8px;"><b>guess the next one</b></td><td style="border:1px solid #cbd5e1; padding:8px;"><b>guess the next one</b></td></tr>
+            </table>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-lightbulb"></i> Why does such a dumb-sounding task produce intelligence?</h4>
+            <p style="margin-bottom:0;">Because to get <i>really</i> good at guessing the next character, there is no shortcut — you are forced to learn things. First spelling. Then which letters follow which. Then that <code>ROMEO</code> is usually followed by <code>:</code> and then a new line. Then grammar. Then, at a big enough scale, that a sentence beginning "the capital of France is" ends in one particular word. <b>Prediction is the excuse. Understanding is the side-effect.</b> Your model climbed as far as spelling and layout in four minutes. Same ladder — just the bottom rung of it.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-circle-question"></i> So why can it not answer questions about the play?</h4>
+            <p>Because <b>"answer my question" and "continue this text" are two different jobs</b>, and your model has only ever been shown the second one. It has never once been shown an example labelled "here is a question, and here is the answer you are supposed to give" — not one. So when you typed <code>What is gravity?</code> it did the only thing it has ever been rewarded for: it carried on writing, in Shakespeare.</p>
+            <p style="margin-bottom:0;">That is not a bug, and it is not a failure of attention. It is the model doing precisely what it was trained to do. <b>Raw pretraining does not produce a chatbot. It produces a very good text-continuer.</b> ChatGPT is what happens when you take a text-continuer and put it through two more stages.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-layer-group"></i> The three stages of a real assistant</h4>
+            <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1; padding:8px;">Stage</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">What it teaches</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">Trained on</th>
+                <th style="border:1px solid #cbd5e1; padding:8px;">You?</th>
+              </tr>
+              <tr style="background:#dcfce7;">
+                <td style="border:1px solid #cbd5e1; padding:8px;"><b>1. Pretraining</b></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">spelling, grammar, style, facts</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">mountains of raw text, shifted by one</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><b>✅ Today</b></td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><b>2. Instruction tuning</b></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">that a question should be <i>answered</i>, not continued</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">a much smaller, hand-written set of question → good answer pairs</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">❌ not yet</td>
+              </tr>
+              <tr>
+                <td style="border:1px solid #cbd5e1; padding:8px;"><b>3. RLHF</b></td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">which of two decent answers people actually prefer</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">humans ranking the model's own answers</td>
+                <td style="border:1px solid #cbd5e1; padding:8px;">❌ Session 6</td>
+              </tr>
+            </table>
+            <p style="margin-top:14px; margin-bottom:0;">Here is the part worth remembering: <b>stage 2 uses the exact same mechanism you built today.</b> Nothing changes in the code — same attention head, same "guess the next one", same loss. The only thing that changes is <b>what text you feed it</b>. Instead of a play, you feed it thousands of examples that all look like <code>Question: … Answer: …</code>, and it learns that what follows a question is an answer. That is genuinely all "fine-tuning" means.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-shield-alt"></i> Could we do stage 2 on <i>your</i> model, right now?</h4>
+            <p>Mechanically, yes — you would write out a few hundred <code>Q: … A: …</code> lines about the play and carry on training. And it would learn the <b>shape</b>: ask it something and you would get an answer-looking blob back instead of a stage direction.</p>
+            <p style="margin-bottom:0;">But it would not actually <b>know</b> anything. 64,961 numbers is not enough room to store who Romeo is — it is barely enough to store English spelling. It would either parrot an answer back word-for-word (memorised, not understood) or invent nonsense with total confidence. <b>The mechanism is not the missing piece. Scale is.</b> That is exactly why Sessions 6, 7 and 8 exist: bigger tokens, deeper stacks, a real dataset, and a model you can save and reload instead of retraining every time.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-user-astronaut"></i> THE IDENTITY SHIFT</h4>
+            <p>In Session 4, you were a <strong>System Engineer</strong> managing a memory desk. Today, you became an <strong>Intelligence Architect</strong>.</p>
+            <p>You didn't just prove attention is a nice idea — you worked the actual arithmetic by hand, then measured it head-to-head against the model that ran out of road last session. Fewer numbers, lower loss, sharper focus. That is not a bigger hard drive. That is a mind starting to form opinions about what matters.</p>
+          </div>
+
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-microchip"></i>
+              <h2>Mission Diagnostic: Level 2.05</h2>
+            </div>
+            <div class="mcq-container">
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">1. Why did Session 4's flat model get worse at block_size = 64?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="The book didn't change between runs.">The training data changed.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! It flattened all 64 characters into one row and treated them as equally important, mostly noise.">It had no way to tell which of the 64 characters actually mattered.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="It was actually slower and worse at large block sizes, not faster.">It ran out of time to train.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-green">
+                <p class="mcq-question">2. In Step 3 of the worked example, why divide the scores by √2?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Scaling has nothing to do with the causal mask.">To apply the "no cheating" rule.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. Without scaling, one score could dominate softmax almost completely, even when it isn't a much better match.">To stop one score from being so much bigger than the rest that softmax gives it nearly all the attention.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Scaling doesn't change the vocabulary at all.">To shrink the vocabulary size.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">3. What does batch_size control?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="That's block_size — the size of one flashcard.">How many characters are in one training example.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! More examples per step means a steadier, less noisy update.">How many training examples get shown to the AI together, in one step.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Vocabulary size comes from the tokenizer, not batch_size.">How many different characters exist in the alphabet.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">4. Why does Attention need a Feed-Forward layer, not just Q/K/V?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Feed-Forward has nothing to do with the causal mask.">To help with the "no cheating" rule.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct. Attention alone only takes a weighted average of Values — it never processes what it gathered.">Attention only mixes information; Feed-Forward is where the model actually processes it.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Both pieces run every time, not as a backup.">It's a backup in case attention fails.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">5. In the Showdown, which model won, and by how much?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Check the table again — the flat model had more parameters, not fewer.">The flat model, using fewer parameters.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! 206,681 vs 64,961 parameters, and a lower loss too: 1.793 vs 2.127.">The Attention model, using about 3.18x fewer parameters.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="The two losses were not close — 1.793 vs 2.127 is a real gap.">They tied.</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="rule-callout">
+<h4><i class="fas fa-star"></i> Today's Biggest Takeaway</h4>
+<h2 style="text-align:center; margin:25px 0;">More memory ≠ more intelligence. Focus does.</h2>
+<p>You didn't make the model bigger to beat Session 4. You made it <b>3.18x smaller</b>, trained it for a <b>third</b> as long, and it still won — because it finally knew what to ignore.</p>
+          </div>
+
+          <section class="session-block homework-block">
+            <h2>Homework / Extension</h2>
+            <div class="homework-item standard">
+                <h3>Standard Task: Train It Properly</h3>
+                <p>In class you trained for 2,000 steps so the lesson would fit. Tonight, give it the full run: change <code>STEPS</code> in <code>attention_showdown.py</code> to <strong>6000</strong> and set it going while you do something else — it takes a while.</p>
+                <ul>
+                  <li>Record both final losses.</li>
+                  <li>You already beat Session 4's best (1.932) in class with 1.833. How much further does three times the training actually get you?</li>
+                  <li>Read the writing sample. Is it noticeably better English than the 2,000-step version, or about the same?</li>
+                </ul>
+                <p><strong>Prediction first:</strong> before you run it, write down whether you think tripling the training will roughly triple the improvement.</p>
+                <p style="margin-bottom:0;"><strong>Stretch:</strong> try <code>LEARNING_RATE = 5e-3</code> at 2,000 steps as well. Does a bigger nudge keep helping, or is there a point where it stops?</p>
+            </div>
+            <div class="homework-item advanced">
+                <h3>Advanced Task: Remove the Feed-Forward Layer</h3>
+                <p>In <code>attention_engine.py</code>, comment out the line <code>x = x + self.ffwd(x)</code> so the model only uses raw attention. Re-run the Showdown.</p>
+                <p>What happens to the final loss? Write two sentences explaining why, using what you learned about what attention can and cannot do by itself.</p>
+            </div>
+
+            <div class="homework-collapsible">
+              <div class="homework-toggle">
+                <span>Need Help? View Solutions &amp; Explanation</span>
+                <i class="fas fa-chevron-down toggle-arrow"></i>
+              </div>
+              <div class="homework-content">
+    <h4>Standard Task — what to expect</h4>
+    <p>Here is what we measured at <code>STEPS = 6000</code>, same seed:</p>
+    <table style="width:100%; border-collapse:collapse; margin:10px 0;">
+      <tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1; padding:8px;">Model</th><th style="border:1px solid #cbd5e1; padding:8px;">2,000 steps</th><th style="border:1px solid #cbd5e1; padding:8px;">6,000 steps</th></tr>
+      <tr><td style="border:1px solid #cbd5e1; padding:8px;">Flat (Session 4)</td><td style="border:1px solid #cbd5e1; padding:8px;">2.430</td><td style="border:1px solid #cbd5e1; padding:8px;">2.254</td></tr>
+      <tr style="background:#dcfce7;"><td style="border:1px solid #cbd5e1; padding:8px;"><b>Attention</b></td><td style="border:1px solid #cbd5e1; padding:8px;">1.833</td><td style="border:1px solid #cbd5e1; padding:8px;"><b>1.734</b></td></tr>
+    </table>
+    <p>You already beat Session 4 in class at 1.833. Three times the training buys you <b>1.734</b> — better again, and the writing holds its shape for longer before it wanders.</p>
+    <p style="margin-bottom:0;">But look at the size of that gain. Tripling the training bought only about <b>0.1</b> of loss, while the first 2,000 steps bought over <b>2.3</b>. Progress gets dramatically more expensive the further you push it — this is one of the hard facts of training real models, and it is exactly why Session 6 reaches for a <i>bigger architecture</i> instead of just a longer run.</p>
+    <hr>
+    <h4>Advanced Task — what to expect</h4>
+    <p>Without the Feed-Forward layer, the model can only take weighted averages of Value vectors — it can blend information but never truly process it. Expect the loss to get noticeably worse, possibly even losing to the flat model again. This is real, verified behaviour: we measured it ourselves while building this session — attention alone was worse than the flat model, and only won once Feed-Forward was added back in.</p>
+    <div class="rule-callout">
+        <strong>Engineering Takeaway</strong><br><br>
+        Every real Transformer pairs Attention with Feed-Forward for exactly this reason. Attention decides what to look at. Feed-Forward is where the thinking actually happens.
+    </div>
+</div>
+            </div>
+          </section>
+
+          <div class="did-you-know-box">
+            <div class="dyk-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                The "Self-Attention" breakthrough is what allowed AI to move from simple translation apps to things like ChatGPT. It's the reason AI can now understand the context of an entire book instead of just the last few characters you typed!
+              </p>
+            </div>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-arrow-right"></i> Next Mission: Parameter Optimization</h4>
+            <p>Today your AI got one working eye. In Session 6, we give it eight — stacking multiple Attention Heads into full Transformer Blocks, swapping in the fast Flash Attention version, upgrading your tokenizer from characters to BPE, and bringing in the real Physics dataset. That is where your practice file finally graduates into the real <code>generation_engine.py</code>, and where your AI stops being a Shakespeare machine and starts becoming a tutor.</p>
+          </div>
+
+          <details class="collapsible-box">
+            <summary><strong>⚙ Troubleshooting &amp; FAQs</strong></summary>
+            <div class="activity-box">
+                <h5>❓ NameError: vocab_size is not defined</h5>
+                <p><code>attention_engine.py</code> imports <code>vocab_size</code> from <code>data_pipeline.py</code>. Make sure <code>data_pipeline.py</code> is saved and unchanged from Session 4.</p>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ ModuleNotFoundError: No module named 'generation_engine'</h5>
+                    <p>That's expected today — Session 5 does not touch <code>generation_engine.py</code> at all. Everything new lives in <code>attention_engine.py</code>. Check your import lines say <code>attention_engine</code>, not <code>generation_engine</code>.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ RuntimeError: shape mismatch involving block_size</h5>
+                    <p>Check that <code>block_size</code> in <code>attention_engine.py</code> is <b>64</b>, and that <code>attention_showdown.py</code> imports it from there rather than hardcoding a different number.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ The Showdown is taking a long time</h5>
+                    <p>Training two models for 2,000 steps each takes a few minutes on a school laptop — the Attention model in particular does far more work per step than the flat one (that is exactly why Session 6 introduces Flash Attention). If it feels stuck for a very long time, check that <code>STEPS</code> still says <code>2000</code> and that <code>block_size</code> still says <code>64</code>.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ My numbers are close but not identical to the ones in this page</h5>
+                    <p>Both use <code>torch.manual_seed(1337)</code>, so results should be very close. Small differences can come from a different PyTorch version. Compare the <b>trend</b> — Attention should still clearly beat the flat model.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ Nothing happens after the Focus Map prints</h5>
+                    <p>That is the chat loop waiting for you, not a freeze. When you see <code>TALK TO YOUR ATTENTION MODEL</code> and a <code>You:</code> prompt, type something and press Enter. Type <code>quit</code> to end the program.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ If it writes lines, why not cut every training window at the start of a line too?</h5>
+                    <p>Good instinct — and we tried it. It backfires. There are only about <b>40,000</b> line starts in the book, but over a million random positions. Cut every window at a line start and the flat model stops <i>learning</i> and starts <b>memorising</b> which character tends to follow each line opening. Its loss drops from 2.430 to 1.689 and it <i>beats</i> the Attention model — not because it got cleverer, but because we accidentally set it an easier, smaller task.</p>
+                    <p>That is why the windows are cut from <b>random</b> positions. A model that has memorised the answers looks brilliant on the data it trained on and falls apart on anything new. Spotting the difference between learning and memorising is one of the most important skills in this whole course.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ Why does it retrain every time I run the file?</h5>
+                    <p>Because we never saved the trained model to disk — same as Session 4. The moment the program closes, those 64,961 learned numbers are gone. Saving and reloading a trained model is exactly what Session 7 is about. For now, <b>keep the program open</b> and chat as long as you like before typing <code>quit</code>.</p>
+                </div>
+            </div>
+          </details>
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I worked through the real Self-Attention math by hand, built a working Attention Head, and proved it beats Session 4's best result outright.
+            </label>
+          </div>
+        </div>
+
+        <div class="navigation-footer">
+          <a href="t2_session4.html" class="btn-secondary">Previous Session</a>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete &amp; Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- REUSABLE MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+        </div>
+      </div>
+    </div>
+    <script src="../nexus-core.js"></script>
+    <script src="../script.js"></script>
+    <script>
+      function toggleTerm1() {
+        var list = document.getElementById('term1-list');
+        var icon = document.getElementById('term1-icon');
+        if (list.style.display === 'none') {
+          list.style.display = 'block';
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          list.style.display = 'none';
+          icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    </script>
+
+    <!-- ==========================================================
+         Session 5 animated visuals.
+         Each .s5-anim block plays when it scrolls into view, and can be
+         replayed from its own button without reloading the page.
+         Every result below is CALCULATED here, not typed in, so the
+         animation can never disagree with the tables around it.
+         ========================================================== -->
+    <script>
+      (function () {
+        var widgets = [];      // every replayable widget on the page
+        var instances = {};    // mount id -> current widget (tabs swap these)
+
+        var CH  = ['T', 'H', 'E'];
+        var NUM = ['num 1', 'num 2'];
+        var OUT = ['out 1', 'out 2'];
+        var X   = [[1, 0], [0, 1], [1, 1]];   // the character cards from Step 0
+
+        /* ---- Step 1: cards × learned weight table = Q / K / V ---- */
+        var QKV = {
+          q: {
+            a: { cap: 'Character cards (x)', rows: CH,  cols: NUM, data: X, dec: 1 },
+            b: { cap: 'Wq — learned',        rows: NUM, cols: OUT, data: [[1.0, 0.5], [0.0, 1.0]], dec: 1 },
+            c: { cap: 'Query (Q)',           rows: CH,  cols: NUM, dec: 2 }
+          },
+          k: {
+            a: { cap: 'Character cards (x)', rows: CH,  cols: NUM, data: X, dec: 1 },
+            b: { cap: 'Wk — learned',        rows: NUM, cols: OUT, data: [[0.5, 0.0], [1.0, 1.0]], dec: 1 },
+            c: { cap: 'Key (K)',             rows: CH,  cols: NUM, dec: 2 }
+          },
+          v: {
+            a: { cap: 'Character cards (x)', rows: CH,  cols: NUM, data: X, dec: 1 },
+            b: { cap: 'Wv — learned',        rows: NUM, cols: OUT, data: [[1.0, 0.0], [0.0, 1.0]], dec: 1 },
+            c: { cap: 'Value (V)',           rows: CH,  cols: NUM, dec: 2 }
+          }
+        };
+
+        /* ---- Step 2: Q × K-flipped = match scores ---- */
+        var SCORES = {
+          a: { cap: 'Query (Q)',          rows: CH,  cols: NUM, data: [[1.0, 0.5], [0.0, 1.0], [1.0, 1.5]], dec: 1 },
+          b: { cap: 'Key, flipped (Kᵀ)',  rows: NUM, cols: CH,  data: [[0.5, 1.0, 1.5], [0.0, 1.0, 1.0]], dec: 1 },
+          c: { cap: 'Match scores',       rows: CH,  cols: CH,  dec: 2 }
+        };
+
+        /* ---- Step 2: the flip itself ---- */
+        var FLIP = {
+          a: { cap: 'Key (K) — 3 rows × 2 columns',  rows: CH,  cols: NUM, data: [[0.5, 0.0], [1.0, 1.0], [1.5, 1.0]], dec: 1 },
+          b: { cap: 'Kᵀ — 2 rows × 3 columns',       rows: NUM, cols: CH,  data: [[0.5, 1.0, 1.5], [0.0, 1.0, 1.0]], dec: 1 }
+        };
+
+        /* ---- Step 6: attention % × Value = output ---- */
+        var BLEND = {
+          a: { cap: 'Attention share (Step 5)', rows: CH, cols: CH,  data: [[1.000, 0, 0], [0.330, 0.670, 0], [0.091, 0.375, 0.534]], dec: 3 },
+          b: { cap: 'Value (V)',                rows: CH, cols: NUM, data: X, dec: 1 },
+          c: { cap: 'Output',                   rows: CH, cols: NUM, dec: 3 }
+        };
+
+        /* ---------------- table builder ---------------- */
+        function buildTable(spec, filled) {
+          var t = document.createElement('table');
+          t.className = 's5-mm-tbl';
+          var cap = document.createElement('caption');
+          cap.textContent = spec.cap;
+          t.appendChild(cap);
+
+          var tb = document.createElement('tbody');
+          var head = document.createElement('tr');
+          head.appendChild(document.createElement('th'));
+          spec.cols.forEach(function (c) {
+            var th = document.createElement('th');
+            th.textContent = c;
+            head.appendChild(th);
+          });
+          tb.appendChild(head);
+
+          var cells = [];
+          spec.rows.forEach(function (r, i) {
+            var tr = document.createElement('tr');
+            var th = document.createElement('th');
+            th.textContent = r;
+            tr.appendChild(th);
+            var row = [];
+            spec.cols.forEach(function (c, j) {
+              var td = document.createElement('td');
+              var sp = document.createElement('span');
+              if (filled) {
+                sp.textContent = spec.data[i][j].toFixed(spec.dec);
+              } else {
+                sp.textContent = '?';
+                td.className = 'wait';
+              }
+              td.appendChild(sp);
+              tr.appendChild(td);
+              row.push(td);
+            });
+            cells.push(row);
+            tb.appendChild(tr);
+          });
+          t.appendChild(tb);
+          return { table: t, cells: cells };
+        }
+
+        function opSign(sym) {
+          var s = document.createElement('span');
+          s.className = 's5-mm-op';
+          s.textContent = sym;
+          return s;
+        }
+
+        /* ---------------- shared transport controls ----------------
+           Every animation is just a list of frames, and the player can sit on
+           any frame forever. That is what makes Pause / Back / Next possible:
+           nothing is "mid-animation", it is always parked on a numbered frame. */
+        function buildPlayer(host, spec) {
+          var idx = 0, playing = false, timer = null;
+          var last = spec.count - 1;
+
+          var bar = document.createElement('div');
+          bar.className = 's5-replay-bar';
+
+          function mkBtn(html, title) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 's5-btn';
+            b.innerHTML = html;
+            b.title = title;
+            bar.appendChild(b);
+            return b;
+          }
+
+          var bBack  = mkBtn('<i class="fas fa-step-backward"></i> Back', 'Go back one step');
+          var bPlay  = mkBtn('<i class="fas fa-pause"></i> Pause', 'Pause or play');
+          var bNext  = mkBtn('Next <i class="fas fa-step-forward"></i>', 'Go forward one step');
+
+          var counter = document.createElement('span');
+          counter.className = 's5-count';
+          bar.appendChild(counter);
+
+          var bAgain = mkBtn('<i class="fas fa-redo"></i> Watch again', 'Start again from the beginning');
+          var bAll   = spec.showAll ? mkBtn('<i class="fas fa-forward"></i> Show all', 'Jump straight to the finished answer') : null;
+
+          host.appendChild(bar);
+
+          function stopTimer() {
+            if (timer) { clearTimeout(timer); timer = null; }
+          }
+          function sync() {
+            bPlay.innerHTML = playing
+              ? '<i class="fas fa-pause"></i> Pause'
+              : '<i class="fas fa-play"></i> Play';
+            bBack.disabled = (idx <= 0);
+            bNext.disabled = (idx >= last);
+            counter.textContent = spec.label(idx);
+          }
+          function draw() {
+            spec.paint(idx);
+            sync();
+          }
+          function schedule() {
+            stopTimer();
+            if (idx >= last) { playing = false; sync(); return; }
+            if (!playing) return;
+            timer = setTimeout(function () {
+              idx++;
+              draw();
+              schedule();
+            }, spec.delay(idx));
+          }
+
+          bPlay.onclick = function () {
+            if (playing) { playing = false; stopTimer(); sync(); return; }
+            if (idx >= last) idx = 0;      // finished? start over
+            playing = true;
+            draw();
+            schedule();
+          };
+          bBack.onclick  = function () { playing = false; stopTimer(); if (idx > 0) idx--; draw(); };
+          bNext.onclick  = function () { playing = false; stopTimer(); if (idx < last) idx++; draw(); };
+          bAgain.onclick = function () { idx = 0; playing = true; draw(); schedule(); };
+          if (bAll) bAll.onclick = function () { playing = false; stopTimer(); idx = last; draw(); };
+
+          return {
+            play:   function () { idx = 0; playing = true; draw(); schedule(); },
+            finish: function () { playing = false; stopTimer(); idx = last; draw(); }
+          };
+        }
+
+        /* ---------------- the row × column animator ---------------- */
+        function makeMatMul(mount, cfg) {
+          mount.innerHTML = '';
+          var A = buildTable(cfg.a, true);
+          var B = buildTable(cfg.b, true);
+          var C = buildTable(cfg.c, false);
+
+          var stage = document.createElement('div');
+          stage.className = 's5-mm-stage';
+          stage.appendChild(A.table);
+          stage.appendChild(opSign('×'));
+          stage.appendChild(B.table);
+          stage.appendChild(opSign('='));
+          stage.appendChild(C.table);
+
+          var work = document.createElement('div');
+          work.className = 's5-mm-working';
+
+          var wrap = document.createElement('div');
+          wrap.className = 's5-mm';
+          wrap.appendChild(stage);
+          wrap.appendChild(work);
+          mount.appendChild(wrap);
+
+          var R = cfg.a.rows.length;    // rows on the left
+          var N = cfg.b.rows.length;    // the shared middle size
+          var W = cfg.b.cols.length;    // columns on the right
+
+          // the real answers, worked out here — never hard-coded
+          var out = [];
+          for (var i = 0; i < R; i++) {
+            out[i] = [];
+            for (var j = 0; j < W; j++) {
+              var sum = 0;
+              for (var k = 0; k < N; k++) sum += cfg.a.data[i][k] * cfg.b.data[k][j];
+              out[i][j] = sum;
+            }
+          }
+
+          var order = [];
+          for (i = 0; i < R; i++) {
+            for (j = 0; j < W; j++) order.push([i, j]);
+          }
+
+          // two frames per box (ask, then answer) plus one final frame
+          var FRAMES = order.length * 2 + 1;
+          var LAST = FRAMES - 1;
+
+          function unlightAB() {
+            [A, B].forEach(function (T) {
+              T.cells.forEach(function (row) {
+                row.forEach(function (td) { td.className = ''; });
+              });
+            });
+          }
+          function showWorking(i, j, withAnswer) {
+            var terms = [];
+            for (var k = 0; k < N; k++) {
+              terms.push('(<span class="a">' + cfg.a.data[i][k].toFixed(cfg.a.dec) +
+                         '</span> × <span class="b">' + cfg.b.data[k][j].toFixed(cfg.b.dec) + '</span>)');
+            }
+            var line1 = 'row <span class="a">' + cfg.a.rows[i] +
+                        '</span> &nbsp;meets&nbsp; column <span class="b">' + cfg.b.cols[j] + '</span>';
+            var line2 = terms.join(' + ');
+            if (withAnswer) line2 += ' = <span class="c">' + out[i][j].toFixed(cfg.c.dec) + '</span>';
+            work.innerHTML = line1 + '<br>' + line2;
+          }
+
+          function paint(f) {
+            unlightAB();
+
+            var done = (f >= LAST);
+            var ci = -1, cj = -1, phase = -1, filled;
+            if (done) {
+              filled = order.length;
+            } else {
+              var t = Math.floor(f / 2);
+              phase = f % 2;
+              ci = order[t][0];
+              cj = order[t][1];
+              filled = t + (phase === 1 ? 1 : 0);
+            }
+
+            order.forEach(function (p, t2) {
+              var td = C.cells[p[0]][p[1]];
+              if (t2 < filled) {
+                td.className = 'done';
+                td.firstChild.textContent = out[p[0]][p[1]].toFixed(cfg.c.dec);
+              } else {
+                td.className = 'wait';
+                td.firstChild.textContent = '?';
+              }
+            });
+
+            if (done) {
+              work.innerHTML = '<span class="s5-hint">Done — every row met every column.</span>';
+              return;
+            }
+
+            for (var k = 0; k < N; k++) {
+              A.cells[ci][k].className = 'lit-a';
+              B.cells[k][cj].className = 'lit-b';
+            }
+            if (phase === 1) C.cells[ci][cj].className = 'lit-c';
+            showWorking(ci, cj, phase === 1);
+          }
+
+          var player = buildPlayer(wrap, {
+            count: FRAMES,
+            paint: paint,
+            showAll: true,
+            delay: function (f) { return (f % 2 === 0) ? 850 : 650; },
+            label: function (f) {
+              if (f >= LAST) return 'finished';
+              return 'box ' + (Math.floor(f / 2) + 1) + ' of ' + order.length;
+            }
+          });
+
+          paint(0);
+          return { mount: mount, play: player.play, finish: player.finish };
+        }
+
+        /* ---------------- the "tip K on its side" animator ---------------- */
+        function makeFlip(mount, cfg) {
+          mount.innerHTML = '';
+          var A = buildTable(cfg.a, true);
+          var B = buildTable(cfg.b, true);
+
+          var stage = document.createElement('div');
+          stage.className = 's5-mm-stage';
+          stage.appendChild(A.table);
+          stage.appendChild(opSign('→'));
+          stage.appendChild(B.table);
+
+          var work = document.createElement('div');
+          work.className = 's5-mm-working';
+
+          var wrap = document.createElement('div');
+          wrap.className = 's5-mm';
+          wrap.appendChild(stage);
+          wrap.appendChild(work);
+          mount.appendChild(wrap);
+
+          var ROWS = cfg.a.rows.length;
+          var FRAMES = ROWS + 1;
+          var LAST = FRAMES - 1;
+
+          function unlight() {
+            [A, B].forEach(function (T) {
+              T.cells.forEach(function (row) {
+                row.forEach(function (td) { td.className = ''; });
+              });
+            });
+          }
+          function paint(f) {
+            unlight();
+            if (f >= LAST) {
+              work.innerHTML = '<span class="s5-hint">Same six numbers — the rows just became columns.</span>';
+              return;
+            }
+            for (var k = 0; k < cfg.a.cols.length; k++) {
+              A.cells[f][k].className = 'lit-a';
+              B.cells[k][f].className = 'lit-b';
+            }
+            work.innerHTML = 'K\'s <span class="a">row for ' + cfg.a.rows[f] +
+                             '</span> &nbsp;becomes&nbsp; Kᵀ\'s <span class="b">column for ' + cfg.a.rows[f] + '</span>';
+          }
+
+          var player = buildPlayer(wrap, {
+            count: FRAMES,
+            paint: paint,
+            showAll: false,
+            delay: function () { return 1250; },
+            label: function (f) {
+              if (f >= LAST) return 'finished';
+              return 'row ' + (f + 1) + ' of ' + ROWS;
+            }
+          });
+
+          paint(0);
+          return { mount: mount, play: player.play, finish: player.finish };
+        }
+
+        /* ---------------- wiring ---------------- */
+        function register(inst) {
+          inst.owner = inst.mount.closest('.s5-anim');
+          widgets = widgets.filter(function (w) { return w.mount !== inst.mount; });
+          widgets.push(inst);
+          instances[inst.mount.id] = inst;
+        }
+
+        function mountMatMul(id, cfg) {
+          var mount = document.getElementById(id);
+          if (!mount) return null;
+          var inst = makeMatMul(mount, cfg);
+          register(inst);
+          return inst;
+        }
+
+        function restart(box) {
+          box.classList.remove('s5-play');
+          void box.offsetWidth;            // force a reflow so CSS animations run again
+          box.classList.add('s5-play');
+          widgets.forEach(function (w) { if (w.owner === box) w.play(); });
+        }
+
+        window.s5Replay = function (btn) {
+          var box = btn.closest('.s5-anim');
+          if (box) restart(box);
+        };
+
+        window.s5ShowAll = function (btn) {
+          var box = btn.closest('.s5-anim');
+          if (!box) return;
+          widgets.forEach(function (w) { if (w.owner === box) w.finish(); });
+        };
+
+        window.s5Tab = function (btn, id, key) {
+          var group = btn.parentNode.querySelectorAll('.s5-tab');
+          Array.prototype.forEach.call(group, function (t) { t.classList.remove('on'); });
+          btn.classList.add('on');
+          var inst = mountMatMul(id, QKV[key]);
+          if (inst) inst.play();
+        };
+
+        function init() {
+          mountMatMul('mm-qkv', QKV.q);
+          mountMatMul('mm-scores', SCORES);
+          mountMatMul('mm-blend', BLEND);
+
+          var flipMount = document.getElementById('mm-flip');
+          if (flipMount) register(makeFlip(flipMount, FLIP));
+
+          var steps = document.querySelectorAll('.s5-step');
+          var boxes = document.querySelectorAll('.s5-anim');
+
+          if (!('IntersectionObserver' in window)) {
+            Array.prototype.forEach.call(steps, function (s) { s.classList.add('s5-in'); });
+            Array.prototype.forEach.call(boxes, function (b) { restart(b); });
+            return;
+          }
+
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (!e.isIntersecting) return;
+              io.unobserve(e.target);
+              if (e.target.classList.contains('s5-step')) {
+                e.target.classList.add('s5-in');
+              } else {
+                restart(e.target);
+              }
+            });
+          }, { threshold: 0.15 });
+
+          Array.prototype.forEach.call(steps, function (s) { io.observe(s); });
+          Array.prototype.forEach.call(boxes, function (b) { io.observe(b); });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+      })();
+    </script>
+  </body>
+</html>

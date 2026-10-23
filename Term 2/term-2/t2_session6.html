@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | Teaching It To Answer</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* Session 6 only. Two tiny visuals - style.css untouched. */
+      .s6-split { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin:16px 0; }
+      .s6-card { flex:1 1 240px; border:1px solid #cbd5e1; border-radius:10px; padding:14px 16px;
+                 background:#fff; }
+      .s6-card h5 { margin:0 0 8px; font-size:0.92em; color:#0f172a; }
+      .s6-card.bad { border-color:#fca5a5; background:#fef2f2; }
+      .s6-card.good { border-color:#86efac; background:#f0fdf4; }
+      .s6-card pre { margin:0; font-size:0.82em; line-height:1.55; white-space:pre-wrap;
+                     background:none; padding:0; color:#334155; }
+      .s6-toks { display:flex; flex-wrap:wrap; gap:4px; margin:12px 0; justify-content:center; }
+      .s6-t { font-family:monospace; font-size:1.05em; padding:9px 14px; border-radius:7px;
+              background:#e2e8f0; color:#334155; border:1px solid #cbd5e1; }
+      .s6-t.one { font-size:1.6em; padding:14px 30px; background:#dcfce7;
+                  border:2px solid #22c55e; color:#14532d; font-weight:bold;
+                  letter-spacing:0.02em; }
+
+      /* ---------- file walkthrough ---------- */
+      .s6-walk { border:1px solid #dbe3ec; border-radius:12px; overflow:hidden;
+                 margin:20px 0; background:#fbfdff; }
+      .s6-walk > h4 { margin:0; padding:14px 18px; background:#eef4fb; color:#1e3a5f;
+                      font-size:1.02em; border-bottom:1px solid #dbe3ec; }
+      .s6-walk > h4 i { margin-right:8px; color:#2563eb; }
+      .s6-step { display:grid; grid-template-columns:34px 1fr; gap:14px;
+                 padding:15px 18px; border-bottom:1px solid #eef2f7; }
+      .s6-step:last-child { border-bottom:none; }
+      .s6-n { width:28px; height:28px; border-radius:50%; background:#2563eb; color:#fff;
+              display:flex; align-items:center; justify-content:center; font-size:0.82em;
+              font-weight:bold; font-family:monospace; }
+      .s6-what h5 { margin:2px 0 6px; font-size:0.95em; color:#0f172a;
+                    font-family:monospace; word-break:break-word; }
+      .s6-what p { margin:0 0 7px; font-size:0.94em; line-height:1.65; color:#334155; }
+      .s6-what p:last-child { margin-bottom:0; }
+      .s6-why { display:block; background:#fff8e6; border-left:3px solid #f59e0b;
+                padding:8px 12px; border-radius:0 6px 6px 0; margin-top:8px;
+                font-size:0.9em; line-height:1.6; color:#5b4508; }
+      @media (max-width:640px) {
+        .s6-step { grid-template-columns:26px 1fr; gap:10px; padding:12px; }
+        .s6-n { width:24px; height:24px; font-size:0.74em; }
+      }
+      .s6-t.tag { background:#e0e7ff; border-color:#818cf8; color:#3730a3; font-weight:bold; }
+      .s6-num { font-family:monospace; font-size:1.05em; font-weight:bold; color:#0ea5e9; }
+    </style>
+  </head>
+  <body class="page-session" data-current-session="t2_s6">
+    <nav class="navbar">
+      <a href="../index.html" class="site-logo">
+        <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status">Status: <strong>AI Architect</strong></span>
+        <a href="term2.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-section" data-sidebar-term="2">
+          <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+            <span>TERM 2: THE BRAIN</span>
+            <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+          </h3>
+          <ul style="display: block;">
+            <li data-session-id="t2_s1"><a href="t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li>
+            <li data-session-id="t2_s2"><a href="t2_session2.html"><i class="fas fa-font"></i> S2: The Encoding Pipeline</a></li>
+            <li data-session-id="t2_s3"><a href="t2_session3.html"><i class="fas fa-dice"></i> S3: The First Prediction Engine</a></li>
+            <li data-session-id="t2_s4"><a href="t2_session4.html"><i class="fas fa-window-maximize"></i> S4: Context Windows &amp; Sequence Processing</a></li>
+            <li data-session-id="t2_s5"><a href="t2_session5.html"><i class="fas fa-highlighter"></i> S5: Self-Attention Mechanism</a></li>
+            <li data-session-id="t2_s6" class="active"><a href="t2_session6.html"><i class="fas fa-comments"></i> S6: Teaching It To Answer</a></li>
+            <li data-session-id="t2_s7"><a href="t2_session7.html"><i class="fas fa-puzzle-piece"></i> S7: Smarter Tokens</a></li>
+            <li data-session-id="t2_s8"><a href="t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 2 / Session 6 / Teaching It To Answer
+        </nav>
+
+        <section id="lesson-header">
+          <h1>Session 6: Teaching It To Answer</h1>
+          <p class="lead">
+            Your model can write. It cannot <b>answer</b>. Today you change the book it learns from, change what a token is, and end the session by typing a physics question and getting a reply written in real English words.
+          </p>
+          <div class="stats-bar">
+            <span><i class="far fa-clock"></i> 60 Minutes</span>
+            <span><i class="fas fa-signal"></i> Level: AI Architect</span>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+            <p>
+              Train the <b>same engine from Session 5</b> on question-and-answer data, upgrade the tokenizer from letters to words, and have a conversation with it.
+            </p>
+          </div>
+        </section>
+
+        <section class="lesson-body">
+
+          <h2>0. Quick Recap: Where We Are</h2>
+
+          <div class="tool-info-box">
+            <p>Last session you built a real Attention Head and raced it against Session 4's flat model. Same book, same everything else:</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Model</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Parameters</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Final loss</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Flat model (Session 4)</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">206,681</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">2.127</td>
+              </tr>
+              <tr style="background:#dcfce7;">
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Attention model (Session 5)</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>64,961</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>1.833 &mdash; won, with 3.18x fewer</b></td>
+              </tr>
+            </table>
+            <p style="margin-top:12px;">Attention won. Your engine works. <b>Its design does not change today</b> &mdash; no new layers, no new maths. You change the <i>book</i> and the <i>tokenizer</i>, nothing else.</p>
+            <p style="margin-bottom:0;">There is <b>one</b> line of <code>attention_engine.py</code> to check before you start &mdash; see the box below.</p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(220, 38, 38, 0.07); border-left-color:#dc2626;">
+            <h4><i class="fas fa-triangle-exclamation"></i> Do this first: one line in attention_engine.py</h4>
+            <p>Today's tokenizer splits on <b>words</b>, so the newline character <code>"\n"</code> stops being a token at all. Session 5's engine looks that character up by name, and it will stop with <code>KeyError: '\n'</code> the moment you import it.</p>
+            <p>Open <code>attention_engine.py</code> and find this line near the top:</p>
+            <div class="code-block python"><div class="code-header">attention_engine.py &mdash; the old line</div><pre>
+NEWLINE = stoi["\n"]
+</pre></div>
+            <p>Change it to use <code>.get()</code>, which returns <code>None</code> instead of crashing when the character is missing:</p>
+            <div class="code-block python"><div class="code-header">attention_engine.py &mdash; the fixed line</div><pre>
+NEWLINE = stoi.get("\n")
+</pre></div>
+            <p>Then find the line inside <code>generate()</code> that uses it, and add the <code>NEWLINE is not None</code> check:</p>
+            <div class="code-block python"><div class="code-header">attention_engine.py &mdash; inside generate()</div><pre>
+            if stop_after_lines is not None and NEWLINE is not None and idx_next.item() == NEWLINE:
+</pre></div>
+            <p style="margin-bottom:0;">That is the whole fix, and nothing today uses <code>stop_after_lines</code> anyway. If your copy already says <code>.get()</code>, you have nothing to do. <b>This is the only change to the engine all session.</b></p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-comment-slash"></i> But try asking it something</h4>
+            <p>Re-run last session's <code>attention_showdown.py</code> and, when it drops into its chat prompt, type a question. (The chat loop lives at the end of that file &mdash; Session 5 folded it in so you only train once.) You will get something like this:</p>
+            <div class="code-block"><pre>You: What is gravity?
+
+AI: What is gravity?
+
+NORTENIUS:
+But ther with is by thim hard, not.
+
+VINDIUS:
+For Rome intrevereak shee time,
+Or record, peak hear I no RICIO:</pre></div>
+            <p style="margin-bottom:0;">It did not answer. It <b>continued</b>. And that is not a bug &mdash; it is exactly what you trained it to do.</p>
+          </div>
+
+          <hr />
+
+          <h2>1. Why It Cannot Answer</h2>
+
+          <div class="info-box">
+            <h4><i class="fas fa-book"></i> A model can only copy the patterns in its book</h4>
+            <p>Your model has read one thing its whole life: a Shakespeare play. So it learned the patterns in a play &mdash; which character speaks next, how a line of verse tends to run.</p>
+            <p style="margin-bottom:0;"><b>A play has no questions and answers in it.</b> Nobody asks "what is gravity?" and gets a reply. So the model has never once seen the pattern <i>"a question was asked &rarr; now give an answer &rarr; now stop"</i>. It cannot copy a pattern it has never seen.</p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-lightbulb"></i> Today's whole idea, in one line</h4>
+            <p style="margin-bottom:0;"><b>If you want different behaviour, change the book &mdash; not the brain.</b> Your engine is fine. It has simply been reading the wrong thing.</p>
+          </div>
+
+          <hr />
+
+          <h2>2. A Different Kind of Book</h2>
+
+          <div class="tool-info-box">
+            <h4>🔍 What is in the new file</h4>
+            <p>Your instructor will give you a new <code>input.txt</code>. It is <b>399 physics questions with their answers</b>, all written in exactly the same shape. Here is one real block from it:</p>
+            <div class="code-block">
+              <div class="code-header">One block from the new input.txt</div>
+              <pre>
+&lt;|user|&gt;
+What is gravity?
+&lt;|assistant|&gt;
+Gravity isn't just a simple one-line rule; it is an invisible pulling
+force that exists between absolutely everything in the universe that
+has mass...
+&lt;|endoftext|&gt;
+              </pre>
+            </div>
+            <p style="margin-top:12px; margin-bottom:0;"><b>Save it in your <code>Term_2</code> folder, replacing the old one.</b></p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-signs-post"></i> The three signposts</h4>
+            <p>Those <code>&lt;|...|&gt;</code> things are not words. They are <b>signposts</b> &mdash; and they are the most important part of the file:</p>
+            <ul style="line-height:1.9;">
+              <li><code>&lt;|user|&gt;</code> &mdash; "a question starts here"</li>
+              <li><code>&lt;|assistant|&gt;</code> &mdash; "stop reading, start answering"</li>
+              <li><code>&lt;|endoftext|&gt;</code> &mdash; "this conversation is finished"</li>
+            </ul>
+            <p style="margin-bottom:0;">Nobody explains to the model what they mean. It works that out by seeing them <b>399 times</b> in the same positions. That is how it learns to take turns.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 1: Swap the Book</h4>
+            <ol>
+              <li>Put the new <code>input.txt</code> in your <code>Term_2</code> folder, replacing the old one.</li>
+              <li><b>Change no code at all.</b> <code>data_pipeline.py</code> already reads a file called <code>input.txt</code>.</li>
+              <li>Run it:</li>
+            </ol>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>python Term_2/data_pipeline.py</pre>
+</div>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>
+Dataset Size: 137104 tokens.
+Different characters: 86
+First 10 tokens: tensor([25, 81, 75, 73, 59, 72, 81, 27,  0, 50])
+Decoded: &lt;|user|&gt;
+W
+              </pre>
+</div>
+            <p style="margin-top:10px; margin-bottom:0;">Your dataset is now 137,104 tokens instead of a million, and there are 86 different characters instead of 65. The book has changed. <b>Nothing else has.</b></p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+            <h4><i class="fas fa-circle-exclamation"></i> One thing to know</h4>
+            <p>Sessions 4 and 5 also read <code>input.txt</code>, so the moment you swap the book they are reading physics too.</p><p style="margin-bottom:0;">And once you change the tokenizer in the next step, <code>attention_showdown.py</code> will stop running altogether &mdash; it looks characters up one at a time (<code>stoi[c] for c in "ROMEO:"</code>), and a word-level vocabulary has no single characters in it. Expect <code>KeyError: 'R'</code> if you try. That is fine: those scripts belong to the character-level era and you are finished with them. <b>So do the Shakespeare chat above BEFORE you change the tokenizer.</b></p>
+          </div>
+
+          <hr />
+
+          <h2>3. The Wall: It Spells One Letter At A Time</h2>
+
+          <div class="tool-info-box">
+            <h4>🔍 We trained it on the new book. Here is what came out.</h4>
+            <p>Same engine, same settings, new book. Asked <i>"What is gravity?"</i>:</p>
+            <div class="code-block"><pre>If you the the a hat to footion?
+&lt;|assisureate is neamouch (drample uning it inning thed and leath
+&lt;|assistant|&gt;
+Frictions thard a fore a likerts, M is to ide slidant it is we objects</pre></div>
+            <p style="margin-top:12px;"><b>Look closely, because there is good news hiding in there.</b> It wrote <code>&lt;|assistant|&gt;</code>. It is taking turns. After one training run it has already worked out the <i>shape</i> of a conversation &mdash; something Shakespeare could never have taught it.</p>
+            <p style="margin-bottom:0;"><b>But it cannot spell.</b> "Frictions thard a fore a likerts."</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-face-frown"></i> Why more training will not fix this</h4>
+            <p>Your tokenizer, from Session 2, breaks text into <b>single characters</b>:</p>
+            <div class="code-block python"><pre>chars = sorted(list(set(text)))    # 86 different characters</pre></div>
+            <p>So to write the word <b>gravity</b>, the model has to pick the right letter <b>seven times in a row</b>:</p>
+            <div class="s6-toks">
+              <span class="s6-t">g</span><span class="s6-t">r</span><span class="s6-t">a</span><span class="s6-t">v</span><span class="s6-t">i</span><span class="s6-t">t</span><span class="s6-t">y</span>
+            </div>
+            <p style="margin-bottom:0;">Get any one wrong and the word is ruined. That is not a training problem &mdash; it is a <b>design</b> problem. We measured it: after a full training run, only <span class="s6-num">57.7%</span> of the words it wrote were real English words.</p>
+          </div>
+
+          <hr />
+
+          <h2>4. The Upgrade: Whole Words Instead of Letters</h2>
+
+          <div class="rule-callout" style="background: rgba(99, 102, 241, 0.08); border-left-color: #6366f1;">
+            <h4><i class="fas fa-shoe-prints"></i> Before we start: this is a stepping stone</h4>
+            <p>What you are about to build is <b>not</b> the tokenizer we finish with. Whole words fix the spelling problem, and then break something else &mdash; you will find the break yourself at the end of today.</p>
+            <p style="margin-bottom:0;">We are building it anyway, on purpose. Characters showed you one extreme, words show you the other, and <b>next session you build the one real AI models actually use</b>, which sits in the middle. You cannot appreciate why that one is clever until you have felt both of these fail.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-key"></i> What if a token was a whole word?</h4>
+            <p>Then the model picks <b>gravity</b> in one go, from a list:</p>
+            <div class="s6-toks">
+              <span class="s6-t one">gravity</span>
+            </div>
+            <p style="margin-bottom:0;"><b>It becomes impossible to misspell.</b> Not unlikely &mdash; impossible. Every word it writes comes from a list of real words, so a broken word cannot come out.</p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-wand-magic-sparkles"></i> And the change is one word of code</h4>
+            <p>Session 2 collected every unique <b>character</b>. We now collect every unique <b>word</b>. It is the same idea, pointed at something bigger:</p>
+            <div class="s6-split">
+              <div class="s6-card">
+                <h5>Session 2 &mdash; characters</h5>
+                <pre>chars = sorted(list(set(text)))</pre>
+              </div>
+              <div class="s6-card good">
+                <h5>Session 6 &mdash; words</h5>
+                <pre>words = sorted(list(set(text.split())))</pre>
+              </div>
+            </div>
+            <p style="margin-bottom:0;"><code>.split()</code> cuts text wherever there is a space. That is the entire upgrade.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 2: Upgrade Your Tokenizer</h4>
+            <ol>
+              <li>Open <code>data_pipeline.py</code>.</li>
+              <li>Find the line <code># --- The tokenizer from Session 2 ---</code>.</li>
+              <li><b>Delete that line and the nine lines under it</b> &mdash; everything down to and including <code>vocab_size = len(chars)</code>. Leave the file-opening code above it alone, and the <code>data = torch.tensor(...)</code> part below it alone.</li>
+              <li>Paste the block below into the gap.</li>
+              <li>Run it again.</li>
+            </ol>
+            <div class="code-block python">
+  <div class="code-header">data_pipeline.py  —  replace the tokenizer section</div>
+  <pre>
+# --- The tokenizer, now split on WORDS instead of characters ---
+# Session 2 did:  chars = sorted(list(set(text)))
+# One added .split() and every token is now a whole word.
+words = sorted(list(set(text.split())))
+stoi = { w:i for i,w in enumerate(words) }
+itos = { i:w for i,w in enumerate(words) }
+
+vocab_size = len(words)      # how many different WORDS exist
+
+# Unknown words are dropped, because the model has no number for them.
+def encode(s):
+    return [stoi[w] for w in s.split() if w in stoi]
+
+def decode(ids):
+    return &#x27; &#x27;.join([itos[i] for i in ids])
+              </pre>
+</div>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>python Term_2/data_pipeline.py</pre>
+</div>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>
+Dataset Size: 22182 tokens.
+Different words: 4095
+First 10 tokens: tensor([ 211,  553, 2084, 1856,  209,  319, 2085, 2115,  568, 3273])
+Decoded: &lt;|user|&gt; What is gravity? &lt;|assistant|&gt; Gravity isn&#x27;t just a simple
+              </pre>
+</div>
+            <p style="margin-top:12px;">Two numbers changed a lot. Both matter:</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:8px;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;"></th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Characters</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Words</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Vocabulary</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">86</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>4,095</b> &mdash; 48x bigger</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Dataset length</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">137,104 tokens</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>22,182</b> tokens &mdash; 6x shorter</td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;">The same text is now <b>six times shorter</b> in tokens. Which means something rather good, and it is the Session 4 lesson coming back.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-window-maximize"></i> Remember the context window?</h4>
+            <p>Session 4 taught you that <code>block_size</code> is how much the model can see at once. It is still <b>64</b> &mdash; you are not changing it.</p>
+            <p style="margin-bottom:0;">But 64 <i>characters</i> was barely half a sentence. <b>64 words is a whole question and most of its answer.</b> Without touching that setting, your model can suddenly see far more of the conversation at once.</p>
+          </div>
+
+          <hr />
+
+          <h2>5. Train It</h2>
+
+          <div class="tool-info-box">
+            <h4>🔍 A new file, built from one you already know</h4>
+            <p><code>attention_showdown.py</code> trained <b>two</b> models so you could compare them. You do not need the flat model any more.</p>
+            <p style="margin-bottom:0;">So <code>train_qa.py</code> is that same training loop with the flat model removed, and <b>two additions</b>: it saves the finished model to a file, and it asks a question at the end.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 3: Train On The New Book</h4>
+            <ol>
+              <li>Create a new file called <code>train_qa.py</code>.</li>
+              <li>Copy in the code below.</li>
+              <li>Run it. It takes about <b>5 minutes</b> &mdash; watch the loss fall while you wait.</li>
+            </ol>
+            <div class="code-block python">
+  <div class="code-header">train_qa.py</div>
+  <pre>
+import torch
+import torch.nn.functional as F
+
+# Same seed as Session 5, so a re-run gives the same model.
+torch.manual_seed(1337)
+
+from data_pipeline import data, vocab_size, decode, encode
+from attention_engine import model, block_size, batch_size
+
+STEPS = 1500
+
+print(f&quot;Vocabulary   : {vocab_size} words&quot;)
+print(f&quot;Dataset      : {len(data)} tokens&quot;)
+print(f&quot;Model params : {sum(p.numel() for p in model.parameters()):,}&quot;)
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
+
+print(&quot;\nTraining on the question-and-answer data...&quot;)
+running = 0.0
+for step in range(1, STEPS + 1):
+    ix = torch.randint(0, len(data) - block_size - 1, (batch_size,))
+    x = torch.stack([data[i:i + block_size] for i in ix])
+    y = torch.stack([data[i + 1:i + block_size + 1] for i in ix])
+
+    logits = model(x)
+    loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    running += loss.item()
+    if step % 300 == 0:
+        print(f&quot;  step {step:5d} | average loss {running/300:.3f}&quot;)
+        running = 0.0
+
+# --- Save it, so you never have to train again ---
+torch.save(model.state_dict(), &quot;qa_model.pth&quot;)
+print(&quot;\nSaved qa_model.pth&quot;)
+
+# --- Ask it something straight away ---
+prompt = &quot;&lt;|user|&gt; What is gravity? &lt;|assistant|&gt;&quot;
+ids = torch.tensor([encode(prompt)], dtype=torch.long)
+answer = model.generate(ids, max_new_tokens=60)[0].tolist()
+
+print(&quot;\n&quot; + &quot;=&quot; * 55)
+print(&quot;YOUR MODEL, ANSWERING A QUESTION&quot;)
+print(&quot;=&quot; * 55)
+print(decode(answer[len(encode(prompt)):]))
+              </pre>
+</div>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>python Term_2/train_qa.py</pre>
+</div>
+          </div>
+
+          <div class="s6-walk">
+            <h4><i class="fas fa-diagram-project"></i>How train_qa.py works, part by part</h4>
+
+            <div class="s6-step"><div class="s6-n">1</div><div class="s6-what">
+              <h5>torch.manual_seed(1337)</h5>
+              <p>Fixes every "random" choice &mdash; the starting weights, and which chunks of the book each step grabs. Run it twice and you get the identical model.</p>
+              <span class="s6-why"><b>Why it is the very first line:</b> it must run <i>before</i> the model is built, or the starting weights are already random by the time you fix the seed. Same trick as Session 5.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">2</div><div class="s6-what">
+              <h5>from data_pipeline import ... / from attention_engine import ...</h5>
+              <p>Everything comes from files you already have. <code>data_pipeline</code> gives the book as numbers and the word list; <code>attention_engine</code> gives the model itself.</p>
+              <span class="s6-why">Importing a file <b>runs</b> it &mdash; which is why you see <code>data_pipeline</code>'s own printout appear first. Not a bug.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">3</div><div class="s6-what">
+              <h5>STEPS = 1500</h5>
+              <p>How many times the model practises. Section 6 explains why this is 1,500 and not Session 5's 6,000 &mdash; the short version is that this book is 50 times smaller.</p>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">4</div><div class="s6-what">
+              <h5>optimizer = torch.optim.AdamW(...)</h5>
+              <p>The part that actually adjusts the model. Once we know which way each number should move, AdamW moves it a little. <code>lr=1e-3</code> is how big that step is.</p>
+              <span class="s6-why">Same optimizer you used in Sessions 4 and 5. Nothing new here.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">5</div><div class="s6-what">
+              <h5>ix = torch.randint(...) &mdash; grabbing a batch</h5>
+              <p>Picks <b>64 random starting points</b> in the book. From each it takes 64 tokens as the input <code>x</code>, and the same 64 shifted one place along as the answer <code>y</code>.</p>
+              <p>That one-place shift is the whole task: <b>at every position, the right answer is simply the next word.</b></p>
+              <span class="s6-why">Nobody labelled this data. The book labels itself &mdash; which is why models can learn from plain text.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">6</div><div class="s6-what">
+              <h5>logits = model(x) &mdash; the guess</h5>
+              <p>All 64 chunks go through the model at once. Out comes a score for <b>every one of the 4,095 words</b>, at every position.</p>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">7</div><div class="s6-what">
+              <h5>loss = F.cross_entropy(...) &mdash; the marking</h5>
+              <p>Compares each guess against the word that actually came next, and turns the whole lot into a single number: <b>how surprised were you?</b></p>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">8</div><div class="s6-what">
+              <h5>zero_grad() &rarr; backward() &rarr; step()</h5>
+              <p>Three lines, always in this order. <b>Wipe</b> last step's notes, <b>work out</b> which way every number should move, then <b>move them</b>.</p>
+              <span class="s6-why"><b>Forget <code>zero_grad()</code> and PyTorch adds the new notes onto the old ones.</b> The model still trains, just wrongly, and slowly gets worse in a way that looks like a bad learning rate. The most common bug in hand-written training loops.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">9</div><div class="s6-what">
+              <h5>if step % 300 == 0: print(...)</h5>
+              <p>Every 300 steps, print the average loss since last time. Averaging matters &mdash; a single step bounces around too much to tell you anything.</p>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">10</div><div class="s6-what">
+              <h5>torch.save(model.state_dict(), "qa_model.pth")</h5>
+              <p>Writes every learned number to a file. <code>state_dict</code> is PyTorch's name for that bundle.</p>
+              <span class="s6-why">This is the line that ends the retrain-every-time misery. It is also, in miniature, exactly how every AI you have used is shipped: train once, save, load forever.</span>
+            </div></div>
+
+            <div class="s6-step"><div class="s6-n">11</div><div class="s6-what">
+              <h5>The question at the end</h5>
+              <p>Builds the prompt <code>&lt;|user|&gt; What is gravity? &lt;|assistant|&gt;</code>, feeds it in, and prints what comes out &mdash; so you find out whether the run worked without opening another file.</p>
+            </div></div>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-floppy-disk"></i> The important new line</h4>
+            <div class="code-block python"><pre>torch.save(model.state_dict(), "qa_model.pth")</pre></div>
+            <p style="margin-bottom:0;">Until now, every time you wanted to chat, your model retrained from scratch. This line writes everything it learned into a file. <b>Train once, use forever.</b> That file is your model &mdash; and it is the first one you will actually keep.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+            <p>This is real measured output. Your numbers should land close to these.</p>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>
+Vocabulary   : 4095 words
+Dataset      : 22182 tokens
+Model params : 842,751
+
+Training on the question-and-answer data...
+  step   300 | average loss 5.182
+  step   600 | average loss 2.993
+  step   900 | average loss 1.803
+  step  1200 | average loss 1.090
+  step  1500 | average loss 0.690
+
+Saved qa_model.pth
+
+=======================================================
+YOUR MODEL, ANSWERING A QUESTION
+=======================================================
+Magnetism is an outside force because there is no air resistance force pushing
+it forward in the handlebars your skateboard down a skateboard off, the
+skateboard off, out If you hold the block on the ramp decreases. a desk. This
+creates a large mass doubles, what will experience a force, but objects appear
+weightless because they waited of inertia! The
+              </pre>
+</div>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-face-smile"></i> Read that answer again &mdash; then read it properly</h4>
+            <p><b>Every single word is spelled correctly.</b> Compare it with <i>"Frictions thard a fore a likerts"</i> from an hour ago. That is today's win, and it is a real one.</p>
+            <p style="margin-bottom:0;"><b>Now be honest about the rest.</b> It starts on magnetism, wanders into skateboards, and never actually answers the question. It is real English that means very little. That is not a mistake you made &mdash; it is exactly what this model is, and the next section explains why.</p>
+          </div>
+
+          <hr />
+
+          <h2>6. Why 1,500 Steps? Understanding the Dials</h2>
+
+          <div class="tool-info-box">
+            <h4>🔍 Session 5 trained for 6,000 steps. Why did we drop to 1,500?</h4>
+            <p>It looks like we are being lazy. We are not. Look at what a "step" actually costs on each book.</p>
+            <p style="margin-bottom:0;">Every step, your model reads <b>64 chunks of 64 tokens</b> &mdash; that is 4,096 tokens per step. So the real question is: <b>how many times does it read the whole book?</b></p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-repeat"></i> The number that decides everything</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;"></th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Session 5</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Session 6</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Book size</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">1,115,394 tokens</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>22,182</b> tokens</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Steps</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">6,000</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">1,500</td>
+              </tr>
+              <tr style="background:#dcfce7;">
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Times it reads the whole book</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>22</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>277</b></td>
+              </tr>
+            </table>
+            <p style="margin-top:12px;">Your new book is <b>50 times smaller</b>. So even at a quarter of the steps, your model reads it <b>277 times</b> &mdash; against Shakespeare's 22.</p>
+            <p style="margin-bottom:0;">And if we had kept 6,000 steps? It would read these same 399 questions <b>1,108 times over</b>. Nobody learns anything new on the thousandth read. They just learn it by heart.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-ruler"></i> What "loss" actually measures</h4>
+            <p>Loss is <b>how surprised the model was by the right answer</b>. Nothing more.</p>
+            <p>At every position it guesses the next token. Then we look at what actually came next and ask: <i>how much did you expect that?</i></p>
+            <ul style="line-height:1.9; margin-bottom:8px;">
+              <li>Expected it strongly &rarr; loss near <b>0</b></li>
+              <li>Total shock &rarr; loss <b>large</b></li>
+            </ul>
+            <p style="margin-bottom:0;">Your run went <b>5.182 &rarr; 0.690</b>. It started off astonished by every word, and ended up mostly expecting what came next. That is real learning &mdash; the model found patterns.</p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+            <h4><i class="fas fa-triangle-exclamation"></i> The trap: a lower loss does NOT mean better writing</h4>
+            <p>This is the single most useful thing in today's session, so here is real proof from your own model.</p>
+            <p>We tried making the model bigger &mdash; a whole extra round of look-and-think. One change, nothing else touched:</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:8px;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;"></th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Loss</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Sensible word pairs</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Copied word-for-word</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Your model</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">0.594</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">87.1%</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">3.7%</td>
+              </tr>
+              <tr style="background:#fee2e2;">
+                <td style="padding:8px; border:1px solid #cbd5e1;">Bigger model</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>0.401</b> &mdash; much better!</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">88.2% &mdash; no real change</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>6.0%</b> &mdash; nearly doubled</td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;">The loss fell by a third. The writing did not improve. <b>What improved was its memory of the answer sheet.</b> That is why we do not simply chase a smaller number.</p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4>🔍 So what is really happening as the steps go up?</h4>
+            <ol style="line-height:1.9; margin-bottom:8px;">
+              <li><b>Early on</b> the model learns real patterns &mdash; that <code>&lt;|assistant|&gt;</code> follows a question, that "force" often follows "the".</li>
+              <li><b>Later</b> it runs out of new patterns to find. There are only 399 questions.</li>
+              <li><b>So it starts memorising</b> whole phrases. Loss keeps dropping, because reciting is a very reliable way to be unsurprised.</li>
+            </ol>
+            <p style="margin-bottom:0;">We measured exactly this. At 750 steps <b>0%</b> of its writing was copied word-for-word from the book. At 1,500 steps it was creeping up. Push on to 6,000 and you get a model that recites your book back at you &mdash; with a beautiful loss number and nothing learned.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-sliders"></i> Every dial in your files, and what it does</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Setting</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Yours</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">What it does &mdash; and why it is set there</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>STEPS</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">1,500</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">How many times it practises. <b>Too few</b> and it hasn't found the patterns. <b>Too many</b> and it memorises. 1,500 is where it writes well without reciting.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>block_size</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">64</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">How much it sees at once. <b>We did not raise it</b> &mdash; because 64 <i>words</i> is already a whole question plus most of an answer. It used to be 64 letters. The tokenizer did that job for us.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>batch_size</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">64</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">How many chunks it studies together before adjusting itself. Bigger means steadier &mdash; one odd chunk can't yank the whole model sideways.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>n_embd</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">96</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">How many numbers describe <b>one token</b>. Think of it as how much the model is allowed to remember about a word &mdash; is it a noun? about force? plural?</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>nn.Embedding</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">4,095 &times; 96</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">The lookup table. One row of 96 numbers per word. Feed in word 2,568 and out comes row 2,568 &mdash; the numbers that mean "gravity" to your model.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>nn.Linear</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">several</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Where the learning actually lives.</b> Each one multiplies its input by a grid of numbers that training adjusts. Your Query, Key, Value and the thinking step are all these.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><code>vocab_size</code></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">4,095</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">How many options it chooses between at every single position. It went from 86 to 4,095 today &mdash; a much harder choice, but every option is now a real word.</td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;">Add all those numbers up and you get your model's size: <b>842,751 parameters</b>. Most of them live in that embedding table and the final layer, because both have to cope with 4,095 different words.</p>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(99, 102, 241, 0.08); border-left-color: #6366f1;">
+            <h4><i class="fas fa-lightbulb"></i> The lesson hiding in all of this</h4>
+            <p>Today you changed <b>two</b> things and left the model alone:</p>
+            <table style="width:100%; border-collapse:collapse; margin-top:8px;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Change</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Effect on the writing</th>
+              </tr>
+              <tr style="background:#dcfce7;">
+                <td style="padding:8px; border:1px solid #cbd5e1;">Swapped the tokenizer</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>12.5% &rarr; 87%</b> sensible word pairs</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Made the model bigger</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">87.1% &rarr; 88.2% &mdash; <b>almost nothing</b></td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;">When your dataset is small, <b>how you feed the model matters far more than how clever the model is.</b> That is why today was about data and tokens, not about the engine. Bigger engines start earning their keep in Term 3 &mdash; once there is enough data to feed them.</p>
+          </div>
+
+          <hr />
+
+          <h2>7. Talk To It</h2>
+
+          <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+            <h4><i class="fas fa-triangle-exclamation"></i> Set your expectations first &mdash; this is important</h4>
+            <p>You are about to type a question and get a reply. <b>It will not actually answer you.</b> Do not expect a tutor.</p>
+            <p>What you built is an <b>autocomplete engine</b>. It has one skill: look at the text so far, guess the next word. That is all it has ever done. When you type <i>"What is gravity?"</i> it does not understand a question has been asked &mdash; it just continues the text in the style it has read.</p>
+            <p style="margin-bottom:8px;">Sometimes that continuation looks like an answer. Sometimes it carries on writing <i>another question</i>. Both are the same behaviour.</p>
+            <p style="margin-bottom:0;"><b>Today's goal was never "answer correctly".</b> It was "produce real English words", and you have done that.</p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-weight-scale"></i> Why it cannot answer properly yet &mdash; three honest reasons</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;"></th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Yours today</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">The model in Term 3</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Size</b> (parameters)</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">842,751</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">12,219,525 &mdash; <b>14x bigger</b></td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Reading material</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">22,182 tokens</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">7,505,033 &mdash; <b>338x more</b></td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;"><b>Practice</b></td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">1,500 steps</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">10,000 steps</td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;">399 questions is simply not enough material to learn what physics <i>means</i>. It is enough to learn what physics writing <b>sounds like</b> &mdash; and that is precisely what you are seeing.</p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4>🔍 Two changes to a file you already have</h4>
+            <p>Open your <code>talk_to_your_engine.py</code> from Session 5. Two things are different now:</p>
+            <ol style="line-height:1.9; margin-bottom:0;">
+              <li><b>It loads the saved model</b> instead of importing the training script. No more waiting.</li>
+              <li><b>It wraps your question in signposts</b> before sending it &mdash; <code>&lt;|user|&gt; your question &lt;|assistant|&gt;</code> &mdash; so the model sees the exact shape it was trained on.</li>
+            </ol>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-scissors"></i> Why you never see the signposts in the reply</h4>
+            <p>The model absolutely does write <code>&lt;|user|&gt;</code> and <code>&lt;|assistant|&gt;</code> into its output &mdash; it learned them from the book, so it uses them. Two lines of code hide them, and it is worth knowing exactly how.</p>
+            <p style="margin-bottom:6px;"><b>Step 1 &mdash; throw away the prompt.</b></p>
+            <div class="code-block python"><pre>answer = decode(result[len(ids):])</pre></div>
+            <p style="margin-bottom:6px;"><code>generate()</code> hands back <b>your question and the new text joined together</b>. Your question already contained two signposts, because you wrapped it in them. Slicing from <code>len(ids)</code> keeps only what the model actually added.</p>
+            <p style="margin-top:12px; margin-bottom:6px;"><b>Step 2 &mdash; stop at the first signpost.</b></p>
+            <div class="code-block python"><pre>for tag in ("&lt;|endoftext|&gt;", "&lt;|user|&gt;", "&lt;|assistant|&gt;"):
+    answer = answer.split(tag)[0]</pre></div>
+            <p style="margin-bottom:0;">The model does not stop when it finishes an answer. It carries straight on and starts inventing a <b>whole new conversation</b>. <code>split(tag)[0]</code> keeps only the part before the first signpost &mdash; so you see one answer instead of an endless stream. We check all three tags, because whichever one it writes first is where the answer really ended.</p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 4: Ask Your AI A Physics Question</h4>
+            <ol>
+              <li>Open <code>talk_to_your_engine.py</code> and replace everything in it with the code below.</li>
+              <li>Run it and ask a question.</li>
+            </ol>
+            <div class="code-block python">
+  <div class="code-header">talk_to_your_engine.py</div>
+  <pre>
+import torch
+
+# No training this time. The model is loaded from the file you saved.
+from attention_engine import model, block_size
+from data_pipeline import stoi, encode, decode
+
+model.load_state_dict(torch.load(&quot;qa_model.pth&quot;))
+model.eval()
+
+print(&quot;\n&quot; + &quot;=&quot; * 55)
+print(&quot;ASK YOUR AI A PHYSICS QUESTION&quot;)
+print(&quot;=&quot; * 55)
+print(&quot;Type a question. Type  quit  to stop.\n&quot;)
+
+while True:
+    question = input(&quot;You: &quot;)
+    if question.lower() == &quot;quit&quot;:
+        break
+
+    missing = [w for w in question.split() if w not in stoi]
+    if missing:
+        print(f&quot;   (these words are not in the vocabulary, so they were dropped: {missing})&quot;)
+
+    # Wrap the question the same way every block in input.txt is wrapped.
+    prompt = f&quot;&lt;|user|&gt; {question} &lt;|assistant|&gt;&quot;
+    ids = encode(prompt)
+    if not ids:
+        print(&quot;   (nothing left for the AI to read)\n&quot;)
+        continue
+
+    context = torch.tensor([ids[-block_size:]], dtype=torch.long)
+    result = model.generate(context, max_new_tokens=60)[0].tolist()
+
+    # Step 1: drop the prompt. generate() returns your question AND the new
+    # text, so we keep only the part after what we fed in.
+    answer = decode(result[len(ids):])
+
+    # Step 2: stop at the first signpost. The model keeps writing after it
+    # finishes an answer -- it starts a whole new question. Cut it off there.
+    for tag in (&quot;&lt;|endoftext|&gt;&quot;, &quot;&lt;|user|&gt;&quot;, &quot;&lt;|assistant|&gt;&quot;):
+        answer = answer.split(tag)[0]
+
+    print(&quot;\nAI: &quot; + answer.strip() + &quot;\n&quot;)
+              </pre>
+</div>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>python Term_2/talk_to_your_engine.py</pre>
+</div>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-terminal"></i> Expected output</h4>
+<div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>
+=======================================================
+ASK YOUR AI A PHYSICS QUESTION
+=======================================================
+Type a question. Type  quit  to stop.
+
+You: What is gravity?
+
+AI: Faraday&#x27;s an MRI machine?
+
+You: Why do magnets stick?
+
+AI: The iron core is highly permeable, concentrating and multiplying the
+gravitational field lines generated by the copper coil.
+              </pre>
+</div>
+            <p style="margin-top:10px;">It loads instantly now &mdash; no training wait.</p>
+            <p style="margin-bottom:0;"><b>Look at that first reply.</b> Asked "What is gravity?", it wrote <i>"Faraday's an MRI machine?"</i> &mdash; it carried on writing <b>another question</b> instead of answering. That is the autocomplete engine showing its true colours, and it is the clearest proof of everything in the orange box above.</p>
+          </div>
+
+          <hr />
+
+          <h2>8. Controlled Failure: The Word It Doesn't Know</h2>
+
+          <div class="activity-box">
+            <h4>🛠 Try this exact sentence</h4>
+            <p>Type this into your chat, capital E and all:</p>
+            <div class="code-block"><pre>Explain magnetism to me</pre></div>
+            <div class="code-block">
+  <div class="code-header">Terminal</div>
+  <pre>
+You: Explain magnetism to me
+   (these words are not in the vocabulary, so they were dropped: [&#x27;Explain&#x27;])
+
+AI: The more gravitational gravitational force drops to 1/4th (one-quarter).
+If you triple the distance, it drops and inversely proportional to the square
+of the distance. If you are the distance current-carrying a planet you down,
+the gravitational constant G and the speed of light.
+              </pre>
+</div>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+            <h4><i class="fas fa-triangle-exclamation"></i> Your model does not know the word "Explain"</h4>
+            <p>But it knows <b>"explain"</b> with a small e. To your tokenizer those are two completely different words, and only one of them was in the book.</p>
+            <p>This is the price of whole words. Your vocabulary is a <b>fixed list of 4,095</b>. Anything not on that list simply does not exist:</p>
+            <ul style="line-height:1.9;">
+              <li><code>Explain</code> &mdash; wrong capital letter &rarr; gone</li>
+              <li><code>photosynthesis</code> &mdash; never in the book &rarr; gone</li>
+              <li><code>maglev</code> &mdash; never in the book &rarr; gone</li>
+            </ul>
+            <p style="margin-bottom:0;">We tested eight ordinary questions. <b>Three of them lost a word.</b></p>
+          </div>
+
+          <div class="info-box">
+            <h4><i class="fas fa-scale-balanced"></i> So which tokenizer is right?</h4>
+            <table style="width:100%; border-collapse:collapse;">
+              <tr style="background:#f1f5f9;">
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;"></th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Characters</th>
+                <th style="text-align:left; padding:8px; border:1px solid #cbd5e1;">Words</th>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Can spell?</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">❌ 57.7% real words</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">✅ always</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Can read any word?</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">✅ always</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">❌ only its 4,095</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; border:1px solid #cbd5e1;">Vocabulary</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">86</td>
+                <td style="padding:8px; border:1px solid #cbd5e1;">4,095</td>
+              </tr>
+            </table>
+            <p style="margin-top:12px; margin-bottom:0;"><b>Neither.</b> Each one is good at exactly what the other is bad at. Next session you build the thing that gets both &mdash; and it is what every real AI uses.</p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-user-astronaut"></i> THE IDENTITY SHIFT</h4>
+            <p>You did not redesign your engine today. Beyond a one-line tokenizer safety fix, <code>attention_engine.py</code> is the same file you wrote in Session 5 &mdash; same attention head, same maths, same everything.</p>
+            <p style="margin-bottom:0;">You changed <b>what it reads</b> and <b>what a token is</b> &mdash; and it went from Elizabethan babble to answering physics questions in correctly spelled English. That is a real lesson about AI: an enormous amount of the work is not the model at all. It is the data and the tokenizer.</p>
+          </div>
+
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-microchip"></i>
+              <h2>Mission Diagnostic: Level 2.06</h2>
+            </div>
+            <div class="mcq-container">
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">1. Why couldn't your Session 5 model answer a question?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="The engine was fine -- you didn't change a single line of it today.">Its attention head was broken.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! A play contains no questions and answers, so the model never saw that pattern and could not copy it.">It had only ever read a play, which contains no questions and answers.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="It had plenty of training -- 6,000 steps. More practice on a play still gives you a play.">It hadn't been trained for long enough.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-green">
+                <p class="mcq-question">2. What do the <code>&lt;|user|&gt;</code> and <code>&lt;|assistant|&gt;</code> signposts actually do?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="Nothing in the code reads them or treats them specially -- they are just text in the file.">Special code in data_pipeline.py detects them and switches mode.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! They are just text. The model learns what they mean by seeing them 399 times in the same positions.">Nothing by themselves -- the model learns what they mean by seeing them repeatedly.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="They aren't instructions. The model has no way to receive an instruction.">They tell the model to stop and wait for the user.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">3. Why can a word-level model never misspell a word?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="There is no spell checker anywhere in your code.">Because it checks its spelling before writing.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! It picks from a fixed list of real words, so a broken word is not one of the options.">Because it picks whole words from a list, so a broken word isn't an option.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="It was actually trained for FEWER steps than the character model, not more.">Because it was trained for much longer.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">4. Your dataset went from 137,104 tokens to 22,182. Why is that good news for <code>block_size = 64</code>?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! 64 characters was half a sentence. 64 words is a whole question and most of an answer -- without changing the setting at all.">Because 64 words covers far more of the conversation than 64 characters did.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="block_size stayed at 64 all session -- you never changed it.">Because block_size automatically got bigger.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Fewer tokens is less training data, which is a cost, not the benefit being described here.">Because less data always trains better.</button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">5. Why did "Explain magnetism to me" lose a word?</p>
+                <div class="mcq-options">
+                  <button class="mcq-btn" data-correct="false" data-feedback="The question is well within the 64-token window.">The question was too long for the context window.</button>
+                  <button class="mcq-btn" data-correct="true" data-feedback="Correct! 'explain' is in the vocabulary but 'Explain' is not -- to the tokenizer they are two completely different words.">"Explain" with a capital E is not in the 4,095-word vocabulary.</button>
+                  <button class="mcq-btn" data-correct="false" data-feedback="Nothing in your code filters by topic. The model has no idea what a topic is.">The model decided magnetism was off-topic.</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="rule-callout" style="background: rgba(99, 102, 241, 0.08); border-left-color: #6366f1;">
+            <h4>Today's Biggest Takeaway</h4>
+            <h2 style="margin:6px 0 0;">Change the book and the tokenizer, and the same brain behaves completely differently.</h2>
+          </div>
+
+          <section class="session-block homework-block">
+            <h2>Homework / Extension</h2>
+            <div class="homework-item standard">
+                <h3>Standard Task: Find Five Words It Doesn't Know</h3>
+                <p>Chat with your model and hunt for words it drops. Write down five, and next to each write <b>why</b> you think it is missing.</p>
+                <ul>
+                  <li>Is it a capital-letter problem, like <code>Explain</code>?</li>
+                  <li>Is it a word that simply never came up in 399 physics questions?</li>
+                  <li>Is it a word with punctuation stuck to it, like <code>gravity?</code> versus <code>gravity</code>?</li>
+                </ul>
+                <p><strong>Bring your list to next session.</strong> We are going to fix all three problems at once.</p>
+            </div>
+            <div class="homework-item advanced">
+                <h3>Advanced Task: Train It Twice As Long</h3>
+                <p>In <code>train_qa.py</code>, change <code>STEPS = 1500</code> to <code>STEPS = 3000</code>. Run it again and compare the answers.</p>
+                <p>Does it sound better? Now try asking it a question that appears in <code>input.txt</code> <b>word for word</b>. Does the answer look suspiciously familiar? Write two or three sentences on what you think is happening.</p>
+            </div>
+
+            <div class="homework-collapsible">
+              <div class="homework-toggle">
+                <span>Need Help? View Solutions &amp; Explanation</span>
+                <i class="fas fa-chevron-down toggle-arrow"></i>
+              </div>
+              <div class="homework-content">
+    <h4>Standard Task &mdash; what to expect</h4>
+    <p>You will find all three kinds. Capital letters are the most surprising to people: <code>The</code>, <code>Why</code> and <code>Gravity</code> exist because sentences start with them, but plenty of other capitalised words do not. Punctuation is the sneakiest &mdash; because we split on spaces, <code>gravity?</code> and <code>gravity</code> are stored as two separate entries, which is part of why the vocabulary reached 4,095.</p>
+    <hr>
+    <h4>Advanced Task &mdash; what to expect</h4>
+    <p>At 3,000 steps the answers get smoother, and something else creeps in: whole phrases start coming back <b>word for word</b> from the training file. We measured it &mdash; at 1,500 steps about 3.7% of what it writes is copied verbatim, and that climbs with more training.</p>
+    <p>That is <b>memorising</b>, not understanding. With only 399 questions there simply is not enough material to learn general patterns, so the model starts reciting. It is the honest reason we stopped at 1,500.</p>
+    <div class="rule-callout">
+        <strong>Engineering Takeaway</strong><br><br>
+        <p style="margin:0;">More training is not automatically better. Past a point, a model stops learning the subject and starts learning the answer sheet. The only way to spot it is to check whether the output is copied &mdash; the loss number looks wonderful either way.</p>
+    </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="dyk-box" style="display:flex; align-items:center; gap:16px; background:#fef3c7; border-radius:10px; padding:16px 20px; margin-top:24px;">
+            <i class="fas fa-star" style="font-size:1.8em; color:#f59e0b;"></i>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                The very first version of Google Translate's neural model used whole words, exactly like yours &mdash; and hit exactly the same wall. Their vocabulary reached 80,000 words and it <i>still</i> could not handle names, typos or new words. That problem is what led directly to the technique you will build next session.
+              </p>
+            </div>
+          </div>
+
+          <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+            <h4><i class="fas fa-arrow-right"></i> Next Mission: Smarter Tokens</h4>
+            <p>Characters can spell anything but write nonsense. Words write beautifully but only know 4,095 things. Next session you build the tokenizer that gets <b>both</b> &mdash; it splits words into common chunks, so <code>Explain</code> and <code>photosynthesis</code> both work, and it is the exact method behind every AI you have heard of.</p>
+          </div>
+
+          <details class="collapsible-box">
+            <summary><strong>⚙ Troubleshooting &amp; FAQs</strong></summary>
+            <div class="activity-box">
+                <h5>❓ KeyError when I run data_pipeline.py</h5>
+                <p>You changed <code>chars</code> to <code>words</code> in some places but not others. Every one of <code>stoi</code>, <code>itos</code> and <code>vocab_size</code> must be built from <code>words</code>, not <code>chars</code>.</p>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ FileNotFoundError: qa_model.pth</h5>
+                    <p>You have not run <code>train_qa.py</code> yet, or it stopped before finishing. The chat script loads that file &mdash; it cannot run until training has saved it once.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ My model prints data_pipeline's output too</h5>
+                    <p>Normal &mdash; importing a file runs it, exactly as in Session 4. Comment out the <code>print()</code> lines at the bottom of <code>data_pipeline.py</code> if you want a cleaner screen. Only the prints.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ RuntimeError about size mismatch when loading qa_model.pth</h5>
+                    <p>You saved the model with one vocabulary and are loading it with another &mdash; usually because <code>input.txt</code> changed after training. Re-run <code>train_qa.py</code> to rebuild the file.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ The answers wander off topic</h5>
+                    <p>Expected, and honest. With 399 questions and a small engine, the model has learned what physics writing <i>sounds</i> like far better than what any particular question <i>means</i>. Term 3 fixes this with a far bigger dataset.</p>
+                </div>
+                <hr>
+                <div class="faq-item">
+                    <h5>❓ Training is taking much longer than 5 minutes</h5>
+                    <p>Check <code>STEPS = 1500</code> at the top of <code>train_qa.py</code>. If you also have other programs running, close them &mdash; this is doing real arithmetic on your processor.</p>
+                </div>
+            </div>
+          </details>
+
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I trained my Session 5 engine on question-and-answer data, upgraded my tokenizer from characters to whole words, saved my model to a file, and had a real conversation with it in correctly spelled English.
+            </label>
+          </div>
+        </div>
+
+        <div class="session-nav" style="display:flex; justify-content:space-between; margin-top:30px;">
+          <a href="t2_session5.html" class="btn-secondary">Previous Session</a>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete &amp; Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+        </div>
+      </div>
+    </div>
+    <script src="../nexus-core.js"></script>
+    <script src="../script.js"></script>
+  </body>
+</html>

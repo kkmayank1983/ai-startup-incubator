@@ -1,0 +1,1564 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Nexus | The Encoding Pipeline</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="page-session" data-current-session="t2_s2">
+    <nav class="navbar">
+      <a href="../index.html" class="site-logo">
+        <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+      </a>
+      <div class="nav-links">
+        <span class="user-status">Status: <strong>AI Architect</strong></span>
+        <a href="term2.html" class="btn-primary">My Dashboard</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <aside class="sidebar">
+        <!-- TERM 2 ACTIVE -->
+        <div class="sidebar-section" data-sidebar-term="2">
+          <h3
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              user-select: none;
+            "
+          >
+            <span>TERM 2: THE BRAIN</span>
+            <i
+              class="fas fa-chevron-down"
+              style="transition: transform 0.3s ease"
+            ></i>
+          </h3>
+          <ul style="display: block">
+            <li data-session-id="t2_s1">
+              <a href="t2_session1.html"
+                ><i class="fas fa-cubes"></i> S1: Digital Concrete</a
+              >
+            </li>
+            <li data-session-id="t2_s2" class="active">
+              <a href="t2_session2.html"
+                ><i class="fas fa-font"></i> S2: The Encoding Pipeline</a
+              >
+            </li>
+            <li data-session-id="t2_s3">
+              <a href="t2_session3.html"
+                ><i class="fas fa-dice"></i> S3: Autoregressive Prediction</a
+              >
+            </li>
+            <li data-session-id="t2_s4">
+              <a href="t2_session4.html"
+                ><i class="fas fa-window-maximize"></i> S4: Context Windows &
+                Sequence Processing</a
+              >
+            </li>
+            <li data-session-id="t2_s5">
+              <a href="t2_session5.html"
+                ><i class="fas fa-highlighter"></i> S5: Self-Attention
+                Mechanism</a
+              >
+            </li>
+            <li data-session-id="t2_s6">
+              <a href="t2_session6.html"
+                ><i class="fas fa-dumbbell"></i> S6: Parameter Optimization</a
+              >
+            </li>
+            <li data-session-id="t2_s7">
+              <a href="t2_session7.html"
+                ><i class="fas fa-save"></i> S7: Weight Persistence</a
+              >
+            </li>
+            <li data-session-id="t2_s8">
+              <a href="t2_session8.html"
+                ><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a
+              >
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <div id="sidebar-resizer" class="resizer"></div>
+
+      <main class="content">
+        <nav class="breadcrumb">
+          Mission Control / Term 2 / Session 2 / The Encoding Pipeline
+        </nav>
+
+        <section id="lesson-header">
+          <h1>Session 2: The Tokenization & Preprocessing Pipeline</h1>
+          <p class="lead">
+            Language models cannot see letters. They see numerical sequences.
+            Today, you engineer the gateway between the human world and the math
+            world.
+          </p>
+          <div class="stats-bar">
+            <span><i class="far fa-clock"></i> 60 Minutes</span>
+            <span><i class="fas fa-signal"></i> Level: Junior Architect</span>
+          </div>
+
+          <div class="outcome-box">
+            <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+            <p>
+              Build a real-time, deterministic character-level tokenizer that
+              converts raw text into sequences of Token IDs, manages vocabulary
+              boundaries, and prepares data as <code>torch.long</code> tensors.
+            </p>
+          </div>
+        </section>
+
+        <section class="lesson-body">
+          <h2>1. The Gateway to Logic</h2>
+          <div class="tool-info-box">
+            <p>
+              <b>Raw Text</b> is messy. A computer sees the word "Apple" as just
+              a picture of pixels on a screen. For our local model to process
+              language, we must transform it into a language the machine speaks:
+              <b>Numerical Sequences.</b>
+            </p>
+            <p>
+              In Session 1, you built the containers (Tensors). Today, you
+              engineer the infrastructure that fills them with data. Without
+              this pipeline, your tensors are just empty lockers.
+            </p>
+          </div>
+
+          <div class="rule-callout" style="border-left-color: #f59e0b">
+            <h4><i class="fas fa-brain"></i> Important Reality Check</h4>
+            <p>
+              The model does not understand language semantically like humans
+              do. It does not "know" what a cat is. Instead, it processes
+              <strong>numerical relationships</strong> between token positions.
+              It sees IDs, calculates probabilities, and predicts the next
+              number.
+            </p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-map-signs"></i> The System Map</h4>
+            <p>Trace our progress through the LLM Architecture:</p>
+            <p>
+              <strong>Raw Text</strong>
+              → Step 1: Tokenization<br />
+              → Step 2: Token IDs<br />
+              → Step 3: Tensor Representation <br />
+              → Step 4: Attention Mechanisms <br />
+              → Step 5: Autoregressive Prediction
+            </p>
+          </div>
+
+          <div class="rule-callout">
+            <h4><i class="fas fa-barcode"></i> The "Barcode" Analogy</h4>
+            <p>
+              Imagine a warehouse where the computer scanner can't read the word
+              "Apple." It only knows <strong>Item #42</strong>. Tokenization is
+              the process of assigning a unique, unchangeable ID to every
+              character so the math can begin.
+            </p>
+          </div>
+
+          <hr />
+
+          <h2>2. Vocabulary Discovery</h2>
+          <div class="tool-info-box">
+            <p>
+              Imagine trying to teach a robot how to read for the very first
+              time.
+            </p>
+
+            <p>The robot has never seen:</p>
+
+            <ul>
+              <li>Letters</li>
+              <li>Words</li>
+              <li>Grammar</li>
+              <li>Meaning</li>
+            </ul>
+
+            <p>
+              To the machine, every character is just a symbol. Before our AI
+              can process language, we must first define the complete list of
+              symbols it is allowed to recognize.
+            </p>
+
+            <p>This list becomes the model’s <b>Vocabulary</b>.</p>
+
+            <p>
+              If a symbol does not exist inside this vocabulary, the AI has no
+              mathematical way to represent it inside a tensor.
+            </p>
+
+            <p>
+              This is why vocabulary discovery is the first real preprocessing
+              step in every language model pipeline.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 1: Discovering the Vocabulary Boundaries</h4>
+
+            <p>
+              We are now engineering the very first layer of the preprocessing
+              pipeline.
+            </p>
+
+            <p>
+              The machine cannot process language until it knows:
+              <br />
+              → which symbols exist
+              <br />
+              → which symbols are allowed
+              <br />
+              → and how many unique characters the system must handle.
+            </p>
+
+            <p>
+              Your mission is to discover the complete vocabulary hidden inside
+              a text sample.
+            </p>
+
+            <ol>
+              <li>
+                Open <strong>VS Code</strong> and navigate to your main AI Nexus
+                project folder.
+              </li>
+              <li>
+                Open your terminal and
+                <strong>activate your Virtual Environment</strong>. <br /><code
+                  >venv\Scripts\activate</code
+                >
+                (Windows) <br /><code>source venv/bin/activate</code>
+                (Mac/Linux)
+              </li>
+              <li>
+                Open your existing <strong>Term_2</strong> workspace inside VS
+                Code.
+              </li>
+
+              <li>
+                Create a new Python file called
+                <code>tokenizer_pipeline.py</code>.
+              </li>
+
+              <li>Copy the code below into the file.</li>
+              <div class="code-block python">
+                <div class="code-header">Discovering the Vocabulary</div>
+                <pre>
+text = "The quick brown fox jumps over the lazy dog."
+
+# Find all unique characters and sort them
+chars = sorted(list(set(text)))
+vocab_size = len(chars)
+
+print(f"Vocabulary: {chars}")
+print(f"Vocab Size: {vocab_size}")
+    </pre
+                >
+              </div>
+              <figure class="screenshot">
+                <img src="../images/Session 2/Activity 1_code.png" alt="code" />
+              </figure>
+              <li>
+                Run the file using:
+                <pre><code>python Term_2/tokenizer_pipeline.py</code></pre>
+              </li>
+
+              <li>
+                Observe the generated vocabulary and total vocabulary size.
+              </li>
+              <figure class="screenshot">
+                <img
+                  src="../images/Session 2/Activity 1_output.png"
+                  alt="output"
+                />
+              </figure>
+              <li>
+                Notice how spaces and punctuation also become part of the
+                vocabulary.
+              </li>
+            </ol>
+
+            <p>
+              Notice that the characters appear sorted instead of following the
+              original sentence order. This happens because
+              <b>sorted()</b> organizes all unique characters alphabetically
+              while building the vocabulary.
+            </p>
+          </div>
+          <div class="info-box">
+            <h4><i class="fas fa-search"></i> Observe the System Carefully</h4>
+
+            <p>Study the output carefully:</p>
+
+            <ul>
+              <li>Did spaces appear in the vocabulary?</li>
+              <li>Did punctuation become part of the vocabulary?</li>
+              <li>Are uppercase and lowercase letters treated differently?</li>
+            </ul>
+
+            <p>This reveals an important truth:</p>
+
+            <p>The tokenizer does not understand language like humans do.</p>
+
+            <p>
+              To the machine:
+              <br />
+              → spaces are tokens
+              <br />
+              → punctuation is tokens
+              <br />
+              → symbols are tokens
+              <br />
+              → letters are tokens
+            </p>
+
+            <p>Everything becomes numerical structure.</p>
+          </div>
+
+          <hr />
+
+          <h2>3. Deterministic Mapping (stoi / itos)</h2>
+          <div class="tool-info-box">
+            <p>
+              Once we discover our vocabulary, we must assign every character a
+              permanent numerical identity.
+            </p>
+
+            <p>This process is called <b>Deterministic Mapping</b>.</p>
+
+            <p>
+              Deterministic means:
+              <br />
+              → the same character must always map to the same Token ID.
+            </p>
+
+            <p>For example:</p>
+
+            <pre><code>
+"A" → 5
+"B" → 6
+" " → 2 
+  </code></pre>
+
+            <p>
+              Imagine changing locker numbers in a school every morning.
+              Students would never know where their books belong.
+            </p>
+
+            <p>
+              Language models work the same way. During training, the AI slowly
+              learns relationships between Token IDs. <br />
+              If those IDs suddenly change, all learned relationships become
+              corrupted.
+            </p>
+
+            <p>
+              Stable Token IDs are what allow the model’s learned weights to
+              remain meaningful across time.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>🛠 Activity 2: Building Deterministic Token Mappings</h4>
+
+            <p>
+              Now that we know the vocabulary, we must assign every character a
+              permanent numerical identity.
+            </p>
+
+            <p>
+              This creates the core translation infrastructure of the tokenizer.
+            </p>
+
+            <p>We will build:</p>
+
+            <ul>
+              <li><code>stoi</code> → String To Integer</li>
+              <li><code>itos</code> → Integer To String</li>
+            </ul>
+
+            <p>
+              These two dictionaries become the machine's language conversion
+              system.
+            </p>
+
+            <ol>
+              <li>
+                Continue working inside your existing
+                <code>tokenizer_pipeline.py</code> file.
+              </li>
+
+              <li>
+                Copy the mapping code below underneath your vocabulary code.
+              </li>
+              <div class="code-block python">
+                <div class="code-header">Building the Token Maps</div>
+                <pre>
+# stoi: string-to-integer (The Encoder)
+stoi = { ch:i for i,ch in enumerate(chars) }
+
+# itos: integer-to-string (The Decoder)
+itos = { i:ch for i,ch in enumerate(chars) }
+
+print("Character → Token ID Mapping:", stoi)
+
+print(f"Mapping for 's': {stoi['s']}")
+
+sample_id = stoi['s']
+print(f"ID {sample_id} belongs to: {itos[sample_id]}")
+    </pre
+                >
+              </div>
+              <figure class="screenshot">
+                <img src="../images/Session 2/Activity 2_code.png" alt="code" />
+              </figure>
+              <li>
+                Run the file again using:
+                <pre><code>python tokenizer_pipeline.py</code></pre>
+              </li>
+
+              <li>Observe how characters are converted into Token IDs.</li>
+              <figure class="screenshot">
+                <img
+                  src="../images/Session 2/Activity 2_output.png"
+                  alt="output"
+                />
+              </figure>
+              <li>
+                Re-run the program multiple times and verify that the mappings
+                remain consistent.
+              </li>
+            </ol>
+            <p>
+              Notice that these Token IDs only exist for this specific dataset.
+              In future sessions, we will scale this pipeline using larger
+              datasets and more advanced tokenization systems.
+            </p>
+          </div>
+
+          <div class="rule-callout">
+            <h4>
+              <i class="fas fa-fingerprint"></i> Permanent Numerical Identity
+            </h4>
+
+            <p>
+              Once these mappings are created, they become part of the model's
+              language infrastructure.
+            </p>
+
+            <p>
+              During training, the AI learns relationships between these exact
+              numerical IDs.
+            </p>
+
+            <p>Example:</p>
+
+            <pre>
+"s" → 18
+"y" → 24
+" " → 0
+      </pre
+            >
+
+            <p>The model never sees the actual character.</p>
+
+            <p>
+              It only learns patterns between token positions and token IDs.
+            </p>
+          </div>
+          <hr />
+
+          <h2>4. Engineering the encode() and decode() Functions</h2>
+          <p>
+            Now we build the functions that will perform the actual translation
+            in our real-time inference pipeline.
+          </p>
+
+          <div class="tool-info-box" style="text-align: center">
+            <h4>
+              <i class="fas fa-exchange-alt"></i> End-to-End Visual Token Flow
+            </h4>
+            <div
+              style="
+                background: #f1f5f9;
+                padding: 20px;
+                border-radius: 8px;
+                font-family: monospace;
+                color: #1e293b;
+                display: inline-block;
+                text-align: left;
+                border: 1px solid #cbd5e1;
+                width: 100%;
+                max-width: 500px;
+              "
+            >
+              "HELLO"<br /><br />
+              &nbsp;&nbsp;↓ (Split into Characters)<br /><br />
+              ['H','E','L','L','O']<br /><br />
+              &nbsp;&nbsp;↓ (Apply stoi mapping)<br /><br />
+              [7, 4, 11, 11, 14]<br /><br />
+              &nbsp;&nbsp;↓ (Convert to Tensor)<br /><br />
+              <b>tensor([7, 4, 11, 11, 14], dtype=torch.long)</b><br /><br />
+              &nbsp;&nbsp;↓<br /><br />
+              <b>Input sequence for the model</b>
+            </div>
+          </div>
+          <div class="tool-info-box">
+            <h4>
+              <i class="fas fa-exchange-alt"></i> Crossing Between Two Worlds
+            </h4>
+
+            <p>
+              The <code>encode()</code> function is the gateway from the human
+              world into the machine world.
+            </p>
+
+            <p>
+              It converts readable language into structured numerical sequences
+              that the model can process mathematically.
+            </p>
+
+            <p>
+              <strong>encode()</strong> translates human-readable language into
+              machine-readable numerical structure.
+            </p>
+
+            <p>
+              <strong>decode()</strong> performs the reverse operation:
+              <br />
+              it converts numerical sequences back into readable language.
+            </p>
+
+            <p>
+              Without these two functions, humans and language models would have
+              no way to communicate with each other.
+            </p>
+          </div>
+          <div class="activity-box">
+            <h4>🛠 Activity 3: Engineering the Translation Pipeline</h4>
+
+            <p>
+              We now build the two most important functions in today's session:
+            </p>
+
+            <ul>
+              <li><code>encode()</code> → converts language into Token IDs</li>
+              <li>
+                <code>decode()</code> → converts Token IDs back into language
+              </li>
+            </ul>
+
+            <p>
+              These functions form the gateway between:
+              <br />
+              → human-readable language
+              <br />
+              → and machine-readable numerical sequences.
+            </p>
+
+            <ol>
+              <li>
+                Continue working inside the same
+                <code>tokenizer_pipeline.py</code> file.
+              </li>
+
+              <li>
+                Copy the translation pipeline code below into your script.
+              </li>
+              <div class="code-block python">
+                <div class="code-header">Building the Translation Pipeline</div>
+                <pre>
+# Text -> list of IDs
+def encode(s):
+    return [stoi[c] for c in s]
+# list of IDs -> Text
+def decode(l):
+    return ''.join([itos[i] for i in l])
+
+# Test the engineering
+test_msg = "system"
+encoded_seq = encode(test_msg)
+
+print(f"Raw Input: {test_msg}")
+print(f"Numerical Sequence: {encoded_seq}")
+print(f"Decoded Output: {decode(encoded_seq)}")
+    </pre
+                >
+              </div>
+              <figure class="screenshot">
+                <img src="../images/Session 2/Activity 3_code.png" alt="code" />
+              </figure>
+              <li>
+                Run the file again using:
+                <pre><code>python tokenizer_pipeline.py</code></pre>
+              </li>
+
+              <li>
+                Observe how the <code>encode()</code> function converts language
+                into Token IDs.
+              </li>
+              <figure class="screenshot">
+                <img
+                  src="../images/Session 2/Activity 3_output.png"
+                  alt="output"
+                />
+              </figure>
+              <li>
+                Verify that the <code>decode()</code> function reconstructs the
+                original message correctly.
+              </li>
+
+              <li>
+                Notice how human-readable text has now become machine-readable
+                data.
+              </li>
+            </ol>
+          </div>
+
+          <div class="tool-info-box">
+            <h4>
+              <i class="fas fa-cogs"></i> Follow the Transformation Carefully
+            </h4>
+
+            <p>When you run:</p>
+
+            <pre><code>
+encode("system")
+      </code></pre>
+
+            <p>the machine does NOT see:</p>
+
+            <pre><code>
+s y s t e m
+      </code></pre>
+
+            <p>Instead, it sees something like:</p>
+
+            <pre><code>
+[18, 24, 18, 19, 6, 12]
+      </code></pre>
+
+            <p>These numbers are now the machine's version of language.</p>
+
+            <p>
+              Every future:
+              <br />
+              → prediction
+              <br />
+              → attention calculation
+              <br />
+              → probability operation
+            </p>
+
+            <p>will happen using these numerical relationships.</p>
+          </div>
+          <div class="tool-info-box">
+            <h4><i class="fas fa-flask"></i> Mini Exploration Activity</h4>
+
+            <p>
+              Right now, our tokenizer only understands characters that exist
+              inside the current dataset.
+            </p>
+
+            <p>Try running:</p>
+
+            <pre><code>
+encode("Football is fun!")
+  </code></pre>
+
+            <p>
+              You may notice that the system crashes because uppercase letters
+              like:
+            </p>
+
+            <pre><code>
+F
+  </code></pre>
+
+            <p>do not currently exist inside the vocabulary.</p>
+
+            <p>To expand the tokenizer, replace your current dataset with:</p>
+
+            <div class="code-block python">
+              <pre>
+text = """
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz
+0123456789
+.,!? 
+"""
+    </pre
+              >
+            </div>
+
+            <p>
+              Re-run the tokenizer pipeline and try encoding your own custom
+              sentences again. Dont include capitals or special symbols. 
+            </p>
+          </div>
+
+          <hr />
+
+          <h2>5. Filling the Containers (Tensor Representation)</h2>
+          <div class="tool-info-box">
+            <p>
+              Until now, our encoded sequence has only existed as a normal
+              Python list. But real AI models do not process ordinary Python
+              lists.
+            </p>
+
+            <p>They process <b>Tensors</b>.</p>
+
+            <p>
+              This is where Session 1 connects directly into today's
+              architecture.
+            </p>
+
+            <p>
+              Last session, you built the containers.
+              <br />
+              Today, you finally fill those containers with structured language
+              data.
+            </p>
+
+            <p>
+              We use:
+              <br />
+              <code>dtype=torch.long</code>
+            </p>
+
+            <p>
+              because Token IDs behave like exact positions or indices inside
+              the model.
+            </p>
+
+            <p>Think of it like locker numbers in a school:</p>
+
+            <ul>
+              <li>Locker #12 is valid</li>
+              <li>Locker #12.7 is meaningless</li>
+            </ul>
+
+            <p>
+              The model needs exact integer positions so it knows which learned
+              representation to access. Once converted into a tensor, our text
+              officially becomes machine-processable input.
+            </p>
+          </div>
+          <div class="rule-callout">
+            <h4><i class="fas fa-stream"></i> Why Sequence Order Matters</h4>
+
+            <p>Language models do not just care about which tokens exist.</p>
+
+            <p>They also care about the order of those tokens.</p>
+
+            <p>Example:</p>
+
+            <pre>
+"DOG BITES MAN"
+"MAN BITES DOG"
+  </pre
+            >
+
+            <p>
+              Both sentences contain the same words, but the sequence order
+              completely changes the meaning.
+            </p>
+
+            <p>
+              This is why token positions become critically important inside
+              transformer systems.
+            </p>
+
+            <p>
+              In future sessions, we will build mechanisms that help the model
+              understand these positional relationships.
+            </p>
+          </div>
+
+          <div class="activity-box">
+            <h4>
+              🛠 Activity 4: Converting Language into Tensor Infrastructure
+            </h4>
+
+            <p>
+              Until now, our encoded sequence has only existed as a normal
+              Python list.
+            </p>
+
+            <p>But transformer systems process tensors — not regular lists.</p>
+
+            <p>
+              In this activity, we officially move our language data into the
+              mathematical architecture built in Session 1.
+            </p>
+
+            <ol>
+              <li>
+                Continue working inside the same
+                <code>tokenizer_pipeline.py</code> file.
+              </li>
+
+              <li>
+                Copy the PyTorch tensor code below underneath your existing
+                tokenizer pipeline.
+              </li>
+              <div class="code-block python">
+                <div class="code-header">Preparing the Sequence Tensor</div>
+                <pre>
+import torch
+
+# Convert our encoded list into a PyTorch Tensor
+data_tensor = torch.tensor(encode(text), dtype=torch.long)
+
+# Inspect the architecture
+print(data_tensor)
+print(f"Tensor Shape: {data_tensor.shape}")
+print(f"Tensor Data Type: {data_tensor.dtype}")
+    </pre
+                >
+              </div>
+              <figure class="screenshot">
+                <img src="../images/Session 2/Activity 4_code.png" alt="code" />
+              </figure>
+              <li>
+                Make sure the PyTorch library installed in Session 1 is
+                available in your virtual environment.
+              </li>
+
+              <li>
+                Run the file again using:
+                <pre><code>python Term_2/tokenizer_pipeline.py</code></pre>
+              </li>
+
+              <li>Observe the tensor shape and datatype.</li>
+              <figure class="screenshot">
+                <img
+                  src="../images/Session 2/Activity 4_output.png"
+                  alt="output"
+                />
+              </figure>
+              <li>
+                Notice how the language sequence has now entered the tensor
+                architecture from Session 1.
+              </li>
+            </ol>
+            <p>
+              Notice that <b>torch.int64</b> means the tensor is storing
+              whole-number integer values. This is the standard datatype used
+              for Token IDs inside AI systems.
+            </p>
+          </div>
+          <div class="tool-info-box">
+            <h4>
+              <i class="fas fa-layer-group"></i> Why Not Just Use Python Lists?
+            </h4>
+
+            <p>
+              Python lists are useful for general programming, but AI systems
+              require optimized mathematical structures.
+            </p>
+
+            <p>Tensors are designed for:</p>
+
+            <ul>
+              <li>Fast numerical computation</li>
+              <li>Large-scale matrix operations</li>
+              <li>Parallel processing</li>
+              <li>GPU acceleration</li>
+            </ul>
+
+            <p>
+              In modern transformer systems, almost every operation eventually
+              becomes tensor math.
+            </p>
+
+            <p>
+              Today, your language data officially entered that mathematical
+              pipeline.
+            </p>
+          </div>
+
+          <div class="rule-callout">
+            <h4>
+              <i class="fas fa-ruler-combined"></i> Understanding the Shape
+            </h4>
+
+            <p>If you see:</p>
+
+            <pre><code>
+torch.Size([47])
+      </code></pre>
+
+            <p>this means:</p>
+
+            <ul>
+              <li>The tensor has 1 dimension</li>
+              <li>It contains 47 token positions</li>
+              <li>Each position stores one Token ID</li>
+            </ul>
+
+            <p>The AI does not see a sentence.</p>
+
+            <p>
+              It sees a structured numerical sequence flowing through the
+              architecture.
+            </p>
+          </div>
+
+          <div class="tool-info-box">
+            <h4>
+              <i class="fas fa-microchip"></i> Engineering Insight: Why Token
+              Efficiency Matters
+            </h4>
+
+            <p>
+              Character-level tokenization creates very long sequences because
+              every individual letter becomes its own token.
+            </p>
+
+            <p>Example:</p>
+
+            <pre><code>
+"H E L L O"
+→ 5 separate tokens
+  </code></pre>
+
+            <p>Longer sequences require:</p>
+
+            <ul>
+              <li>More memory</li>
+              <li>More computation</li>
+              <li>More attention calculations</li>
+            </ul>
+
+            <p>This becomes expensive as models scale.</p>
+
+            <p>Modern LLMs solve this using advanced tokenizers like:</p>
+
+            <ul>
+              <li>Byte Pair Encoding (BPE)</li>
+              <li>SentencePiece</li>
+              <li>TikToken</li>
+            </ul>
+
+            <p>
+              These systems combine common letter patterns into larger chunks so
+              the model can process language more efficiently.
+            </p>
+
+            <p>
+              Our character-level tokenizer is intentionally simpler because it
+              lets us clearly understand the architecture before introducing
+              optimization complexity.
+            </p>
+          </div>
+
+          <hr />
+
+          <h2>6. Controlled Failure: Vocabulary Boundaries</h2>
+          <div class="tool-info-box">
+            <h4><i class="fas fa-bomb"></i> Breaking the System</h4>
+            <p>
+              What happens if you try to encode a character that wasn't in your
+              original text (like an emoji 🚀 or a `~`)? Try it now in your
+              code.
+            </p>
+            <p>
+              <strong>The Result:</strong> <code>KeyError</code>. This is a
+              real-world engineering constraint. An LLM is physically unable to
+              process or "see" anything that isn't inside its defined
+              vocabulary.
+            </p>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">Triggering a Vocabulary Failure</div>
+            <pre>
+# Trigger a tokenizer failure
+print(encode("🚀"))
+  </pre
+            >
+          </div>
+          <div class="tool-info-box">
+            <h4><i class="fas fa-bug"></i> What Just Happened?</h4>
+
+            <p>The rocket emoji does not exist inside our vocabulary.</p>
+
+            <p>
+              Since the tokenizer has no numerical identity assigned to this
+              symbol, the system cannot encode it.
+            </p>
+
+            <p>This causes a:</p>
+
+            <pre><code>KeyError</code></pre>
+
+            <p>
+              Professional AI engineers intentionally trigger failures like this
+              to test system boundaries and improve robustness.
+            </p>
+          </div>
+          <details class="collapsible-box">
+            <summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+            <div class="activity-box">
+              <h4>❓ KeyError: 'X'</h4>
+              <p>
+                The character 'X' isn't in your vocabulary. The system can only
+                encode characters found in the original training text.
+              </p>
+
+              <hr />
+              <h4>❓ torch.long vs torch.float</h4>
+
+              <p>
+                Token IDs represent exact positions inside the model's internal
+                lookup system.
+              </p>
+
+              <p>Think of it like opening lockers in a school:</p>
+
+              <ul>
+                <li>Locker #12 exists</li>
+                <li>Locker #12.5 does not exist</li>
+              </ul>
+
+              <p>
+                The model uses Token IDs as exact integer indices to locate
+                learned representations.
+              </p>
+
+              <p>
+                This is why token sequences must use:
+                <br />
+                <code>torch.long</code>
+              </p>
+
+              <p>
+                If you accidentally use floating-point numbers, later embedding
+                layers will fail because they cannot index fractional positions.
+              </p>
+
+              <hr />
+              <h4>❓ Case Sensitivity ( 'A' vs 'a' )</h4>
+              <p>
+                Python sees 'A' and 'a' as different characters. If your text
+                only has lowercase letters, typing an uppercase letter will
+                crash the tokenizer.
+              </p>
+
+              <hr />
+              <h4>❓ Empty Vocabulary</h4>
+              <p>
+                If your <code>set(text)</code> results in 0 characters, your
+                mappings will be empty and your functions will fail. Always
+                ensure your source text is loaded correctly.
+              </p>
+
+              <hr />
+              <h4>❓ Decode Mismatch</h4>
+              <p>
+                If <code>decode(encode("hi"))</code> doesn't return "hi", your
+                <code>stoi</code> and <code>itos</code> maps are not aligned.
+                Ensure they are both built from the same
+                <code>chars</code> list.
+              </p>
+            </div>
+          </details>
+
+          <div
+            class="rule-callout"
+            style="
+              background: rgba(16, 185, 129, 0.1);
+              border-left-color: #10b981;
+            "
+          >
+            <h4><i class="fas fa-brain"></i> THE ARCHITECT'S REALIZATION</h4>
+
+            <p>
+              Today, you engineered the gateway between language and
+              computation. You transformed raw human symbols into structured
+              numerical sequences that a machine can process mathematically.
+              Most people interact with AI through chat interfaces.
+              <br />
+              You are now seeing the infrastructure underneath the interface.
+              The tensors from Session 1 are no longer empty containers.
+            </p>
+
+            <p>
+              They now carry:
+              <br />
+              → Token IDs
+              <br />
+              → sequence structures
+              <br />
+              → and the raw numerical representation of language itself.
+            </p>
+
+            <p>
+              You are no longer just using AI systems.
+              <br />
+              You are beginning to understand how these systems are engineered
+              internally.
+            </p>
+          </div>
+
+          <section class="knowledge-check">
+            <div class="check-header">
+              <i class="fas fa-microchip"></i>
+              <h2>Mission Diagnostic: Level 2.02</h2>
+              <p>Verify your understanding of Tokenization Infrastructure.</p>
+            </div>
+            <div class="mcq-container">
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">
+                  1. Why do we need the 'stoi' mapping in our pipeline?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Correct! stoi translates strings into integers so the AI can perform math."
+                  >
+                    To encode text into numerical IDs.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="No, that is what 'itos' does."
+                  >
+                    To turn numbers back into letters.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Incorrect. That is handled by PyTorch tensors."
+                  >
+                    To make the AI think faster.
+                  </button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-green">
+                <p class="mcq-question">
+                  2. What happens if a user types a character that is NOT in
+                  your vocabulary?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="AI models are strict; they cannot guess characters they haven't been mapped to."
+                  >
+                    The AI guesses what the letter means.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Exactly. This is a Vocabulary Boundary error (KeyError)."
+                  >
+                    The tokenizer pipeline crashes or fails.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="No. Tokenization must happen before prediction can start."
+                  >
+                    The AI skips it and moves to the next word.
+                  </button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-blue">
+                <p class="mcq-question">
+                  3. Why would changing Token IDs after training damage the
+                  model?
+                </p>
+
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Correct! The model learns relationships between specific Token IDs during training. Changing those IDs breaks the learned patterns."
+                  >
+                    The model’s learned numerical relationships would no longer
+                    match the correct characters.
+                  </button>
+
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Incorrect. Token IDs affect meaning consistency, not processing speed."
+                  >
+                    The tokenizer would become slower.
+                  </button>
+
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Incorrect. Token mappings do not directly control tensor dimensions."
+                  >
+                    The tensor shapes would automatically change.
+                  </button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-amber">
+                <p class="mcq-question">
+                  4. Why is 'torch.long' the required dtype for token sequences?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Correct. Computer indices and IDs must be whole numbers."
+                  >
+                    Because token IDs must be whole-number integers.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Long is slower than float, but necessary for IDs."
+                  >
+                    Because it makes the math faster.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="No, long tensors cannot hold decimals."
+                  >
+                    To allow the AI to use decimal points.
+                  </button>
+                </div>
+              </div>
+
+              <div class="mcq-item q-purple">
+                <p class="mcq-question">
+                  5. What is the risk of a non-deterministic mapping?
+                </p>
+                <div class="mcq-options">
+                  <button
+                    class="mcq-btn"
+                    data-correct="true"
+                    data-feedback="Precisely. If IDs change, the model's learned weights will point to the wrong letters."
+                  >
+                    The model’s learned token relationships would become
+                    invalid.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Mapping doesn't affect speed, only consistency."
+                  >
+                    It makes the tokenizer use too much power.
+                  </button>
+                  <button
+                    class="mcq-btn"
+                    data-correct="false"
+                    data-feedback="Deterministic mapping is a software logic choice."
+                  >
+                    It causes the computer to run out of RAM.
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="session-block homework-block">
+            <h2>Homework / Extension</h2>
+            <div class="homework-item standard">
+              <h3>Standard Task: Expanding the Vocabulary</h3>
+
+              <p>Update your <code>text</code> variable by:</p>
+
+              <ul>
+                <li>
+                  Adding emojis. You can use "windows" key + "." or ":" as a
+                  shortcut to type emojis. In Mac you can use "control" +
+                  "command" + "space_bar"
+                </li>
+                <li>Adding uppercase letters</li>
+                <li>Adding punctuation symbols</li>
+                <li>Testing different sentence styles</li>
+              </ul>
+
+              <p>Re-run the tokenizer pipeline and observe:</p>
+
+              <ul>
+                <li>How the <code>vocab_size</code> changes</li>
+                <li>How the vocabulary itself changes</li>
+                <li>How uppercase and lowercase characters are treated</li>
+                <li>How punctuation becomes part of the token system</li>
+              </ul>
+
+              <p>
+                Finally, try converting the entire text into lowercase using:
+              </p>
+
+              <pre><code>text.lower()</code></pre>
+
+              <p>Compare the new vocabulary size with the original version.</p>
+            </div>
+
+            <div class="homework-item advanced">
+              <h3>Advanced Task: Robust Tokenizer Engineering</h3>
+
+              <p>
+                Modify your <code>encode()</code> function so the tokenizer no
+                longer crashes when it encounters an unknown character.
+              </p>
+
+              <p>
+                Instead of triggering a <code>KeyError</code>, your system
+                should:
+              </p>
+
+              <ul>
+                <li>Detect unknown characters</li>
+                <li>Print a warning message</li>
+                <li>Skip unsupported symbols safely</li>
+              </ul>
+
+              <p>
+                This introduces one of the most important ideas in software
+                engineering:
+              </p>
+
+              <p>
+                <strong>Error Handling & System Robustness.</strong>
+              </p>
+            </div>
+
+            <div class="homework-collapsible">
+              <div class="homework-toggle">
+                <span>Need Help? View Solutions & Explanation</span>
+                <i class="fas fa-chevron-down toggle-arrow"></i>
+              </div>
+
+              <div class="homework-content">
+                <!-- STANDARD SOLUTION -->
+                <h4>Standard Task – Solution</h4>
+
+                <p>
+                  Adding more symbols increases the vocabulary size because the
+                  tokenizer must assign a new Token ID to every unique
+                  character.
+                </p>
+
+                <p>Example:</p>
+
+                <div class="code-block python">
+                  <pre>
+text = "HELLO!!! 🚀"
+      </pre
+                  >
+                </div>
+
+                <p>This introduces:</p>
+
+                <ul>
+                  <li>Uppercase letters</li>
+                  <li>Punctuation</li>
+                  <li>Emoji characters</li>
+                </ul>
+
+                <p>Converting everything into lowercase using:</p>
+
+                <div class="code-block python">
+                  <pre>
+text.lower()
+      </pre
+                  >
+                </div>
+
+                <p>usually reduces the vocabulary size because:</p>
+
+                <pre><code>
+"H" and "h"
+    </code></pre>
+
+                <p>become the same character.</p>
+
+                <p>
+                  Smaller vocabularies are easier to manage and require fewer
+                  unique Token IDs.
+                </p>
+
+                <p>
+                  However, token efficiency also depends on sequence length.
+                </p>
+
+                <p>
+                  Modern LLMs balance both:
+                  <br />
+                  → vocabulary size
+                  <br />
+                  → and sequence efficiency.
+                </p>
+
+                <hr />
+
+                <!-- ADVANCED SOLUTION -->
+                <h4>Advanced Task – Solution</h4>
+
+                <div class="code-block python">
+                  <div class="code-header">Safer Encoding Logic</div>
+                  <pre>
+def encode(s):
+    output = []
+
+    for c in s:
+        if c in stoi:
+            output.append(stoi[c])
+        else:
+            print(f"Warning: '{c}' not in vocabulary. Skipping.")
+
+    return output
+      </pre
+                  >
+                </div>
+                <p>
+                  <strong>Important Tradeoff:</strong>
+                </p>
+
+                <p>
+                  Skipping unknown characters prevents the system from crashing,
+                  but it also removes information from the original input.
+                </p>
+
+                <p>Example:</p>
+                "Hello 🚀"
+                <br />
+
+                <p>may become:</p>
+                "Hello "
+
+                <p>after encoding and decoding.</p>
+
+                <p>Real-world AI systems solve this using:</p>
+
+                <ul>
+                  <li>Special unknown tokens like <code>&lt;UNK&gt;</code></li>
+                  <li>Larger vocabularies</li>
+                  <li>More advanced tokenization systems</li>
+                </ul>
+
+                <p>
+                  <strong>Explanation:</strong>
+                </p>
+
+                <p>
+                  Instead of crashing with a <code>KeyError</code>, the
+                  tokenizer now safely handles unsupported characters.
+                </p>
+
+                <p>Real-world AI systems require:</p>
+
+                <ul>
+                  <li>Graceful error handling</li>
+                  <li>Input validation</li>
+                  <li>Robust preprocessing pipelines</li>
+                </ul>
+
+                <p>
+                  This is one of the first steps toward building
+                  production-grade AI infrastructure.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="did-you-know-box">
+            <div class="dyk-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="dyk-text">
+              <h3>Did You Know?</h3>
+              <p>
+                GPT-4 doesn't tokenize letters; it uses "Byte Pair Encoding"
+                (BPE). It groups common patterns like "the" or "ing" into a
+                single ID. This is why it can "read" much faster and fit more
+                information into its context window than our character-level
+                model!
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="rule-callout"
+            style="
+              background: rgba(14, 165, 233, 0.1);
+              border-left-color: #0ea5e9;
+            "
+          >
+            <h4>
+              <i class="fas fa-arrow-right"></i> Next Mission: Autoregressive
+              Prediction
+            </h4>
+            <p>
+              Now that we have a pipeline that turns language into numbers, it's
+              time to build the first logic layer of the machine. In Session 3,
+              we move from static sequences to
+              <strong>Probabilistic Prediction</strong>. You will build a Bigram
+              model that calculates the odds of what token comes next.
+            </p>
+          </div>
+        </section>
+
+        <div class="completion-zone">
+          <div class="completion-card">
+            <label class="checkbox-container">
+              <input type="checkbox" id="session-check" />
+              <span class="checkmark"></span>
+              I have engineered a deterministic tokenizer pipeline and converted
+              sequences into <code>torch.long</code> tensors.
+            </label>
+          </div>
+        </div>
+
+        <div class="navigation-footer">
+          <a href="t2_session1.html" class="btn-secondary">Previous Session</a>
+          <button class="btn-primary" id="next-btn">
+            Mark Complete & Next <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <!-- REUSABLE MODALS -->
+    <div id="mcq-modal" class="mcq-modal">
+      <div class="mcq-modal-content">
+        <div id="mcq-modal-status-bar"></div>
+        <div class="mcq-modal-body">
+          <div id="mcq-modal-icon"></div>
+          <h3 id="mcq-modal-title">Checking Logic...</h3>
+          <p id="mcq-modal-feedback"></p>
+          <button class="btn-primary" onclick="closeMcqModal()">
+            Resume Mission
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../nexus-core.js"></script>
+    <script src="../script.js"></script>
+    <script>
+      function toggleTerm1() {
+        var list = document.getElementById("term1-list");
+        var icon = document.getElementById("term1-icon");
+        if (list.style.display === "none") {
+          list.style.display = "block";
+          icon.style.transform = "rotate(180deg)";
+        } else {
+          list.style.display = "none";
+          icon.style.transform = "rotate(0deg)";
+        }
+      }
+    </script>
+  </body>
+</html>

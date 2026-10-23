@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Nexus | Modular Programming</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="page-session" data-current-session="t1_s5">
+
+    <nav class="navbar">
+        <a href="index.html" class="site-logo">
+            <img src="images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+        </a>
+        <div class="nav-links">
+            <span class="user-status">Status: <strong>Junior Co-founder</strong></span>
+            <a href="term1.html" class="btn-primary">My Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>TERM 1: THE ENGINE ROOM</h3>
+                <ul>
+                    <li data-session-id="t1_s1"><a href="session1.html"><i class="fas fa-tools"></i> S1: The Architect's Toolkit</a></li>
+                    <li data-session-id="t1_s2"><a href="session2.html"><i class="fas fa-brain"></i> S2: Beyond the Chatbox</a></li>
+                    <li data-session-id="t1_s3"><a href="session3.html"><i class="fas fa-code"></i> S3: Prompting as Code</a></li>
+                    <li data-session-id="t1_s4"><a href="session4.html"><i class="fas fa-memory"></i> S4: Memory Management</a></li>
+                    <li data-session-id="t1_s5"><a href="session5.html"><i class="fas fa-cubes"></i> S5: Modular Programming</a></li>
+                    <li data-session-id="t1_s6"><a href="session6.html"><i class="fas fa-table"></i> S6: Structured Output</a></li>
+                    <li data-session-id="t1_s7"><a href="session7.html"><i class="fas fa-lightbulb"></i> S7: Project Ideation</a></li>
+                    <li data-session-id="t1_s8"><a href="session8.html"><i class="fas fa-rocket"></i> S8: Term 1 Showcase</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section locked">
+                <h3>TERM 2: THE BRAIN <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 3: THE BODY <i class="fas fa-lock"></i></h3>
+            </div>
+            <div class="sidebar-section locked">
+                <h3>TERM 4: THE LAUNCH <i class="fas fa-lock"></i></h3>
+            </div>
+        </aside>
+
+        <div id="sidebar-resizer" class="resizer"></div>
+
+        <main class="content">
+            <nav class="breadcrumb">Mission Control / Term 1 / Session 5 / Modular Programming</nav>
+            
+            <section id="lesson-header">
+                <h1>Session 5: Modular Programming & System Refactoring</h1>
+                <p class="lead">From Scripts to Systems. Learn the engineering art of "Separation of Concerns" to build scalable AI products.</p>
+                <div class="stats-bar">
+                    <span><i class="far fa-clock"></i> 60 Minutes</span>
+                    <span><i class="fas fa-signal"></i> Level: Advanced Junior</span>
+                </div>
+
+                <div class="outcome-box">
+                    <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+                    <p>In this lab, you will perform a professional <strong>Refactoring</strong> of your Personal AI. You will transition from a single messy script to a <strong>Three-Tier Architecture</strong>: Config, Brain, and Interface.</p>
+                </div>
+            </section>
+
+            <section class="lesson-body">
+                
+                <h2>1. The Architect's Pivot: Refactoring</h2>
+                <div class="info-box">
+                    <p><strong>The Reality Check:</strong> Up until now, you were "Scripting"—writing quick lines to test ideas. But as a Co-founder, you must now move to "Engineering."</p>
+                    <p>When code gets complex, we use <strong>Refactoring</strong>. This means rewriting the <i>internal</i> structure of your code without changing its <i>external</i> behavior. Why do we do this?</p>
+                    <ul>
+                        <li><strong>Maintainability:</strong> Making it easy to find and fix bugs.</li>
+                        <li><strong>Scalability:</strong> Adding new features without the system collapsing.</li>
+                        <li><strong>Separation of Concerns:</strong> Ensuring each file has only one specific job.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-callout">
+                    <h4><i class="fas fa-drafting-compass"></i> THE BLUEPRINT</h4>
+                    <p>We are splitting your system into three distinct modules:</p>
+                    <ol>
+                        <li><strong>config.py</strong>: The "Vault." Handles API keys and model settings.</li>
+                        <li><strong>brain.py</strong>: The "Logic Engine." Handles persona and memory.</li>
+                        <li><strong>app.py</strong>: The "Entry Point." The file you run to launch the interface.</li>
+                    </ol>
+                </div>
+                
+                <div class="info-box">
+                    <p>This design creates <strong>"abstraction layers"</strong>.
+                    Each module hides its internal complexity and exposes
+                    only the functionality the rest of the system needs.</p>
+                </div>
+
+                <h2>2. Visualizing the Architecture</h2>
+                <div class="tool-info-box" style="text-align: center;">
+                    <p><strong>How the modules connect:</strong></p>
+                    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; font-family: monospace; color: #1e293b; display: inline-block; text-align: left; border: 1px solid #cbd5e1;">
+                        [ USER INPUT ]<br>
+                        &nbsp;&nbsp;↓<br>
+                        <strong>app.py</strong> (The Captain)<br>
+                        &nbsp;&nbsp;↳ asks <strong>config.py</strong> for the model settings<br>
+                        &nbsp;&nbsp;↳ asks <strong>brain.py</strong> to process the message<br>
+                        &nbsp;&nbsp;↓<br>
+                        [ AI OUTPUT ]
+                    </div>
+                </div>
+                <p>Real AI systems often add more modules such as:</p>
+                    <ul>
+                        <li><b>tools.py</b></li>
+                        <li><b>vector_store.py</b></li>
+                        <li><b>api.py</b></li>
+                        <li><b>ui.py</b></li>
+                    </ul>                  
+                <p>    
+                    Today you built the first three layers of that architecture.
+                </p>
+
+                <h2>3. Module 1: config.py (The Environment)</h2>
+                <div class="tool-info-box">
+                    This module acts as the "Vault" for your system. Its only job is to manage the settings and API connections that allow your code to talk to the AI Cloud. By putting your <code>load_dotenv()</code> and <code>llm</code> initialization here, you create a central command center.
+                    <br><br>
+                    <strong>Why use it?</strong> If you decide to switch from GPT-4o-mini to a different model, or if you want to turn down the "Temperature" for the whole project, you only have to change <b>one line</b> in this file instead of hunting through hundreds of lines of code.
+                </div>
+                <p><strong>Reasoning Step:</strong> <i>If you want to change your model temperature or API key, how many files should you have to edit?</i> In a modular system, the answer is always <b>one</b>.</p>
+
+                <div class="activity-box">
+                    <h4>🛠 Activity: Building the Control Room</h4>
+                    <ol>
+                        <li>Create a new folder named as "AINexus_Modular" in your already existing project folder.</li>
+                        <li>Now in that new folder create a new file named <code>config.py</code>.</li>
+                        <li>This module isolates our <strong>Environment Logic</strong> from our AI logic.</li>
+                    </ol>
+                    <p><b>Prediction</b>:
+If we change the temperature here, will it affect one file or the entire AI system?</p>
+                    <div class="code-block python">
+                        <div class="code-header">config.py</div>
+                        <pre>import os
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
+
+# Load vault variables
+load_dotenv()
+
+# Centralized LLM Configuration
+# Changing settings here updates the whole system!
+llm = ChatOpenAI(
+    model="gpt-4o-mini", 
+    temperature=0.7
+)</pre>
+                    
+                    </div>
+                    <p><b>Verification</b>:
+Change temperature to 0.1. You won’t see output yet—but remember this change will affect all responses later.</p>
+                </div>
+
+                <h2>4. Module 2: brain.py (Logic & Memory)</h2>
+                <div class="tool-info-box">
+                    
+                    This module is where the "Thinking Process" of your AI lives. It encapsulates the Persona Rules (Session 3) and the Memory Notebook (Session 4). It creates the <code>initialize_system()</code> function, which builds the AI object that the rest of the application will use.
+                    <br><br>
+                         <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; font-family: monospace; color: #1e293b; display: inline-block; text-align: left; border: 1px solid #cbd5e1;">
+                            """ <br>
+                            <strong>AI Brain Architecture:</strong>
+                            &nbsp;&nbsp;User Input <br>
+                            &nbsp;&nbsp;&nbsp;↓ <br>
+                            &nbsp;&nbsp;System Rules (Persona) + input + LLM <br>
+                            &nbsp;&nbsp;&nbsp;↓ <br>
+                            &nbsp;&nbsp;Memory Updates<br>
+                            &nbsp;&nbsp;&nbsp;↓ <br>
+                            &nbsp;&nbsp;Response Generation <br>
+                            """
+                        </div>
+                        <br><br>
+                    <strong>Why use it?</strong> Professional engineers hide the "messy" AI logic inside this module so the main app doesn't have to see it. This makes it much easier to add advanced features, like structured output or special tools, without breaking the part of the code that talks to the user.
+                </div>
+                <p><strong>Reasoning Step:</strong> <i>Does the User Interface need to know how memory is saved?</i> No. That is a "Concern" that only the Brain should handle.</p>
+
+                <div class="activity-box">
+                    <h4>🛠 Activity: Encapsulating the Brain</h4>
+                    <ol>
+                        <li>Create a new file named <code>brain.py</code>.</li>
+                        <li>We wrap our personality and memory tools inside a reusable function.</li>
+                    </ol>
+                    <p><b>Prediction</b>:
+If we remove memory from this module, will the AI remember previous messages or forget everything?</p>
+                    <div class="code-block python">
+                        <div class="code-header">brain.py</div>
+                        <pre>from langchain_classic.chains import ConversationChain
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+def initialize_system(llm):
+    """
+    Sets up the Personality Rules 
+    and Memory Notebook 
+    """
+
+    # --- Persona Rules  ---
+    system_rules = """
+    You are a helpful Personal AI assistant.
+    Always respond clearly and concisely.
+    """
+
+    prompt = ChatPromptTemplate.from_messages([
+    ("system", system_rules),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{input}")
+])
+    
+
+    # --- Memory Notebook  ---
+    memory = ConversationBufferMemory(
+    memory_key="history",
+    return_messages=True
+)
+    # --- Create the AI Brain ---
+    bot = ConversationChain(
+        llm=llm,
+        memory=memory,
+        prompt=prompt,
+        verbose=False
+    )
+
+    return bot</pre>
+                    </div>
+                    <p><b>Verification</b>:
+You won’t see output yet—but this file now defines HOW your AI thinks and remembers.</p>
+                </div>
+
+                <h2>5. Module 3: app.py (The Entry Point)</h2>
+                <div class="tool-info-box">
+                    
+                    This module is the "Captain" of your system. It is the file you actually run to launch your Personal LLM. Its job is to handle the User Interface (UI), which in our case is the terminal loop where the user types. It coordinates between the <b>Config</b> and the <b>Brain</b> to deliver the final response.
+                    <br>When you run:
+
+<b>python app.py</b>
+
+Python begins executing code from this file first.
+That is why we call it the "Entry Point".
+                    <br><br>
+                    <strong>Why use it?</strong> By keeping the "Interface" separate from the "Logic," you make your system flexible. In the future, you could replace this terminal loop with a website or a voice interface, and you wouldn't have to change a single line of code in your Brain or Config modules!
+                </div>
+                <p>The <b>Entry Point</b> is the file that launches the system. It coordinates the Config and the Brain like a conductor leads an orchestra.</p>
+
+                <div class="activity-box">
+                    <h4>🛠 Activity: The Final Assembly</h4>
+                    <ol>
+                        <li>Create your final file: <code>app.py</code>.</li>
+                        <li>We use <code>import</code> to bring our tools from our other modules.</li>
+                    
+                    <p><p>Prediction</p>:
+What do you expect to happen when you run this file?</p>
+                    <div class="code-block python">
+                        <div class="code-header">app.py</div>
+                        <pre>from config import llm
+from brain import initialize_system
+
+# 1. Coordinate the modules
+personal_ai = initialize_system(llm)
+
+print("--- AI NEXUS SYSTEM: ONLINE ---")
+
+# 2. The User Interface Loop
+while True:
+    user_message = input("\nYou: ")
+    
+    if user_message.lower() in ["exit", "quit"]:
+        break
+    
+    # 3. Process message through the logic module
+    response = personal_ai.predict(input=user_message)
+    print(f"AI: {response}")</pre>
+                    </div>
+                    <li>
+                        Make sure you are in the root project directory, then run the following command in the terminal :
+    
+    <pre><code>python AINexus_Modular/app.py</code></pre>
+                    </li>
+                    <p>You will see something like this:</p>
+                </ol>
+                <figure class="screenshot">
+                <img src="images/Session 5/Activity 3 output.png"alt="final output"/>
+        </figure>
+                    <p><b>Verification Test</b>:
+Type:
+Hello, who are you?
+
+Now change your system_rules in brain.py and restart.
+Did the personality change?</p>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>Architecture Verified:</strong> It looks the same to the user, but for an engineer, this is 10x better. You are now ready for <strong>Session 6</strong>, where we will make the Brain output structured <b>JSON</b> data!</p>
+                </div>
+                <div class="rule-callout">
+                    <h4><i class="fas fa-brain"></i> Engineer's Realization</h4>
+
+                    <p>Take a moment to realize what you just built.</p>
+
+                    <ul>
+                    <li>Your <b>Config Layer</b> controls the AI model.</li>
+                    <li>Your <b>Brain Layer</b> manages personality and memory.</li>
+                    <li>Your <b>Interface Layer</b> interacts with the user.</li>
+                    </ul>
+
+                    <p>This is the same layered architecture used in real AI applications. 
+                    You have officially moved from <b>prompt user</b> to <b>AI system builder</b>. You have built a complete AI system using: Model + Rules + Memory + Architecture.</p>
+                    </div>
+                <details class="collapsible-box">
+                    <summary><strong>⚙ Troubleshooting & FAQs</strong></summary>
+
+                    <div class="activity-box">
+                        <h4>❓ ModuleNotFoundError: No module named 'config' or 'brain'</h4>
+                        <p>This is the most common modular error. Check the following:</p>
+                        <ul>
+                            <li>Ensure <code>config.py</code>, <code>brain.py</code>, and <code>app.py</code> are all in the <b>exact same folder</b>.</li>
+                            <li>Check for typos in your filenames. If you named it <code>configs.py</code> but imported <code>config</code>, it will fail.</li>
+                            <li>Make sure you saved all files (Ctrl + S) before running <code>app.py</code>.</li>
+                        </ul>
+
+                        <hr />
+
+                        <h4>❓ AttributeError: 'NoneType' object has no attribute 'predict'</h4>
+                        <p>This happens if your <code>initialize_system</code> function in <code>brain.py</code> doesn't actually "give back" the bot.</p>
+                        <p><b>The Fix:</b> Ensure the very last line of that function is <code>return bot</code>. If you forget to return, the variable in <code>app.py</code> stays empty (None).</p>
+
+                        <hr />
+
+                        <h4>❓ I changed the rules in brain.py but nothing happened</h4>
+                        <p>Since <code>app.py</code> imports the logic, it needs to be restarted to see the new changes.</p>
+                        <p><b>The Fix:</b> Stop your terminal (Ctrl + C) and run <code>python app.py</code> again to load the updated rules.</p>
+
+                        <hr />
+
+                        <h4>❓ ImportError: cannot import name 'llm'</h4>
+                        <p>This happens if you named the variable something else in <code>config.py</code>.</p>
+                        <p><b>The Fix:</b> Check <code>config.py</code>. If you wrote <code>my_llm = ChatOpenAI(...)</code>, then in <code>app.py</code> you must use <code>from config import my_llm</code>.</p>
+                    </div>
+                </details>
+                <!-- KNOWLEDGE CHECK -->
+                <section class="knowledge-check">
+                    <div class="check-header">
+                        <i class="fas fa-tasks"></i>
+                        <h2>Mission Diagnostic: Level 05</h2>
+                        <p>Verify your understanding of system architecture and refactoring.</p>
+                    </div>
+
+                    <div class="mcq-container">
+                        <!-- Q1 -->
+                        <div class="mcq-item q-purple">
+                            <p class="mcq-question">1. If you want to add a feature where your AI saves chat logs to a text file, which module should handle that logic?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Config is only for settings, not logic.">A) config.py</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct! brain.py handles how data is processed and stored.">B) brain.py</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="App should only handle user interaction.">C) app.py</button>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="mcq-item q-green">
+                            <p class="mcq-question">2. What is the primary goal of "Refactoring" code?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="That's a system update, not refactoring.">A) Adding new features for the user to see.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Exactly. It's about keeping the behavior identical while improving the internal structure.">B) Improving internal structure without changing external behavior.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Optimization is different from structure improvement.">C) Making the AI response use fewer tokens.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="mcq-item q-blue">
+                            <p class="mcq-question">3. What does the 'import' command allow a developer to do?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct! It is the glue that connects different modules.">A) Use variables and functions from one file inside another.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="That is handled by the OS or Python installer.">B) Install new libraries from the internet.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="That is what 'input()' does.">C) Ask the user for data in the terminal.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="mcq-item q-amber">
+                            <p class="mcq-question">4. Why is 'Separation of Concerns' helpful when upgrading an AI model?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Model choice doesn't change terminal colors.">A) It changes the color of the app.py terminal.</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Spot on! This is the essence of modularity.">B) You only have to change the 'llm' variable in config.py.</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Files don't impact model intelligence.">C) It makes the AI smarter automatically.</button>
+                            </div>
+                        </div>
+
+                        <!-- Q5 -->
+                        <div class="mcq-item q-purple">
+                            <p class="mcq-question">5. Which file acts as the 'Entry Point' in our Personal AI architecture?</p>
+                            <div class="mcq-options">
+                                <button class="mcq-btn" data-correct="false" data-feedback="Brain is a logic component, not the starter.">A) brain.py</button>
+                                <button class="mcq-btn" data-correct="false" data-feedback="Config is a setup file.">B) config.py</button>
+                                <button class="mcq-btn" data-correct="true" data-feedback="Correct. app.py is the commander that runs the system.">C) app.py</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="session-block homework-block">
+                    <h2>Homework / Extension</h2>
+                    <div class="homework-item standard">
+                        <h3>Standard Task: The Rules Injector</h3>
+                        <p>In <code>brain.py</code>, update your <code>initialize_system</code> function to include a <strong>Custom Prompt</strong> from Session 3. Verify that <code>app.py</code> automatically adopts these new persona rules without needing any changes to its code.</p>
+                    </div>
+                    <div class="homework-item advanced">
+                        <h3>Advanced Task: The Logger Module</h3>
+                        <p>Create a 4th module named <code>logger.py</code>. Write a function that takes a string and appends it to a file named <code>chat_history.txt</code>. Import this into <code>app.py</code> so that every AI response is recorded locally. This is your first step into <strong>Data Persistence</strong>! (This means your AI can now store information outside the program,
+so data is not lost when the system stops.)</p>
+                    </div>
+                    <div class="homework-collapsible">
+                        <div class="homework-toggle">
+                            <span>Need Help? View Solutions & Guidance</span>
+                            <i class="fas fa-chevron-down toggle-arrow"></i>
+                        </div>
+
+                        <div class="homework-content">
+                            <h4>Standard Task Guidance (The Rules Injector)</h4>
+                            <ol>
+<li>Open <code>brain.py</code></li>
+
+<li>
+Inside the <code>initialize_system</code> function, locate the <code>system_rules</code> variable that defines the AI's personality.
+</li>
+
+<li>
+Modify the value of <code>system_rules</code> to change the AI's personality.
+For example:
+<pre><code>You are a pirate AI. Speak like a pirate.</code></pre>
+</li>
+
+<li>
+Save the file and run the system again using:
+
+python AINexus_Modular/app.py
+</li>
+
+<li>
+Verify that the AI now follows the new personality without changing anything in <code>app.py</code>.
+</li>
+</ol>
+
+                            <hr>
+
+                            <h4>Advanced Task Guidance (The Logger Module)</h4>
+                            <ol>
+                                <li>Create <code>logger.py</code>.</li>
+                                <li>Write this function:
+                                    <pre><code>def log_chat(text):
+                        with open("chat_history.txt", "a") as file:
+                            file.write(text + "\n")</code></pre>
+                                </li>
+                                <li>At the top of <code>app.py</code>, add <code>from logger import log_chat</code>.</li>
+                                <li>Inside the loop, after getting the AI response, call <code>log_chat(response)</code>.</li>
+                                <li>After running the system, check that a file named chat_history.txt is created. Open it and verify that AI responses are being saved after each message.</li>
+                            </ol>
+
+                            <hr>
+
+                            <h4>Architect's Checklist</h4>
+                            <ul>
+                                <li>Did you use <code>from [file] import [variable]</code> correctly?</li>
+                                <li>Are your <code>.env</code> settings isolated only in the <code>config.py</code>?</li>
+                                <li>Does <code>app.py</code> look clean (no AI configuration code)?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="did-you-know-box">
+                    <div class="dyk-icon"><i class="fas fa-question-circle"></i></div>
+                    <div class="dyk-text">
+                        <h3>Did You Know?</h3>
+                        <p>NASA engineers use "Modular Architecture" for the International Space Station! Each module (like the kitchen or the lab) is built by different countries and then "snapped together" in space. You are using the same logic to build your AI.</p>
+                    </div>
+                </div>
+
+                <div class="rule-callout">
+                    <h4><i class="fas fa-sync"></i> LOOKING AHEAD: SESSION 6</h4>
+                    <p>Now that our system is organized, we can give it "Structured Intelligence." In the next session, we will learn how to make our Brain output <b>JSON</b>, allowing the computer to actually use the AI's thoughts to trigger real actions!</p>
+                </div>
+            </section>
+
+            <div class="completion-zone">
+                <div class="completion-card">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="session-check">
+                        <span class="checkmark"></span>
+                        I have refactored my AI into a modular architecture and verified the Entry Point.
+                    </label>
+                </div>
+            </div>
+
+            <div class="navigation-footer">
+                <a href="session4.html" class="btn-secondary">Previous Session</a>
+                <button class="btn-primary" id="next-btn">Mark Complete & Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- REUSABLE MODAL -->
+    <div id="mcq-modal" class="mcq-modal">
+        <div class="mcq-modal-content">
+            <div id="mcq-modal-status-bar"></div>
+            <div class="mcq-modal-body">
+                <div id="mcq-modal-icon"></div>
+                <h3 id="mcq-modal-title">Checking Logic...</h3>
+                <p id="mcq-modal-feedback"></p>
+                <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="nexus-core.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

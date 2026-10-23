@@ -1,0 +1,1663 @@
+/* FIX: Added surgically to support new components while maintaining current theme */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --bg-light: #f8fafc;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --sidebar-bg: #ffffff;
+    --border: #e2e8f0;
+    --code-bg: #1e1e1e;
+    --accent-yellow: #fefce8;
+    --accent-border: #fef08a;
+    --success-bg: #f0fdf4;
+    --success-border: #bbf7d0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Existing Navbar & Layout Styles remain unchanged... */
+.navbar { background: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+.logo span { color: var(--primary); }
+.container { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: 300px; background: var(--sidebar-bg); border-right: 1px solid var(--border); padding: 2rem 1rem; overflow-y: auto; }
+.sidebar-section h3 { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.05rem; margin-bottom: 1rem; }
+.sidebar ul { list-style: none; padding: 0; margin-bottom: 2rem; }
+.sidebar li a { text-decoration: none; color: var(--text-main); padding: 0.6rem 1rem; display: block; border-radius: 6px; font-size: 0.9rem; margin-bottom: 4px; transition: 0.2s; }
+.sidebar li.active a, .sidebar li a:hover { background: #eff6ff; color: var(--primary); font-weight: 600; }
+.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+.content { flex: 1; padding: 3rem 5rem; overflow-y: auto; background: white; }
+.breadcrumb { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.lead { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem; }
+.stats-bar { display: flex; gap: 20px; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+
+/* FIX 1: Session Outcome Block Styling */
+.outcome-box {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
+.outcome-box h4 { margin: 0 0 0.5rem 0; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+.outcome-box p { margin: 0; font-size: 0.95rem; color: var(--text-main); }
+
+/* FIX 2: Rule Callout Styling */
+.rule-callout {
+    background: #fff1f2;
+    border-left: 4px solid #e11d48;
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+}
+.rule-callout h4 { color: #be123c; margin: 0 0 0.5rem 0; }
+.rule-callout p { margin: 0; font-weight: 500; }
+
+/* FIX 5: Screenshot Placeholders */
+.screenshot-placeholder { margin: 2rem 0; }
+.placeholder-box {
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    color: #94a3b8;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border-radius: 8px;
+    letter-spacing: 1px;
+}
+.screenshot-placeholder figcaption {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* FIX 6: Completion Reinforcement Styling */
+.completion-zone { margin: 4rem 0 2rem 0; }
+.completion-card {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #166534;
+}
+
+/* Existing Logic Components */
+.info-box { background: #f0f7ff; border-left: 4px solid var(--primary); padding: 1rem 1.5rem; margin: 2rem 0; border-radius: 0 8px 8px 0; }
+.analogy { display: flex; align-items: center; gap: 1rem; background: var(--accent-yellow); padding: 1rem; border-radius: 8px; border: 1px solid var(--accent-border); margin: 1.5rem 0; }
+.did-you-know-box { margin-top: 4rem; background: #f5f3ff; border: 2px dashed #c4b5fd; border-radius: 16px; padding: 2rem; display: flex; gap: 1.5rem; align-items: flex-start; }
+.dyk-icon { font-size: 2.5rem; color: #7c3aed; }
+.dyk-text h3 { margin-top: 0; color: #5b21b6; }
+.dyk-text p { margin-bottom: 0; color: #5b21b6; line-height: 1.5; }
+.code-block { background: var(--code-bg); color: #d1d5db; border-radius: 8px; margin: 1.5rem 0; overflow: hidden; }
+.code-header { background: #334155; padding: 0.5rem 1rem; font-size: 0.8rem; font-family: monospace; }
+pre { padding: 1rem; margin: 0; font-family: 'Consolas', monospace; line-height: 1.5; }
+.btn-primary { background: var(--primary); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.btn-secondary { background: white; border: 1px solid var(--border); padding: 0.8rem 1.5rem; border-radius: 6px; cursor: pointer; }
+.navigation-footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+
+/* --- ACADEMIC FLOW NAV & PAGE STYLING --- */
+
+.standard-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    flex: 1;
+}
+
+.page-header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 2.2rem;
+    color: var(--text-main);
+}
+
+.section-block {
+    margin-bottom: 3rem;
+}
+
+.section-block h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+}
+
+.overview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.overview-item {
+    padding: 1rem;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.entry-action {
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.standard-footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Terms Grid */
+.terms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.term-nav-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.term-nav-card.active:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.term-nav-card.locked {
+    background: #f1f5f9;
+    opacity: 0.7;
+}
+
+.term-header-box {
+    margin-bottom: 1rem;
+}
+
+.theme-tag {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.term-nav-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    flex: 1;
+}
+
+/* Session List */
+
+/* SESSION PAGE – Screenshot styling */
+.page-session .screenshot img {
+    max-width: 100%;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.page-session figure {
+    margin: 2.5rem 0;
+}
+
+.session-log {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.session-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.session-meta {
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--text-muted);
+    background: #f1f5f9;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.session-details {
+    flex: 1;
+}
+
+.session-details h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.session-details p {
+    margin: 0.2rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.session-row.locked {
+    background: #f8fafc;
+    opacity: 0.6;
+}
+
+.lock-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .session-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* --- RESPONSIVENESS REPAIRS --- */
+
+/* 1. Adjusting the Session Page (The Sidebar Issue) */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column; /* Stack sidebar on top of content */
+        overflow-y: auto;
+    }
+
+    .sidebar {
+        width: 100%; /* Sidebar takes full width */
+        height: auto;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1.5rem;
+    }
+
+    .content {
+        padding: 2rem 1.5rem; /* Reduce heavy desktop padding */
+    }
+}
+
+/* 2. Adjusting the Academic Flow Pages (Home, Terms, Term 1) */
+@media (max-width: 768px) {
+    .standard-container {
+        padding: 2rem 1rem; /* Less empty space on phones */
+    }
+
+    .page-header h1 {
+        font-size: 1.8rem; /* Smaller titles so they don't wrap weirdly */
+    }
+
+    .navbar {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .nav-links {
+        margin: 0;
+        display: flex;
+        gap: 15px;
+        font-size: 0.85rem;
+    }
+
+    .nav-links a {
+        margin: 0;
+    }
+
+
+
+    /* Make Term Cards and Session Rows stack neatly */
+    .terms-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .session-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .session-meta {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: 10px;
+    }
+}
+
+/* 3. Fixing Components (Code blocks and pointers) */
+@media (max-width: 480px) {
+    .pointer-grid, .output-grid, .filter-section {
+        grid-template-columns: 1fr !important;
+    }
+
+    pre {
+        font-size: 0.8rem; /* Shrink code text to fit screen */
+        overflow-x: auto; /* Allow side-scrolling for long code lines */
+    }
+
+    .did-you-know-box {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* =========================================
+   HOME, TERMS, & TERM 1 PAGE STYLING 
+   (HORIZONTAL & KID-FRIENDLY THEME)
+   ========================================= */
+
+/* Theme Base */
+.nexus-theme {
+    background: radial-gradient(circle at top right, #ffffff 0%, #f0f7ff 100%);
+    min-height: 100vh;
+}
+
+.animate-fade-in {
+    animation: nexusFadeUp 0.8s ease-out;
+}
+
+@keyframes nexusFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Clickable Logo Fix */
+.logo-link { text-decoration: none; }
+
+/* Horizontal Layout Containers */
+.wide-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.hero-center, .page-title-center {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+/* HOME PAGE – Hero text spacing */
+.hero-center p {
+    margin-bottom: 2.5rem;
+}
+
+/* HOME PAGE – CTA vertical positioning */
+.hero-buttons {
+    margin: 2.5rem 0 4rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+
+/* Remove underline from buttons that are anchor tags */
+.btn-primary {
+    text-decoration: none;
+}
+
+/* HOME / TERMS – Primary button hover enhancement */
+.btn-primary {
+    text-decoration: none; /* already discussed */
+    transition: 
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+/* Hover state */
+.btn-primary:hover {
+    transform: scale(1.04); /* subtle enlargement */
+    box-shadow: 
+        0 0 0 3px rgba(37, 99, 235, 0.25),   /* soft outer ring */
+        0 10px 25px rgba(37, 99, 235, 0.35); /* glow depth */
+}
+
+
+
+.hero-center h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+.text-gradient {
+    background: linear-gradient(90deg, #2563eb, #f97316);
+    background-clip: text;             /* Add this standard line */
+    -webkit-background-clip: text;     /* Keep this for Chrome/Safari */
+    -webkit-text-fill-color: transparent;
+}
+
+.mission-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 800;
+    font-size: 0.7rem;
+    border-radius: 50px;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+}
+
+/* Horizontal Feature Grid (Home Page) */
+.horizontal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: 0.3s;
+}
+
+.feature-card:hover { transform: translateY(-10px); }
+
+.icon-box {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    font-size: 1.5rem;
+}
+.icon-box.blue { background: #eff6ff; color: #2563eb; }
+.icon-box.orange { background: #fff7ed; color: #f97316; }
+.icon-box.purple { background: #f5f3ff; color: #7c3aed; }
+
+/* Horizontal Mission Grid (Terms Page) */
+.horizontal-mission-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.mission-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 24px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.active-mission { border-color: #e2e8f0; }
+.active-mission:hover { border-color: #2563eb; box-shadow: 0 15px 30px rgba(37,99,235,0.1); }
+
+.mission-status { font-size: 0.6rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 1rem; }
+.active-mission .mission-status { color: #2563eb; }
+.locked-mission { opacity: 0.5; cursor: not-allowed; background: #f8fafc; }
+
+.mission-icon { font-size: 2.5rem; margin-bottom: 1rem; color: #94a3b8; }
+.active-mission .mission-icon { color: #2563eb; }
+
+/* Horizontal Session Grid (Term 1 Page) */
+.horizontal-session-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.session-level {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #e2e8f0;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.active-level:hover { border-color: #2563eb; background: #f0f7ff; }
+/* =========================
+   COMPLETED SESSION STATE
+   ========================= */
+
+.session-level.completed-level {
+    background: #f0fdf4;                 /* soft success green */
+    border: 1.5px solid #22c55e;         /* strong green border */
+    cursor: pointer;
+}
+
+/* Prevent hover from overriding completed state */
+.session-level.completed-level:hover {
+    background: #f0fdf4;
+    border-color: #22c55e;
+    transform: none;
+    box-shadow: none;
+}
+/* Completed session icon styling */
+.session-level.completed-level .level-icon-mini,
+.session-level.completed-level .level-icon-mini i {
+    color: #22c55e !important;   /* success green */
+}
+/* =========================
+   COMPLETED SESSION CTA FIX
+   ========================= */
+
+/* Hide Start Mission button text */
+.session-level.completed-level .level-btn {
+    font-weight: 800;
+    color: #16a34a;               /* darker green */
+}
+
+/* Replace text using pseudo-element */
+.session-level.completed-level .level-btn::before {
+    content: "✓ Completed";
+}
+
+/* Hide original text */
+.session-level.completed-level .level-btn {
+    font-size: 0;                 /* hides existing text safely */
+}
+
+/* Restore readable size for new label */
+.session-level.completed-level .level-btn::before {
+    font-size: 0.75rem;
+}
+
+
+.level-num { font-size: 2.5rem; font-weight: 900; color: #e2e8f0; margin-bottom: 1rem; }
+.active-level .level-num { color: #dbeafe; }
+
+.level-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #2563eb;
+    text-transform: uppercase;
+}
+
+.locked-level { opacity: 0.6; cursor: not-allowed; }
+
+/* Footer */
+.nexus-footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .horizontal-grid, .horizontal-mission-grid, .horizontal-session-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 650px) {
+    .horizontal-grid, .horizontal-mission-grid, .horizontal-session-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================
+   TERMS PAGE (HORIZONTAL INTERNAL LAYOUT)
+   Side-by-side content + Color Inversion
+   ========================================= */
+
+.terms-mission-view {
+    background-color: #f8fafc;
+}
+/* --- INCREASED SPACING FOR TERMS HEADER --- */
+.terms-header {
+    text-align: center;
+    /* This '6rem' provides the large vertical gap you want */
+    margin: 2rem 0 6rem 0; 
+}
+
+.terms-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+}
+
+.terms-header p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    white-space: nowrap;
+    max-width: none; /* Keeps the text from stretching too wide - for 700px*/
+    margin: 0 auto;   /* Centers the paragraph */
+}
+@media (max-width: 768px) {
+    .terms-header p {
+        white-space: normal;
+        text-align: center;
+    }
+}
+
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 4rem;
+}
+
+/* Base Card Style - Set to Flex Row */
+.mission-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex; /* Side-by-side layout */
+    gap: 1.2rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    position: relative;
+}
+
+/* Left Column: Icon and Meta */
+.card-aside {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid var(--border);
+    padding-right: 1.2rem;
+    min-width: 60px;
+}
+
+.card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: var(--primary);
+    transition: color 0.3s ease;
+}
+
+.card-meta {
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+/* Right Column: Text Content */
+.card-body {
+    flex: 1;
+}
+
+.card-status {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+.status-active { color: var(--primary); }
+
+.card-body h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-main);
+    transition: color 0.3s ease;
+}
+
+.theme-text, .goal-text {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+.card-action {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s ease;
+}
+
+/* --- THE HOVER INVERSION --- */
+/* Everything turns white, Background turns brand blue */
+.mission-card:not(.locked-card):hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
+}
+
+.mission-card:not(.locked-card):hover h3,
+.mission-card:not(.locked-card):hover .card-icon,
+.mission-card:not(.locked-card):hover .card-meta,
+.mission-card:not(.locked-card):hover .card-status,
+.mission-card:not(.locked-card):hover .theme-text,
+.mission-card:not(.locked-card):hover .theme-text strong,
+.mission-card:not(.locked-card):hover .goal-text,
+.mission-card:not(.locked-card):hover .card-action {
+    color: #ffffff !important;
+}
+
+.mission-card:not(.locked-card):hover .card-aside {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Locked State Fix */
+.locked-card {
+    background-color: #f1f5f9;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.locked-card .card-icon { color: #94a3b8; }
+
+/* Responsive: On tablets/phones, go back to single column or 2 columns */
+@media (max-width: 1100px) {
+    .mission-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 650px) {
+    .mission-grid { grid-template-columns: 1fr; }
+    .mission-card { flex-direction: row; } /* Keep side-by-side even on small screens */
+}
+
+/* =========================================
+   SESSION PAGE - TOOL EXPLANATION BOXES
+   Scoped to .page-session only
+   ========================================= */
+
+.page-session .tool-info-box {
+    background-color: #dcebfa; 
+    border-left: 4px solid var(--primary);
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+.page-session .tool-info-box strong {
+    color: var(--primary);
+    display: block;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.05rem;
+}
+
+.page-session .activity-box {
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.page-session .activity-box h4 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.page-session .activity-box pre {
+  margin: 0.75rem 0;
+}
+/* =========================
+   Homework / Extension Block
+   (Session pages only)
+========================= */
+
+.session-block.homework-block {
+  margin-top: 4rem;
+  padding: 2rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.homework-block h2 {
+  margin-bottom: 1.5rem;
+}
+
+.homework-item {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+
+.homework-item.standard {
+  background: #ecfdf5;
+  border-left: 4px solid #10b981;
+}
+
+.homework-item.advanced {
+  background: #eff6ff;
+  border-left: 4px solid #3b82f6;
+}
+
+.homework-item h3 {
+  margin-bottom: 0.5rem;
+}
+
+.homework-item .hint {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  color: #475569;
+}
+/* Increase text size inside Homework block only */
+.homework-block {
+  font-size: 1.05rem;
+}
+
+.homework-block p,
+.homework-block li {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.homework-block h2 {
+  font-size: 1.8rem;
+}
+
+.homework-block h3 {
+  font-size: 1.25rem;
+}
+.site-logo {
+  display: flex;
+  align-items: center;
+}
+
+.site-logo img {
+  height: 70px;   /* ← this is why your old version looked right */
+  width: auto;
+}
+
+/* FIX: Change Session Numbers to Blue */
+body.nexus-theme .level-num {
+    font-size: 2.5rem !important;
+    font-weight: 900 !important;
+    color: #2563eb !important; /* Changed from light grey to Brand Blue */
+    margin-bottom: 10px !important;
+    opacity: 0.8;
+}
+
+/* FIX: Sticky Footer Logic */
+body.nexus-theme {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+}
+
+body.nexus-theme .wide-container {
+    flex: 1 !important; /* This pushes the footer to the very bottom */
+}
+
+.nexus-footer {
+    text-align: center;
+    padding: 2rem !important;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: auto !important; /* Ensures it stays at bottom */
+    background: transparent;
+}
+
+/* Ensure the grid doesn't get too squashed with 8 cards */
+@media (min-width: 1200px) {
+    body.nexus-theme .horizontal-session-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+/* =========================================
+   TERM 1: COOL TECH-GLOW ANIMATIONS
+   (Kids-friendly & Interactive)
+   ========================================= */
+
+/* 1. The Card Container Lift */
+body.nexus-theme .session-level {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* 2. Hover State: Glow & Lift */
+body.nexus-theme .active-level:hover {
+    transform: translateY(-12px) scale(1.02) !important;
+    border-color: var(--primary) !important;
+    background: #ffffff !important;
+    box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15), 
+                0 0 15px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* 3. The Number Pulse Animation */
+body.nexus-theme .active-level:hover .level-num {
+    color: var(--primary) !important;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
+    transition: all 0.3s ease;
+}
+
+/* 4. The Icon Animation (The 'Pop') */
+body.nexus-theme .level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+body.nexus-theme .level-icon-mini {
+    font-size: 1.2rem;
+    color: #cbd5e1;
+    transition: all 0.3s ease;
+}
+
+body.nexus-theme .active-level:hover .level-icon-mini {
+    color: var(--primary);
+    transform: rotate(15deg) scale(1.2);
+}
+
+/* 5. The "Start Mission" Button Slide */
+body.nexus-theme .level-btn i {
+    transition: transform 0.3s ease;
+}
+
+body.nexus-theme .active-level:hover .level-btn i {
+    transform: translateX(5px);
+}
+
+/* 6. Subtle Blue Shine Effect on Hover */
+body.nexus-theme .active-level::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(37,99,235,0.03) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+body.nexus-theme .active-level:hover::after {
+    opacity: 1;
+}
+
+/* =========================================
+   FIXED STICKY FOOTER (NEXUS THEME)
+   Forces copyright to stay at the bottom
+   ========================================= */
+
+/* 1. Set the body to a Flex container */
+body.nexus-theme {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important; /* Forces body to be full screen height */
+    margin: 0 !important;
+}
+
+/* 2. Tell the main container to grow and fill the space */
+body.nexus-theme .wide-container {
+    flex: 1 0 auto !important; /* This "pushes" the footer down */
+}
+
+/* 3. Style the footer to stay at the base */
+.nexus-footer {
+    flex-shrink: 0 !important; /* Prevents footer from squishing */
+    text-align: center;
+    padding: 2rem 0 !important;
+    background-color: #ffffff; /* Matches the theme */
+    border-top: 1px solid var(--border);
+    width: 100%;
+}
+
+.nexus-footer p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* =========================================
+   SESSION PAGE: SIDEBAR RESIZER
+   ========================================= */
+
+/* The Resizer Handle */
+.page-session .resizer {
+    width: 4px;
+    cursor: col-resize;
+    background-color: var(--border);
+    transition: background-color 0.2s;
+    z-index: 10;
+}
+
+/* Highlight the handle when hovering or dragging */
+.page-session .resizer:hover,
+.page-session .resizing .resizer {
+    background-color: var(--primary);
+    width: 6px;
+}
+
+/* Ensure the container doesn't let text get selected while dragging */
+.resizing {
+    cursor: col-resize;
+    user-select: none;
+}
+
+/* Limit sidebar growth so it doesn't break the layout */
+.page-session .sidebar {
+    min-width: 200px;
+    max-width: 600px;
+}
+/* =========================================
+   REFINED NAVBAR BUTTONS (GLOBAL)
+   Professional, high-contrast navigation
+   ========================================= */
+
+.nav-links {
+    display: flex;
+    gap: 15px; /* Space between buttons */
+    align-items: center;
+}
+
+/* =========================================
+   NAVBAR LINKS - SYNCED ANIMATION
+   ========================================= */
+
+/* --- NAVBAR BUTTONS FIX --- */
+.nav-links a {
+    text-decoration: none !important;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.7rem 1.4rem;
+    border-radius: 12px;
+    background-color: #f1f5f9;
+    border: 1px solid var(--border);
+    display: inline-block;
+    /* SYNCED PHYSICS */
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
+}
+
+/* ALL NAVBAR HOVERS (Normal & Active) */
+.nav-links a:hover, .nav-links a.active:hover {
+    transform: scale(1.04) !important;
+    /* SHARP LIGHT GLOW */
+    box-shadow: 
+        0 0 0 2px rgba(37, 99, 235, 0.1),
+        0 8px 16px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* KEEPS THE INACTIVE BUTTON WHITE ON HOVER */
+.nav-links a:not(.active):hover {
+    background-color: #ffffff;
+    color: var(--primary);
+}
+
+/* KEEPS THE ACTIVE BUTTON BLUE */
+.nav-links a.active {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary);
+}
+
+
+/* =========================================
+   2. HERO / ACTION BUTTONS (The big Homepage one)
+   ========================================= */
+/* --- HOME PAGE BUTTON FIX --- */
+.btn-primary {
+    display: inline-block;
+    background-color: var(--primary) !important;
+    color: white !important;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    /* SYNCED PHYSICS */
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.btn-primary:hover {
+    transform: scale(1.04);
+    background-color: var(--primary) !important; /* KEEPS IT ORIGINAL BLUE */
+    /* SHARP LIGHT GLOW */
+    box-shadow: 
+        0 0 0 2px rgba(37, 99, 235, 0.1),
+        0 8px 16px rgba(37, 99, 235, 0.15) !important;
+}
+/* --- LOGO FIX --- */
+.site-logo {
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+
+
+.site-logo img {
+    height: 60px; /* Adjusted for better proportion */
+    width: auto;
+}
+/* --- SIDEBAR LOCK STYLING in Session 1 page, locked->(S2-S8) --- */
+.sidebar li.sidebar-locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar li.sidebar-locked a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    gap: 10px;
+}
+
+.sidebar li.sidebar-locked .dynamic-lock {
+    margin-left: auto;
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+
+
+.sidebar li.sidebar-locked .lock-mini {
+    font-size: 0.7rem;
+    margin-left: auto; /* Pushes the lock to the right */
+    color: #94a3b8;
+}
+
+/* Ensure the hover effect doesn't work on locked items */
+.sidebar li.sidebar-locked:hover {
+    background: transparent !important;
+}
+/* Completed State Visuals */
+body.nexus-theme .completed-level {
+    border-color: #22c55e !important; /* Green border */
+    background: #f0fdf4 !important;
+}
+
+body.nexus-theme .completed-level .level-num {
+    color: #22c55e !important;
+}
+
+body.nexus-theme .completed-level .level-btn {
+    color: #166534 !important;
+}
+/* --- KNOWLEDGE CHECK STYLES --- */
+.page-session .knowledge-check {
+    margin-top: 5rem;
+    padding-top: 3rem;
+    border-top: 2px solid var(--border);
+}
+
+.page-session .mcq-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.page-session .mcq-question {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+.page-session .mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.page-session .mcq-option {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    color: var(--text-main);
+}
+
+.page-session .mcq-option:hover {
+    border-color: var(--primary);
+    background: #f0f7ff;
+}
+
+.page-session .mcq-correct {
+    background-color: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #166534 !important;
+    font-weight: 600;
+}
+
+.page-session .mcq-wrong {
+    background-color: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #991b1b !important;
+}
+
+/* KNOWLEDGE CHECK – VISUAL UPGRADE */
+.page-session .knowledge-check {
+    margin-top: 5rem;
+    padding: 3rem 2.5rem;
+    border-radius: 18px;
+    background: linear-gradient(
+        180deg,
+        #f8fafc 0%,
+        #f1f5f9 100%
+    );
+    border: 1px solid var(--border);
+}
+
+/* MODAL STYLING */
+.mcq-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+}
+
+.mcq-modal-content {
+    background-color: white;
+    padding: 3rem;
+    border-radius: 20px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+#mcq-modal-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#mcq-modal-title {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+#mcq-modal-feedback {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+/* --- KNOWLEDGE CHECK (REFINED PASTEL THEME) --- */
+.page-session .knowledge-check {
+    margin-top: 5rem;
+    padding: 3rem 2.5rem;
+    border-radius: 18px;
+
+    /* NEW BACKGROUND */
+    background: linear-gradient(
+        180deg,
+        #f0f7ff 0%,
+        #eaf3ff 100%
+    );
+
+    border: 1px solid rgba(37, 99, 235, 0.15);
+}
+
+
+.check-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.check-header i {
+    font-size: 2.2rem;
+    color: #eab308; /* Thinking Gold */
+    margin-bottom: 1rem;
+}
+
+.mcq-container { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2rem; 
+}
+
+.mcq-card {
+    /* Subtle Pastel Yellow (Psychology: Mental Clarity & Logic) */
+    background-color: #fffbeb; 
+    border: 1px solid #fef3c7;
+    padding: 2.5rem;
+    border-radius: 20px;
+    /* Consistency with your "Iron Rule" box border style */
+    border-left: 6px solid #fbbf24; 
+    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.05);
+}
+
+.mcq-question { 
+    font-weight: 800; 
+    color: var(--text-main); 
+    margin-bottom: 1.8rem; 
+    font-size: 1.15rem; 
+    line-height: 1.4;
+}
+
+.mcq-options { 
+    display: grid; 
+    gap: 12px; 
+}
+
+.mcq-btn {
+    /* Using a slightly darker gray so it pops against the light yellow card */
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 1.1rem 1.5rem;
+    border-radius: 12px;
+    color: var(--text-main);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.mcq-btn:hover {
+    background: #ffffff;
+    border-color: #fbbf24;
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Correct/Wrong Visuals - High Contrast but Pastel */
+.mcq-btn.correct { 
+    background-color: #dcfce7 !important; 
+    border-color: #22c55e !important; 
+    color: #166534 !important; 
+    font-weight: 700; 
+}
+
+.mcq-btn.wrong { 
+    background-color: #fee2e2 !important; 
+    border-color: #ef4444 !important; 
+    color: #991b1b !important; 
+    font-weight: 700; 
+}
+
+/* --- MODAL REFINEMENT (LIGHT THEME) --- */
+.mcq-modal {
+    display: none; 
+    position: fixed; 
+    z-index: 9999; 
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(15, 23, 42, 0.4); /* Softer overlay */
+    backdrop-filter: blur(8px);
+    align-items: center; 
+    justify-content: center;
+}
+
+.mcq-modal-content {
+    background-color: white; 
+    width: 90%; 
+    max-width: 480px; 
+    border-radius: 24px;
+    overflow: hidden; 
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9); 
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#mcq-modal-status-bar { height: 12px; width: 100%; }
+.mcq-modal-body { padding: 3.5rem 2.5rem; text-align: center; }
+#mcq-modal-icon { font-size: 4rem; margin-bottom: 1.5rem; }
+#mcq-modal-title { margin-bottom: 1rem; font-size: 1.8rem; font-weight: 800; color: var(--text-main); }
+#mcq-modal-feedback { color: var(--text-muted); line-height: 1.6; margin-bottom: 2.5rem; font-size: 1.1rem; }
+.page-session .mcq-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+.page-session .mcq-question {
+    font-weight: 800;
+    font-size: 1.15rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    padding-left: 1rem;
+    border-left: 4px solid var(--primary);
+}
+.page-session .mcq-btn {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: 
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.page-session .mcq-btn:hover {
+    background: #f0f7ff;
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.08);
+}
+.page-session .mcq-btn.correct {
+    background: #ecfdf5;
+    border-color: #22c55e;
+    color: #166534;
+    font-weight: 700;
+}
+
+.page-session .mcq-btn.wrong {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
+    font-weight: 700;
+}
+.mcq-modal-content {
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8fafc 100%
+    );
+    border-radius: 20px;
+}
+/* 1. Prevent sidebar hover on locked items */
+.sidebar li.sidebar-locked:hover {
+    background: transparent !important;
+    cursor: not-allowed;
+}
+
+.sidebar li.sidebar-locked a {
+    color: var(--text-muted) !important;
+    font-weight: normal !important;
+}
+
+/* 2. Prevent roadmap card hover on locked items */
+body.nexus-theme .locked-level:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    border-color: var(--border) !important;
+    cursor: not-allowed;
+}
+
+/* 3. Ensure locked Roadmap cards stay grey */
+body.nexus-theme .locked-level .level-num {
+    color: #e2e8f0 !important;
+}
+/* --- SIDEBAR FIX */
+.sidebar ul li {
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
+    margin-bottom: 4px; /* Space between the session rows */
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    /* This prevents size changes: */
+    border: 1px solid transparent; 
+    box-sizing: border-box;
+    position: relative !important;
+}
+
+.sidebar ul li a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Space between icon and text */
+    padding: 0.7rem 1rem; /* EXACT SAME padding for all states */
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1; /* Keeps text height consistent */
+}
+
+/* The Lock Icon Styling */
+/* Position the dynamic lock on the absolute right of the sidebar row */
+.sidebar li .dynamic-lock {
+    position: absolute !important;
+    right: 15px !important; /* Pinned 15px from the right edge of the sidebar */
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    pointer-events: none;
+    top: 50%;
+    transform: translateY(-50%); /* Perfectly centers it vertically */
+}
+
+/* Blue Background for CURRENT session only */
+.sidebar li.active {
+    background: #eff6ff !important;
+    border-radius: 8px;
+}
+
+.sidebar li.active a {
+    color: var(--primary) !important;
+    font-weight: 600;
+}
+/* --- HOVER STATE (Matching the size exactly) --- */
+.sidebar li:not(.sidebar-locked):hover {
+    background-color: #f1f5f9; /* Subtle grey hover, or use #eff6ff if you want blue */
+    cursor: pointer;
+}
+
+/* Greyed out text for LOCKED sessions */
+.sidebar li.sidebar-locked a {
+    color: #94a3b8 !important;
+    opacity: 0.7;
+}
+
+/* Roadmap Card Logic (Term 1 page) */
+body.nexus-theme .session-level {
+    display: flex !important;
+    flex-direction: column !important;
+}
+.collapsible-box {
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 15px;
+    background-color: var(--bg-secondary);
+}
+
+.collapsible-box summary {
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 0;
+}
+.homework-collapsible {
+    margin-top: 20px;
+    border-top: 1px solid #e0e6ed;
+    padding-top: 10px;
+}
+
+.homework-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1f3b64;
+}
+
+.homework-toggle:hover {
+    opacity: 0.8;
+}
+
+.toggle-arrow {
+    transition: transform 0.3s ease;
+}
+
+.homework-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    margin-top: 10px;
+}
+
+.homework-content.open {
+    max-height: 1000px; /* large enough to fit content */
+}
+
+.toggle-arrow.rotate {
+    transform: rotate(180deg);
+}

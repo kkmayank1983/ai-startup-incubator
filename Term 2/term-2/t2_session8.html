@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Word Pieces (BPE)</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* Session 8 only. Shared styles are untouched. */
+    :root { --s8-blue:#2563eb; --s8-green:#16a34a; --s8-red:#dc2626; --s8-amber:#d97706; --s8-purple:#7c3aed; --s8-ink:#172033; --s8-muted:#526075; --s8-line:#dbe4ef; }
+
+    .s8-map { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0; }
+    .s8-map-card { position:relative; background:#fff; border:1px solid var(--s8-line); border-radius:14px; padding:16px 16px 16px 52px; }
+    .s8-map-card .s8-num { position:absolute; top:14px; left:16px; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--s8-blue); color:#fff; font-weight:800; font-size:.9rem; }
+    .s8-map-card h3 { margin:0 0 4px; font-size:1rem; color:var(--s8-ink); }
+    .s8-map-card p { margin:0; color:var(--s8-muted); font-size:.92rem; line-height:1.5; }
+
+    .s8-recap { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0; }
+    .s8-recap div { background:#fff; border:1px solid var(--s8-line); border-radius:12px; padding:12px; text-align:center; font-size:.9rem; }
+    .s8-recap b { display:block; color:var(--s8-blue); margin-bottom:4px; }
+    .s8-recap .today { border:2px solid var(--s8-green); background:#f0fdf4; }
+    .s8-recap .today b { color:var(--s8-green); }
+
+    /* ---- the "watch your question vanish" widget ---- */
+    .s8-vanish { border:1px solid #bfdbfe; border-radius:16px; overflow:hidden; margin:18px 0; background:linear-gradient(150deg,#f8fbff,#fff); }
+    .s8-vanish-head { padding:12px 18px; background:#eff6ff; border-bottom:1px solid #bfdbfe; }
+    .s8-vanish-head h3 { margin:0 0 2px; color:#1e3a8a; font-size:1.05rem; }
+    .s8-vanish-head p { margin:0; color:#3b5a8a; font-size:.9rem; }
+    .s8-vanish-body { padding:16px 18px; }
+    .s8-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+    .s8-chip { cursor:pointer; border:1px solid #cbd5e1; border-radius:999px; background:#fff; padding:6px 13px; font-size:.88rem; color:#334155; }
+    .s8-chip:hover { border-color:var(--s8-blue); color:var(--s8-blue); }
+    .s8-ask { display:flex; gap:8px; }
+    .s8-ask input { flex:1; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:1rem; font-family:inherit; }
+    .s8-ask button { padding:10px 16px; border:none; border-radius:8px; background:var(--s8-blue); color:#fff; font-weight:700; cursor:pointer; }
+    .s8-tiles { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; min-height:52px; margin:16px 0 8px; padding:14px; border-radius:12px; background:#f1f5f9; }
+    .s8-tile { padding:8px 12px; border-radius:8px; border:2px solid #cbd5e1; background:#fff; font-family:monospace; font-size:1.05rem; position:relative; transition:opacity .6s ease, transform .6s ease, border-color .3s; }
+    .s8-tile.gone { opacity:.25; transform:translateY(10px) scale(.9); border-color:var(--s8-red); text-decoration:line-through; text-decoration-color:var(--s8-red); }
+    .s8-tile.gone::after { content:"not on the list"; position:absolute; left:50%; transform:translateX(-50%); top:-20px; white-space:nowrap; font-size:.65rem; color:var(--s8-red); font-family:inherit; opacity:1; }
+    .s8-sees { text-align:center; font-size:1.05rem; margin-top:14px; }
+    .s8-sees code { font-size:1.05rem; background:#fff7ed; border:1px solid #fed7aa; padding:4px 10px; border-radius:6px; }
+    .s8-count { text-align:center; color:var(--s8-red); font-weight:700; margin-top:6px; min-height:1.4em; }
+
+    /* ---- three kinds of token ---- */
+    .s8-three { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+    .s8-kind { border:2px solid var(--s8-line); border-radius:14px; padding:14px; background:#fff; }
+    .s8-kind h4 { margin:0 0 8px; font-size:1rem; }
+    .s8-kind .s8-bricks { display:flex; flex-wrap:wrap; gap:4px; margin:8px 0 10px; }
+    .s8-brick { border-radius:5px; padding:3px 7px; font-family:monospace; font-size:.85rem; background:#e2e8f0; color:#334155; }
+    .s8-kind.words .s8-brick { background:#fee2e2; color:#991b1b; }
+    .s8-kind.pieces { border-color:var(--s8-green); background:#f0fdf4; }
+    .s8-kind.pieces .s8-brick { background:#bbf7d0; color:#14532d; }
+    .s8-kind ul { margin:0; padding-left:18px; font-size:.88rem; color:var(--s8-muted); line-height:1.55; }
+    .s8-kind li.good { color:#15803d; } .s8-kind li.bad { color:#b91c1c; }
+
+    /* ---- word → pieces animation ---- */
+    .s8-break { display:grid; grid-template-columns:120px 1fr; gap:10px; align-items:center; margin:8px 0; }
+    .s8-break .s8-word { font-family:monospace; font-size:1.05rem; color:var(--s8-ink); text-align:right; }
+    .s8-break .s8-out { display:flex; gap:5px; flex-wrap:wrap; min-height:34px; }
+    .s8-piece { border-radius:6px; padding:5px 8px; font-family:monospace; font-size:1rem; background:#e2e8f0; color:#334155; transition:all .5s ease; }
+    .s8-piece.glued { background:#bbf7d0; color:#14532d; font-weight:700; }
+    .s8-piece.whole { background:#fde68a; color:#78350f; font-weight:700; }
+
+    /* ---- the glue stepper ---- */
+    .s8-stepper { border:1px solid #c7d2fe; border-radius:16px; overflow:hidden; margin:18px 0; background:#fafaff; }
+    .s8-stepper-head { padding:12px 18px; background:#eef2ff; border-bottom:1px solid #c7d2fe; }
+    .s8-stepper-head h3 { margin:0 0 2px; color:#3730a3; font-size:1.05rem; }
+    .s8-stepper-head p { margin:0; color:#4338ca; font-size:.9rem; }
+    .s8-stepper-body { padding:16px 18px; display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
+    .s8-text-tiles { display:flex; flex-wrap:wrap; gap:5px; align-content:flex-start; padding:12px; background:#fff; border:1px solid var(--s8-line); border-radius:12px; min-height:150px; }
+    .s8-tt { padding:6px 8px; border-radius:6px; font-family:monospace; font-size:1rem; background:#e2e8f0; color:#334155; transition:all .4s ease; }
+    .s8-tt.sp { background:transparent; color:#94a3b8; }
+    .s8-tt.hot { background:#fde68a; color:#78350f; transform:scale(1.08); }
+    .s8-tt.new { background:#bbf7d0; color:#14532d; font-weight:700; }
+    .s8-pairs { background:#fff; border:1px solid var(--s8-line); border-radius:12px; padding:12px; font-size:.9rem; }
+    .s8-pairs h4 { margin:0 0 8px; font-size:.95rem; color:var(--s8-ink); }
+    .s8-pairs table { width:100%; border-collapse:collapse; font-family:monospace; }
+    .s8-pairs td { padding:4px 6px; border-bottom:1px dashed #e2e8f0; }
+    .s8-pairs tr.top td { background:#fef3c7; font-weight:700; }
+    .s8-stepper-foot { padding:12px 18px; border-top:1px solid #c7d2fe; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; }
+    .s8-btn { font-family:inherit; font-size:.82rem; padding:6px 14px; border-radius:999px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer; }
+    .s8-btn:hover { background:var(--s8-blue); border-color:var(--s8-blue); color:#fff; }
+    .s8-btn[disabled] { opacity:.45; cursor:default; }
+    .s8-status { width:100%; text-align:center; color:#4338ca; font-size:.9rem; min-height:1.3em; margin-top:4px; }
+    .s8-vocab-line { width:100%; text-align:center; font-family:monospace; font-size:.85rem; color:#475569; }
+
+    /* ---- practice bars ---- */
+    .s8-bars { display:grid; gap:12px; margin:14px 0; }
+    .s8-bar { display:grid; grid-template-columns:150px 1fr 90px; gap:10px; align-items:center; font-size:.92rem; }
+    .s8-bar .track { height:22px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+    .s8-bar .fill { height:100%; border-radius:999px; background:var(--s8-red); width:0; transition:width 1.4s ease; }
+    .s8-bar.good .fill { background:var(--s8-green); }
+    .s8-bar .val { font-weight:800; text-align:right; }
+
+    /* ---- file map ---- */
+    .s8-filemap { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0; }
+    .s8-filemap div { background:#fff; border:1px solid var(--s8-line); border-radius:12px; padding:12px; font-size:.9rem; }
+    .s8-filemap b { display:block; color:var(--s8-blue); margin-bottom:4px; font-family:monospace; }
+
+    .s8-results { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:16px 0; }
+    .s8-result { border-radius:13px; padding:15px; border:1px solid var(--s8-line); background:#fff; text-align:center; }
+    .s8-result strong { display:block; font-size:1.6rem; color:var(--s8-green); }
+    .s8-result span { color:var(--s8-muted); font-size:.9rem; }
+    .s8-table { width:100%; border-collapse:collapse; margin:12px 0; }
+    .s8-table th, .s8-table td { padding:9px; border:1px solid #cbd5e1; text-align:left; vertical-align:top; }
+    .s8-table th { background:#f1f5f9; }
+    .s8-table tr.win td { background:#dcfce7; }
+    .s8-table tr.lose td { background:#fee2e2; }
+
+    @media (prefers-reduced-motion: reduce) { .s8-tile, .s8-piece, .s8-tt, .s8-bar .fill { transition:none; } }
+    @media (max-width: 760px) {
+      .s8-map, .s8-three, .s8-filemap, .s8-results { grid-template-columns:1fr; }
+      .s8-recap { grid-template-columns:1fr 1fr; }
+      .s8-stepper-body { grid-template-columns:1fr; }
+      .s8-bar { grid-template-columns:1fr; }
+      .s8-break { grid-template-columns:1fr; } .s8-break .s8-word { text-align:left; }
+    }
+  </style>
+</head>
+<body class="page-session" data-current-session="t2_s8">
+  <nav class="navbar">
+    <a href="../index.html" class="site-logo">
+      <img src="../images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+    </a>
+    <div class="nav-links">
+      <span class="user-status">Status: <strong>AI Architect</strong></span>
+      <a href="term2.html" class="btn-primary">My Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section" data-sidebar-term="2">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>TERM 2: THE BRAIN</span>
+          <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+        </h3>
+        <ul style="display: block;">
+          <li data-session-id="t2_s1"><a href="t2_session1.html"><i class="fas fa-cubes"></i> S1: Digital Concrete</a></li>
+          <li data-session-id="t2_s2"><a href="t2_session2.html"><i class="fas fa-font"></i> S2: The Encoding Pipeline</a></li>
+          <li data-session-id="t2_s3"><a href="t2_session3.html"><i class="fas fa-dice"></i> S3: The First Prediction Engine</a></li>
+          <li data-session-id="t2_s4"><a href="t2_session4.html"><i class="fas fa-window-maximize"></i> S4: Context Windows &amp; Sequence Processing</a></li>
+          <li data-session-id="t2_s5"><a href="t2_session5.html"><i class="fas fa-highlighter"></i> S5: Self-Attention Mechanism</a></li>
+          <li data-session-id="t2_s6"><a href="t2_session6.html"><i class="fas fa-dumbbell"></i> S6: Parameter Optimization</a></li>
+          <li data-session-id="t2_s7"><a href="t2_session7.html"><i class="fas fa-save"></i> S7: Weight Persistence</a></li>
+          <li data-session-id="t2_s8" class="active"><a href="t2_session8.html"><i class="fas fa-puzzle-piece"></i> S8: Word Pieces (BPE)</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" class="resizer"></div>
+
+    <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 2 / Session 8 / Word Pieces (BPE)</nav>
+
+      <section id="lesson-header">
+        <h1>Session 8: Teach It To Read Anything</h1>
+        <p class="lead">Your engine is good. Its <i>reading</i> is not. Today we find the one bug that hides most of your question from it, fix it the way real GPTs do, and measure the difference.</p>
+        <div class="stats-bar">
+          <span><i class="far fa-clock"></i> 60 Minutes</span>
+          <span><i class="fas fa-signal"></i> Level: AI Architect</span>
+        </div>
+        <div class="outcome-box">
+          <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+          <p>Replace whole-word tokens with <b>word pieces</b> so that no question is ever half-deleted — then race last week's model against today's and prove it reads more, with a smaller brain.</p>
+        </div>
+        <div class="s8-map" aria-label="Lesson roadmap">
+          <div class="s8-map-card"><span class="s8-num">1</span><h3>See the bug</h3><p>Type a question. Watch words vanish before the AI ever sees them.</p></div>
+          <div class="s8-map-card"><span class="s8-num">2</span><h3>Learn the glue trick</h3><p>Build words out of pieces, so anything can be read.</p></div>
+          <div class="s8-map-card"><span class="s8-num">3</span><h3>Retrain and race</h3><p>Same engine, new reading. Measure what changed.</p></div>
+        </div>
+      </section>
+
+      <section class="lesson-body">
+
+        <!-- ============================================================
+             0. WHERE WE ARE
+             ============================================================ -->
+        <h2>0. Where We Are</h2>
+        <div class="s8-recap">
+          <div><b>Session 5</b>Attention: it learned what to <i>look at</i>.</div>
+          <div><b>Session 6</b>A physics book and one number per <i>word</i>.</div>
+          <div><b>Session 7</b>Four heads + LayerNorm: a full Transformer block.</div>
+          <div class="today"><b>Today</b>We fix how it <i>reads</i>. The engine stays the same.</div>
+        </div>
+        <div class="info-box">
+          <p style="margin:0;">Last session the engine got better and the loss got lower. But when you ask it something, the answers still feel like it is <b>reciting</b> rather than <b>understanding</b>. There is a specific reason for that, and it is not the engine.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             1. THE BUG
+             ============================================================ -->
+        <h2>1. The Bug: Watch Your Question Vanish</h2>
+        <p>Since Session 6 the tokenizer has given every <b>whole word</b> its own number — 4,095 of them, one for each different word in the book. Pick a question below, or type your own, and see what the AI actually receives.</p>
+
+        <div class="s8-vanish" id="s8-vanish">
+          <div class="s8-vanish-head">
+            <h3><i class="fas fa-eye-slash"></i> What does the AI actually see?</h3>
+            <p>Every word is checked against the 4,095-word list from the physics book. Anything not on the list is thrown away.</p>
+          </div>
+          <div class="s8-vanish-body">
+            <div class="s8-chips">
+              <button type="button" class="s8-chip">What is gravity?</button>
+              <button type="button" class="s8-chip">What is entropy?</button>
+              <button type="button" class="s8-chip">Why is the sky blue?</button>
+              <button type="button" class="s8-chip">What causes a rainbow?</button>
+              <button type="button" class="s8-chip">How fast does light travel?</button>
+              <button type="button" class="s8-chip">What is gravity</button>
+            </div>
+            <div class="s8-ask">
+              <input type="text" id="s8-ask-input" placeholder="…or type any question and press Ask" />
+              <button type="button" id="s8-ask-btn">Ask</button>
+            </div>
+            <div class="s8-tiles" id="s8-tiles"></div>
+            <div class="s8-sees">The AI sees: <code id="s8-sees">—</code></div>
+            <div class="s8-count" id="s8-count"></div>
+          </div>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(220, 38, 38, 0.06); border-left-color:#dc2626;">
+          <h4><i class="fas fa-triangle-exclamation"></i> Two things just went wrong</h4>
+          <p><b>1. Unknown words are deleted.</b> "What is entropy?" reaches the model as <code>What is</code>. The subject of the question is gone. The model is not <i>choosing</i> to give a random answer — it never got the question.</p>
+          <p style="margin-bottom:0;"><b>2. Punctuation is glued on.</b> Try <code>What is gravity?</code> and then <code>What is gravity</code> with no question mark. The list contains <code>gravity?</code> because that exact spelling appears in the book — but <code>travel?</code> and <code>blue?</code> do not, even though <code>travel</code> and <code>blue</code> do. To a word tokenizer, they are completely different words.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-chart-bar"></i> And it gets worse inside the book</h4>
+          <p>A word can only be learned if it turns up often. Here is how many of those 4,095 words the model saw <b>exactly once</b> in the whole book:</p>
+          <div class="s8-bars" id="s8-bars-once">
+            <div class="s8-bar"><span>Last week: whole words</span><div class="track"><div class="fill" data-w="56"></div></div><span class="val">2,304 / 4,095</span></div>
+          </div>
+          <p style="margin-bottom:0;">More than half the vocabulary was seen a single time. You cannot learn a word from one glimpse — so most of the list is dead weight, and <b>93% of the model's parameters</b> are tied up in that list.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             2. THE IDEA
+             ============================================================ -->
+        <h2>2. The Fix: Read In Pieces</h2>
+        <p>Think about Lego. You do not own one special brick for every possible thing you might build. You own a box of <b>pieces</b> that can build anything. That is exactly what we want for words.</p>
+
+        <div class="s8-three">
+          <div class="s8-kind">
+            <h4><i class="fas fa-font"></i> Characters <small>(Sessions 2–5)</small></h4>
+            <div class="s8-bricks"><span class="s8-brick">g</span><span class="s8-brick">r</span><span class="s8-brick">a</span><span class="s8-brick">v</span><span class="s8-brick">i</span><span class="s8-brick">t</span><span class="s8-brick">y</span></div>
+            <ul>
+              <li class="good">Only 65 bricks. Nothing is ever unknown.</li>
+              <li class="bad">Every brick is tiny. A 64-brick window is barely a sentence.</li>
+            </ul>
+          </div>
+          <div class="s8-kind words">
+            <h4><i class="fas fa-book"></i> Whole words <small>(Sessions 6–7)</small></h4>
+            <div class="s8-bricks"><span class="s8-brick">gravity</span></div>
+            <ul>
+              <li class="good">One brick, one word. Windows hold whole sentences.</li>
+              <li class="bad">4,095 different bricks. Any word not in the box is deleted.</li>
+              <li class="bad">Most bricks were seen once — never really learned.</li>
+            </ul>
+          </div>
+          <div class="s8-kind pieces">
+            <h4><i class="fas fa-puzzle-piece"></i> Word pieces <small>(today)</small></h4>
+            <div class="s8-bricks"><span class="s8-brick">grav</span><span class="s8-brick">ity</span></div>
+            <ul>
+              <li class="good">About 1,000 bricks that can spell <b>any</b> word.</li>
+              <li class="good">Common words stay whole. Rare words split into common pieces.</li>
+              <li class="good">Every piece is seen many times, so every piece gets learned.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-magic"></i> The same words, read by today's tokenizer</h4>
+          <p style="font-size:.9rem; color:#64748b;">These are the real pieces your tokenizer will learn from the physics book. Green = pieces glued from letters. Gold = a whole word it decided deserved one piece of its own.</p>
+          <div id="s8-breaks">
+            <div class="s8-break" data-word=" gravity" data-pieces=" gravity"><span class="s8-word">gravity</span><div class="s8-out"></div></div>
+            <div class="s8-break" data-word=" entropy" data-pieces=" |ent|ro|p|y"><span class="s8-word">entropy</span><div class="s8-out"></div></div>
+            <div class="s8-break" data-word=" rainbow" data-pieces=" ra|in|b|ow"><span class="s8-word">rainbow</span><div class="s8-out"></div></div>
+            <div class="s8-break" data-word=" gravitational" data-pieces=" gravitational"><span class="s8-word">gravitational</span><div class="s8-out"></div></div>
+            <div class="s8-break" data-word=" travel?" data-pieces=" travel|?"><span class="s8-word">travel?</span><div class="s8-out"></div></div>
+          </div>
+          <div class="s8-stepper-foot" style="border:none; padding-top:6px;"><button type="button" class="s8-btn" id="s8-breaks-again"><i class="fas fa-redo"></i> Watch again</button></div>
+          <p style="margin:6px 0 0;"><b>Look at <code>entropy</code>.</b> The book never contains that word — but it does contain <code>ent</code>, <code>ro</code>, <code>p</code> and <code>y</code> many times each. A word it has never seen is just pieces it <i>has</i> seen. And the question mark is now its own piece, so <code>travel?</code> is simply <code>travel</code> + <code>?</code>.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             3. HOW IT LEARNS THE PIECES
+             ============================================================ -->
+        <h2>3. How It Chooses The Pieces: The Glue Rule</h2>
+        <p>Nobody types the pieces in. The tokenizer <b>learns</b> them from the book with one rule, repeated over and over:</p>
+        <div class="rule-callout">
+          <h4><i class="fas fa-ruler-combined"></i> The glue rule</h4>
+          <p style="margin-bottom:0; font-size:1.05rem;">Start with single letters. Find the two neighbours that sit next to each other <b>most often</b>. Glue them into one piece. Repeat.</p>
+        </div>
+        <p>Watch it happen on a tiny sentence. Every count below is calculated live — press <b>Next</b> to glue one pair at a time, or <b>Play</b> to let it run.</p>
+
+        <div class="s8-stepper" id="s8-stepper">
+          <div class="s8-stepper-head">
+            <h3><i class="fas fa-layer-group"></i> Byte-Pair Encoding, one glue at a time</h3>
+            <p>Yellow = the pair about to be glued. Green = the new piece it just made.</p>
+          </div>
+          <div class="s8-stepper-body">
+            <div class="s8-text-tiles" id="s8-tt"></div>
+            <div class="s8-pairs">
+              <h4>Neighbours counted this round</h4>
+              <table id="s8-pairtable"><tbody></tbody></table>
+            </div>
+          </div>
+          <div class="s8-stepper-foot">
+            <button type="button" class="s8-btn" id="s8-st-back"><i class="fas fa-step-backward"></i> Back</button>
+            <button type="button" class="s8-btn" id="s8-st-play"><i class="fas fa-play"></i> Play</button>
+            <button type="button" class="s8-btn" id="s8-st-next">Next <i class="fas fa-step-forward"></i></button>
+            <button type="button" class="s8-btn" id="s8-st-again"><i class="fas fa-redo"></i> Watch again</button>
+            <div class="s8-status" id="s8-st-status"></div>
+            <div class="s8-vocab-line" id="s8-st-vocab"></div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <p style="margin:0;"><b>That is the whole algorithm.</b> Do it about 1,000 times on the physics book instead of 8 times on a sentence, and you get 1,024 pieces: the alphabet, plus every common chunk of English the book kept using — <code> the</code>, <code>tion</code>, <code> gravity</code>, even <code> gravitational</code>. Its real name is <b>Byte-Pair Encoding</b>, or BPE, and it is what GPT uses: GPT-2 learned 50,257 pieces this exact way.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             4. BUILD IT
+             ============================================================ -->
+        <h2>4. Build It</h2>
+        <div class="s8-filemap">
+          <div><b>bpe_tokenizer.py</b>NEW. Cuts text into chunks, learns the glue rules, and can read or write any text.</div>
+          <div><b>data_pipeline.py</b>EDIT. Swap the word tokenizer for the BPE one. Everything else stays.</div>
+          <div><b>attention_engine.py</b>UNCHANGED. Same four heads, same LayerNorm. Today is about reading, not thinking.</div>
+        </div>
+
+        <div class="activity-box">
+          <h4>🛠 Activity 1: Build the tokenizer</h4>
+          <ol>
+            <li>Create a new file called <code>bpe_tokenizer.py</code>.</li>
+            <li>Copy the code below exactly as shown. The three parts match the three things you just watched: <b>cut</b> into chunks, <b>count and glue</b>, then <b>read</b> new text with the rules it learned.</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">bpe_tokenizer.py</div>
+            <pre>
+import re
+from collections import Counter
+
+# The three signposts in input.txt. They must stay in one piece,
+# so the tokenizer is told about them before it learns anything.
+TAGS = ["&lt;|user|&gt;", "&lt;|assistant|&gt;", "&lt;|endoftext|&gt;"]
+
+# How the text gets cut into chunks BEFORE any learning happens:
+#   a signpost            &lt;|user|&gt;
+#   a word, with the space in front of it kept    " gravity"
+#   one punctuation mark, with its space          "?"  or  " ("
+#   any other whitespace                           "\n"
+# Pieces are only ever glued together INSIDE a chunk, so a piece can
+# never spill across two words.
+CHUNK = re.compile(
+    r"&lt;\|user\|&gt;|&lt;\|assistant\|&gt;|&lt;\|endoftext\|&gt;| ?[A-Za-z0-9]+| ?[^A-Za-z0-9\s&lt;]|\s|."
+)
+
+
+def glue(chunk, pair):
+    """Replace every (a, b) that sits side by side in chunk with a+b."""
+    out = []
+    i = 0
+    while i &lt; len(chunk):
+        if i &lt; len(chunk) - 1 and (chunk[i], chunk[i + 1]) == pair:
+            out.append(pair[0] + pair[1])
+            i += 2
+        else:
+            out.append(chunk[i])
+            i += 1
+    return tuple(out)
+
+
+class BPETokenizer:
+    """Learns which letters belong together, then reads ANY text."""
+
+    def __init__(self):
+        self.merges = []     # the glue rules, in the order they were learned
+        self.stoi = {}       # piece  -&gt; number
+        self.itos = {}       # number -&gt; piece
+        self.cache = {}      # remembers chunks it has already broken up
+
+    def train(self, text, vocab_size):
+        # 1. Cut the book into chunks and count how often each one appears.
+        counts = Counter(CHUNK.findall(text))
+
+        # 2. Every chunk starts life as a row of single characters.
+        #    (A signpost stays as one whole piece.)
+        table = {}
+        for chunk, n in counts.items():
+            table[(chunk,) if chunk in TAGS else tuple(chunk)] = n
+
+        # 3. The starting alphabet: every single character in the book.
+        pieces = sorted({p for row in table for p in row})
+
+        # 4. Glue the most common neighbouring pair. Repeat until full.
+        while len(pieces) &lt; vocab_size:
+            pairs = Counter()
+            for row, n in table.items():
+                for a, b in zip(row, row[1:]):
+                    pairs[(a, b)] += n
+            if not pairs:
+                break
+            best = max(pairs, key=pairs.get)
+            self.merges.append(best)
+            pieces.append(best[0] + best[1])
+            table = {glue(row, best): n for row, n in table.items()}
+
+        self.stoi = {p: i for i, p in enumerate(pieces)}
+        self.itos = {i: p for i, p in enumerate(pieces)}
+
+    def break_up(self, chunk):
+        """Turn one chunk into pieces using the learned glue rules."""
+        if chunk in self.cache:
+            return self.cache[chunk]
+        if chunk in TAGS:
+            row = (chunk,)
+        else:
+            # A character the book never contained cannot be read. Skip it.
+            row = tuple(c for c in chunk if c in self.stoi)
+        for pair in self.merges:
+            if len(row) &lt; 2:
+                break
+            row = glue(row, pair)
+        self.cache[chunk] = row
+        return row
+
+    def encode(self, text):
+        ids = []
+        for chunk in CHUNK.findall(text):
+            ids.extend(self.stoi[p] for p in self.break_up(chunk))
+        return ids
+
+    def decode(self, ids):
+        return "".join(self.itos[i] for i in ids)
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">Save it. Do not run it on its own — <code>data_pipeline.py</code> is about to use it.</p>
+        </div>
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-map-signs"></i> One detail worth noticing</h4>
+          <p style="margin-bottom:0;">The three signposts — <code>&lt;|user|&gt;</code>, <code>&lt;|assistant|&gt;</code>, <code>&lt;|endoftext|&gt;</code> — are told to the tokenizer up front, so they always stay in one piece. If they were ever chopped up, the model could not tell where a question ends and an answer begins.</p>
+        </div>
+
+        <div class="activity-box">
+          <h4>🛠 Activity 2: Plug it into the pipeline</h4>
+          <ol>
+            <li>Open <code>data_pipeline.py</code>.</li>
+            <li>Keep the first part that opens the book (down to <code>text = f.read()</code>). <b>Delete everything below it</b> — the word tokenizer from Session 6, and the old Session 4 printout at the bottom.</li>
+            <li>Replace it with this. The whole file should now look like:</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">data_pipeline.py</div>
+            <pre>
+import os
+import torch
+from bpe_tokenizer import BPETokenizer
+
+# --- Open the book ---
+current_dir = os.path.dirname(__file__)
+input_file = os.path.join(current_dir, "input.txt")
+
+with open(input_file, 'r', encoding='utf-8') as f:
+    text = f.read()
+
+# --- The tokenizer, now BPE: words broken into PIECES ---
+# Session 2 used single characters. Session 6 used whole words.
+# Today we start from the characters again, then glue the most
+# common neighbours together until we have VOCAB_SIZE pieces.
+# Any word can be spelled from pieces, so nothing is ever unknown.
+VOCAB_SIZE = 1024
+
+tokenizer = BPETokenizer()
+tokenizer.train(text, VOCAB_SIZE)
+
+stoi = tokenizer.stoi            # piece  -&gt; number
+itos = tokenizer.itos            # number -&gt; piece
+vocab_size = len(stoi)           # how many different PIECES exist
+encode = tokenizer.encode
+decode = tokenizer.decode
+
+# --- Turn the WHOLE book into numbers ---
+data = torch.tensor(encode(text), dtype=torch.long)
+
+print(f"Dataset Size: {len(data)} tokens.")
+print(f"Different pieces: {vocab_size}")
+print(f"First 10 tokens: {data[:10]}")
+print("Decoded:", repr(decode(data[:10].tolist())))
+            </pre>
+          </div>
+          <li>Run it:</li>
+          <pre><code>python Term_2/data_pipeline.py</code></pre>
+          <li>It takes about 15–20 seconds — that is the tokenizer doing its 1,000 glues, then reading the whole book.</li>
+        </div>
+
+        <div class="info-box">
+          <h4><i class="fas fa-terminal"></i> Expected output</h4>
+          <div class="code-block">
+            <div class="code-header">Terminal</div>
+            <pre>
+Dataset Size: 39414 tokens.
+Different pieces: 1024
+First 10 tokens: tensor([ 27,   0, 194, 113, 223,  29,   0,  25,   0,  36])
+Decoded: '&lt;|user|&gt;\nWhat is gravity?\n&lt;|assistant|&gt;\nG'
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">Compare with last week: <b>22,182 word tokens</b> became <b>39,414 piece tokens</b> — more tokens, because rare words are now several pieces — but the list of different tokens shrank from <b>4,095</b> to <b>1,024</b>. And look at the decoded start: <code>\n</code> is back as a real token, so the prompt can be laid out exactly like the book.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             5. SEE THE PIECES
+             ============================================================ -->
+        <h2>5. See What It Reads Now</h2>
+        <div class="activity-box">
+          <h4>🛠 Activity 3: The same questions, both tokenizers</h4>
+          <ol>
+            <li>Create a new file called <code>see_the_pieces.py</code>.</li>
+            <li>Copy the code below and run it.</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">see_the_pieces.py</div>
+            <pre>
+from collections import Counter
+from data_pipeline import text, encode, itos, vocab_size, data
+
+# Rebuild last session's WORD tokenizer, just to compare against it.
+old_words = set(text.split())
+
+QUESTIONS = [
+    "What is gravity?",
+    "What is entropy?",
+    "Why is the sky blue?",
+    "What causes a rainbow?",
+    "How fast does light travel?",
+]
+
+print("=" * 60)
+print("WHAT THE MODEL ACTUALLY RECEIVES")
+print("=" * 60)
+for q in QUESTIONS:
+    kept = [w for w in q.split() if w in old_words]
+    lost = [w for w in q.split() if w not in old_words]
+    pieces = [itos[i] for i in encode(q)]
+    print(f"\nYou type   : {q}")
+    print(f"Last week  : {' '.join(kept) if kept else '(nothing at all)'}"
+          + (f"   &lt;-- dropped {lost}" if lost else ""))
+    print(f"This week  : {'|'.join(pieces)}")
+
+# How often does each piece get seen during training?
+counts = Counter(data.tolist())
+rare_old = sum(1 for w, n in Counter(text.split()).items() if n == 1)
+rare_new = sum(1 for p, n in counts.items() if n == 1)
+
+print("\n" + "=" * 60)
+print("HOW MUCH PRACTICE DOES EACH TOKEN GET?")
+print("=" * 60)
+print(f"Last week : {len(old_words):&gt;5} words   - {rare_old:&gt;5} of them appear only ONCE in the book")
+print(f"This week : {vocab_size:&gt;5} pieces  - {rare_new:&gt;5} of them appear only ONCE in the book")
+
+longest = sorted(itos.values(), key=len, reverse=True)[:10]
+print("\nThe longest pieces it decided to learn on its own:")
+print("   " + "  ".join(repr(p) for p in longest))
+            </pre>
+          </div>
+          <pre><code>python Term_2/see_the_pieces.py</code></pre>
+        </div>
+
+        <div class="info-box">
+          <h4><i class="fas fa-terminal"></i> Expected output</h4>
+          <div class="code-block">
+            <div class="code-header">Terminal</div>
+            <pre>
+============================================================
+WHAT THE MODEL ACTUALLY RECEIVES
+============================================================
+
+You type   : What is gravity?
+Last week  : What is gravity?
+This week  : What| is| gravity|?
+
+You type   : What is entropy?
+Last week  : What is   &lt;-- dropped ['entropy?']
+This week  : What| is| |ent|ro|p|y|?
+
+You type   : Why is the sky blue?
+Last week  : Why is the   &lt;-- dropped ['sky', 'blue?']
+This week  : Why| is| the| sk|y| bl|ue|?
+
+You type   : What causes a rainbow?
+Last week  : What causes a   &lt;-- dropped ['rainbow?']
+This week  : What| caus|es| a| ra|in|b|ow|?
+
+You type   : How fast does light travel?
+Last week  : How fast does light   &lt;-- dropped ['travel?']
+This week  : How| fast| does| light| travel|?
+
+============================================================
+HOW MUCH PRACTICE DOES EACH TOKEN GET?
+============================================================
+Last week :  4095 words   -  2304 of them appear only ONCE in the book
+This week :  1024 pieces  -    26 of them appear only ONCE in the book
+
+The longest pieces it decided to learn on its own:
+   ' gravitational'  ' electromagnet'  '&lt;|assistant|&gt;'  '&lt;|endoftext|&gt;'  ' acceleration'  ' electromagn'  ' microscopic'  ' coefficient'  ' resistance'  ' completely'
+            </pre>
+          </div>
+        </div>
+
+        <div class="rule-callout" style="background:#dcfce7; border-left-color:#16a34a;">
+          <h4 style="color:#15803d;"><i class="fas fa-check-double"></i> Already measurable — before we have trained anything</h4>
+          <div class="s8-bars">
+            <div class="s8-bar"><span>Words dropped (5 questions)</span><div class="track"><div class="fill" data-w="25"></div></div><span class="val">5 of 20</span></div>
+            <div class="s8-bar good"><span>Words dropped, as pieces</span><div class="track"><div class="fill" data-w="0"></div></div><span class="val">0 of 20</span></div>
+            <div class="s8-bar"><span>Tokens seen only once</span><div class="track"><div class="fill" data-w="56"></div></div><span class="val">2,304 / 4,095</span></div>
+            <div class="s8-bar good"><span>Pieces seen only once</span><div class="track"><div class="fill" data-w="3"></div></div><span class="val">26 / 1,024</span></div>
+          </div>
+          <p style="margin-bottom:0;">Every word of every question now reaches the model. And instead of half the vocabulary being seen once, almost every piece is seen many times — which means almost every piece actually gets <i>learned</i>. Now let's find out what that does to the answers.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             6. RETRAIN
+             ============================================================ -->
+        <h2>6. Retrain The Same Engine</h2>
+        <p>Nothing in <code>attention_engine.py</code> changes. It builds itself for whatever vocabulary <code>data_pipeline.py</code> gives it — last week 4,095 words, today 1,024 pieces — so the same code now makes a much smaller model.</p>
+
+        <div class="activity-box">
+          <h4>🛠 Activity 4: Train on pieces</h4>
+          <ol>
+            <li>Open <code>train_qa.py</code>. Two small changes from last week: it saves to <code>qa_model_v3.pth</code> (so last week's model survives for the race), and it has a <code>LEARNING_RATE</code> dial set to <code>3e-3</code> — the bigger nudge you first met in Session 5. Pieces are small and common, so the model can take bigger steps safely.</li>
+            <li>The whole file, for checking:</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py</div>
+            <pre>
+import torch
+import torch.nn.functional as F
+
+# Same seed as before, so a re-run gives the same model.
+torch.manual_seed(1337)
+
+from data_pipeline import data, vocab_size, decode, encode
+from attention_engine import model, block_size, batch_size
+
+STEPS = 2500
+LEARNING_RATE = 3e-3   # pieces are small, so bigger nudges are safe (Session 5)
+
+print(f"Vocabulary   : {vocab_size} pieces")
+print(f"Dataset      : {len(data)} tokens")
+print(f"Model params : {sum(p.numel() for p in model.parameters()):,}")
+
+optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE)
+
+print("\nTraining on the question-and-answer data...")
+running = 0.0
+for step in range(1, STEPS + 1):
+    ix = torch.randint(0, len(data) - block_size - 1, (batch_size,))
+    x = torch.stack([data[i:i + block_size] for i in ix])
+    y = torch.stack([data[i + 1:i + block_size + 1] for i in ix])
+
+    logits = model(x)
+    loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    running += loss.item()
+    if step % 300 == 0:
+        print(f"  step {step:5d} | average loss {running/300:.3f}")
+        running = 0.0
+
+# --- Save it under a NEW name, so last session's model survives ---
+torch.save(model.state_dict(), "qa_model_v3.pth")
+print("\nSaved qa_model_v3.pth")
+
+# --- Ask it something straight away ---
+# Laid out exactly like every block in input.txt. Now that "\n" is a
+# real token again, the prompt can look the same as the book.
+prompt = "&lt;|user|&gt;\nWhat is gravity?\n&lt;|assistant|&gt;\n"
+ids = encode(prompt)
+out = model.generate(torch.tensor([ids]), max_new_tokens=120)[0].tolist()
+answer = decode(out[len(ids):])
+for tag in ("&lt;|endoftext|&gt;", "&lt;|user|&gt;", "&lt;|assistant|&gt;"):   # stop at the first signpost
+    answer = answer.split(tag)[0]
+
+print("\n" + "=" * 55)
+print("YOUR MODEL, ANSWERING A QUESTION")
+print("=" * 55)
+print(answer.strip())
+            </pre>
+          </div>
+          <li>Run it. About 6 minutes on a laptop — a bit faster than last week, because the model is smaller.</li>
+          <pre><code>python Term_2/train_qa.py</code></pre>
+        </div>
+
+        <div class="info-box">
+          <h4><i class="fas fa-terminal"></i> Expected output</h4>
+          <div class="code-block">
+            <div class="code-header">Terminal</div>
+            <pre>
+Vocabulary   : 1024 pieces
+Dataset      : 39414 tokens
+Model params : 259,744
+
+Training on the question-and-answer data...
+  step   300 | average loss 3.868
+  step   600 | average loss 2.472
+  step   900 | average loss 1.629
+  step  1200 | average loss 1.082
+  step  1500 | average loss 0.761
+  step  1800 | average loss 0.583
+  step  2100 | average loss 0.479
+  step  2400 | average loss 0.421
+
+Saved qa_model_v3.pth
+
+=======================================================
+YOUR MODEL, ANSWERING A QUESTION
+=======================================================
+Inertia is an object's velocity?
+            </pre>
+          </div>
+          <p style="margin-bottom:0;"><b>259,744 parameters.</b> Last week's model had 852,447. You just deleted 70% of the brain — the part that was a giant list of rarely-seen words — and it still trains.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             7. A FAIR YARDSTICK
+             ============================================================ -->
+        <h2>7. Stop — Which Loss Is Better?</h2>
+        <div class="rule-callout" style="background: rgba(217, 119, 6, 0.08); border-left-color:#d97706;">
+          <h4><i class="fas fa-scale-balanced"></i> You cannot compare today's loss with last week's</h4>
+          <p>Loss is "how surprised was the model by the correct <b>next token</b>". Last week a token was a whole word. Today a token is a piece of one. That is like comparing two students' marks when one sat a 22-question test and the other a 39-question test made of smaller questions. The numbers live on different scales.</p>
+          <p style="margin-bottom:0;">So today we judge the two models the way you would judge a person: <b>what can it read</b>, and <b>is it answering or reciting</b>.</p>
+        </div>
+
+        <div class="s8-three">
+          <div class="s8-kind"><h4><i class="fas fa-eye"></i> Yardstick 1: Can it read the question?</h4><ul><li>Count the words of a question that survive the tokenizer.</li><li>Last week: anything not on the list vanished.</li><li>Today: every character gets through.</li></ul></div>
+          <div class="s8-kind"><h4><i class="fas fa-copy"></i> Yardstick 2: Is it copying?</h4><ul><li>Slide a 5-word window along the answer.</li><li>If that exact run of words is in the book, it was copied.</li><li>A high copy rate means reciting, not answering.</li></ul></div>
+          <div class="s8-kind pieces"><h4><i class="fas fa-brain"></i> Yardstick 3: How big is the brain?</h4><ul><li class="good">Fewer parameters doing the same job is a win.</li><li class="good">Smaller trains faster and needs less memory.</li></ul></div>
+        </div>
+
+        <details class="s8-reveal" style="border:1px solid #dbe4ef; border-radius:11px; margin:13px 0; background:#fbfdff;">
+          <summary style="cursor:pointer; padding:12px 15px; font-weight:700; color:#1e3a8a;">For the curious: is there a fair single number?</summary>
+          <div style="padding:0 15px 14px;">
+            <p>Yes — divide the surprise by the number of <i>characters</i> instead of tokens, so both models are marked per letter. On fresh slices of the book: last week's model scores about <b>0.04 bits per character</b>, today's about <b>0.16</b>. Lower looks better — but be careful what "better" means here. The book is only 137,000 characters. A model that is almost never surprised by it has <b>memorised</b> it. Last week's model was surprised less because it had learned the book by heart, which is exactly the problem Session 7 flagged. Yardstick 2 shows the same thing from the other side.</p>
+          </div>
+        </details>
+
+        <hr />
+
+        <!-- ============================================================
+             8. THE SHOWDOWN
+             ============================================================ -->
+        <h2>8. The Showdown</h2>
+        <p>Last week's model (<code>qa_model_v2.pth</code>, words) against today's (<code>qa_model_v3.pth</code>, pieces). Same engine, same questions, same dice.</p>
+
+        <div class="activity-box">
+          <h4>🛠 Activity 5: Race them</h4>
+          <ol>
+            <li>Create a new file called <code>tokenizer_showdown.py</code>.</li>
+            <li>Copy the code below. Notice it has to <b>rebuild last week's word tokenizer</b> and build a second engine with <code>PredictionEngine(len(words))</code> — the old weights only fit an engine with a 4,095-word vocabulary.</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">tokenizer_showdown.py</div>
+            <pre>
+import torch
+
+# Today's pipeline: BPE pieces.
+from data_pipeline import text, encode, decode, vocab_size
+from attention_engine import PredictionEngine, model as model_v3
+
+# Rebuild last session's WORD tokenizer, exactly as Session 6 wrote it,
+# so we can load last week's model and race the two side by side.
+words = sorted(set(text.split()))
+w_stoi = {w: i for i, w in enumerate(words)}
+w_itos = {i: w for i, w in enumerate(words)}
+w_encode = lambda s: [w_stoi[w] for w in s.split() if w in w_stoi]
+w_decode = lambda ids: " ".join(w_itos[i] for i in ids)
+
+model_v2 = PredictionEngine(len(words))          # same engine, word vocabulary
+model_v2.load_state_dict(torch.load("qa_model_v2.pth"))
+model_v3.load_state_dict(torch.load("qa_model_v3.pth"))
+model_v2.eval()
+model_v3.eval()
+
+QUESTIONS = [
+    "What is gravity?",                                     # in the book, exactly
+    "What is inertia?",                                     # in the book, exactly
+    "How fast does light travel?",                          # 'travel?' was dropped last week
+    "Why do heavy and light objects fall at the same rate?",# 'rate?' was dropped last week
+    "Explain gravity to me",                                # 'Explain' was dropped last week
+    "What is entropy?",                                     # not in the book at all
+]
+
+
+# How much of an answer is copied word-for-word from the book?
+# We slide a 5-word window along the answer and check whether that exact
+# run of words appears anywhere in input.txt.
+book_words = text.split()
+book_runs = {tuple(book_words[i:i + 5]) for i in range(len(book_words) - 4)}
+
+def copied(answer):
+    w = answer.split()
+    if len(w) &lt; 5:
+        return 0.0
+    runs = [tuple(w[i:i + 5]) for i in range(len(w) - 4)]
+    return 100 * sum(r in book_runs for r in runs) / len(runs)
+
+
+def ask(model, enc, dec, question, seed, n_tokens):
+    torch.manual_seed(seed)                      # same seed for both: a fair race
+    prompt = f"&lt;|user|&gt;\n{question}\n&lt;|assistant|&gt;\n"
+    ids = enc(prompt)
+    out = model.generate(torch.tensor([ids]), max_new_tokens=n_tokens)[0].tolist()
+    answer = dec(out[len(ids):])
+    for tag in ("&lt;|endoftext|&gt;", "&lt;|user|&gt;", "&lt;|assistant|&gt;"):
+        answer = answer.split(tag)[0]
+    return " ".join(answer.split()[:45])         # first 45 words, for both
+
+
+p2 = sum(p.numel() for p in model_v2.parameters())
+p3 = sum(p.numel() for p in model_v3.parameters())
+
+print("=" * 60)
+print("SHOWDOWN: word tokens (Session 7)  vs  BPE pieces (today)")
+print("=" * 60)
+print(f"v2  {len(words):&gt;5} words   : {p2:,} parameters")
+print(f"v3  {vocab_size:&gt;5} pieces  : {p3:,} parameters   ({(p2-p3)/p2*100:.0f}% smaller)")
+
+lost_total = 0
+copy2 = copy3 = 0.0
+for n, q in enumerate(QUESTIONS):
+    seen = [w for w in q.split() if w in w_stoi]
+    lost = [w for w in q.split() if w not in w_stoi]
+    lost_total += len(lost)
+    print("\n" + "-" * 60)
+    print(f"Q: {q}")
+    print("-" * 60)
+    print(f"v2 sees : {' '.join(seen) if seen else '(nothing)'}"
+          + (f"      dropped {lost}" if lost else ""))
+    a2 = ask(model_v2, w_encode, w_decode, q, 100 + n, 45)
+    a3 = ask(model_v3, encode, decode, q, 100 + n, 160)
+    copy2 += copied(a2)
+    copy3 += copied(a3)
+    print(f"v2 says : {a2}")
+    print(f"          ({copied(a2):.0f}% copied word-for-word from the book)")
+    print()
+    print(f"v3 sees : {q}      (every character)")
+    print(f"v3 says : {a3}")
+    print(f"          ({copied(a3):.0f}% copied word-for-word from the book)")
+
+total_words = sum(len(q.split()) for q in QUESTIONS)
+print("\n" + "=" * 60)
+print(f"Words the OLD tokenizer could not read : {lost_total} of {total_words}")
+print(f"Words the NEW tokenizer could not read : 0 of {total_words}")
+print(f"Copied word-for-word, on average        : v2 {copy2/len(QUESTIONS):.0f}%   v3 {copy3/len(QUESTIONS):.0f}%")
+            </pre>
+          </div>
+          <pre><code>python Term_2/tokenizer_showdown.py</code></pre>
+        </div>
+
+        <div class="info-box">
+          <h4><i class="fas fa-terminal"></i> Expected output</h4>
+          <p>Real, measured output. Your answers will differ in wording — they are dice rolls — but the <b>sees</b> lines and the percentages should match closely.</p>
+          <div class="code-block">
+            <div class="code-header">Terminal</div>
+            <pre>
+============================================================
+SHOWDOWN: word tokens (Session 7)  vs  BPE pieces (today)
+============================================================
+v2   4095 words   : 852,447 parameters
+v3   1024 pieces  : 259,744 parameters   (70% smaller)
+
+------------------------------------------------------------
+Q: What is gravity?
+------------------------------------------------------------
+v2 sees : What is gravity?
+v2 says : Definitely not, and why does weight affect its large mass would go straight line up the car much in the universe has been sanded and has massive gravity because removing the air eliminates air resistance completely, allowing it restores the pure friction is the high
+          (15% copied word-for-word from the book)
+
+v3 sees : What is gravity?      (every character)
+v3 says : Inertia is an object's resistance to acceleration. Inertia is just no mass. It has so drafrom a loses untive to a elly around the Moon, acting like a giant field is about 1.6 m * never), causing other sle to string scrape of the field
+          (5% copied word-for-word from the book)
+
+------------------------------------------------------------
+Q: What is inertia?
+------------------------------------------------------------
+v2 sees : What is inertia?
+v2 says : Rotational inertia (moment of inertia) is the resistance of an object to changes in its rotation. It depends on the object's mass and how that mass is distributed around the spin axis.
+          (100% copied word-for-word from the book)
+
+v3 sees : What is inertia?      (every character)
+v3 says : The hammer has no units because it isn objects to only about metal hy have time to s needle's work:ow has stick! invisible pulling it on it body, it will turn the feer and turn the powerful fabther light trolley that white't becomes a scalocst
+          (2% copied word-for-word from the book)
+
+------------------------------------------------------------
+Q: How fast does light travel?
+------------------------------------------------------------
+v2 sees : How fast does light      dropped ['travel?']
+v2 says : Striking surface. The curved path of the hammer resists sliding friction together, jamming their surface area of air molecules, reducing friction to get amount of air resistance.
+          (0% copied word-for-word from the book)
+
+v3 sees : How fast does light travel?      (every character)
+v3 says : A vacuum is a field strength and a 0.01 Teslas, and we would standing Tower of Pisa to test the prevrelock and resist directly on absolute chalk, they point in out?
+          (7% copied word-for-word from the book)
+
+------------------------------------------------------------
+Q: Why do heavy and light objects fall at the same rate?
+------------------------------------------------------------
+v2 sees : Why do heavy and light objects fall at the same      dropped ['rate?']
+v2 says : At takeoff, the stable orbits, because of a black hole and c is measured in kilograms. of weight as the Moon in the same no air in Earth's gravity acts as a protective tightly. The tension squeezes the fibers have the fibers have the fibers
+          (7% copied word-for-word from the book)
+
+v3 sees : Why do heavy and light objects fall at the same rate?      (every character)
+v3 says : Inertia applies dyalk?
+          (0% copied word-for-word from the book)
+
+------------------------------------------------------------
+Q: Explain gravity to me
+------------------------------------------------------------
+v2 sees : gravity to me      dropped ['Explain']
+v2 says : Mass is the scientific measurement of the air during a table surfaces. If inertia will suddenly have very little friction was moving, its surface. This keeps moving at the exact same speed. When thrown, the ball's inertia keeps it moving at that forward and the
+          (24% copied word-for-word from the book)
+
+v3 sees : Explain gravity to me      (every character)
+v3 says : A stand existed, restul stuck glide that resists event entrorus state of friction, requiring your shellites much lowermentsence inertia?
+          (0% copied word-for-word from the book)
+
+------------------------------------------------------------
+Q: What is entropy?
+------------------------------------------------------------
+v2 sees : What is      dropped ['entropy?']
+v2 says : Net force is the vector sum of all forces acting on an object. If the net force is zero, the forces are balanced, and the object's velocity does not change, obeying inertia.
+          (100% copied word-for-word from the book)
+
+v3 sees : What is entropy?      (every character)
+v3 says : Over that cinBraft expline 0.00000 km 25 to 5 T microscopic generath. Even looday. Eres can seeom a North kiloes singleft off the North and North you turn the North by you turn your direction; your lary!
+          (0% copied word-for-word from the book)
+
+============================================================
+Words the OLD tokenizer could not read : 4 of 29
+Words the NEW tokenizer could not read : 0 of 29
+Copied word-for-word, on average        : v2 41%   v3 2%
+            </pre>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <h4>🔍 Here is what we measured — compare it with yours</h4>
+          <div class="s8-results">
+            <div class="s8-result"><strong>0 of 29</strong><span>question words lost<br>(last week: 4 of 29)</span></div>
+            <div class="s8-result"><strong>70% smaller</strong><span>259,744 parameters<br>(last week: 852,447)</span></div>
+            <div class="s8-result"><strong>2% copied</strong><span>of each answer, word-for-word<br>(last week: 41%)</span></div>
+          </div>
+          <table class="s8-table">
+            <tr><th></th><th>Last week: whole words</th><th>Today: word pieces</th></tr>
+            <tr><td>Could read the whole question</td><td>2 of 6 questions</td><td><b>6 of 6</b></td></tr>
+            <tr><td>Parameters</td><td>852,447</td><td><b>259,744</b></td></tr>
+            <tr><td>Time per training step</td><td>about 290 ms</td><td><b>about 145 ms</b></td></tr>
+            <tr><td>Copied word-for-word (average)</td><td>41%</td><td><b>2%</b></td></tr>
+            <tr><td>Answers that read as good English</td><td><b>most</b> — but see below</td><td>few</td></tr>
+          </table>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(220, 38, 38, 0.06); border-left-color:#dc2626;">
+          <h4><i class="fas fa-magnifying-glass"></i> Now read the answers, not just the numbers</h4>
+          <p>Last week's model <i>sounds</i> better. Look closer at two of its answers:</p>
+          <ul style="line-height:1.7;">
+            <li><b>"What is inertia?"</b> → a perfect paragraph, <b>100% copied</b>. It is a training answer, read back word-for-word.</li>
+            <li><b>"What is entropy?"</b> → a perfect paragraph about <i>net force</i>, <b>100% copied</b>. It never saw the word "entropy" — it received "What is" and recited the nearest thing.</li>
+          </ul>
+          <p style="margin-bottom:0;">That is what a 41% copy rate looks like: fluent, confident, and frequently reciting the wrong page. Today's model reads every word of every question and writes its own sentences — and at 2,500 steps its own sentences are still <b>rough</b>. Spelling words from pieces is harder than picking whole words, and it has had 399 examples of practice. This is the honest state of things, and the next section is about why it is still the right trade.</p>
+        </div>
+
+
+        <hr />
+
+        <!-- ============================================================
+             9. TALK TO IT
+             ============================================================ -->
+        <h2>9. Talk To It</h2>
+        <div class="activity-box">
+          <h4>🛠 Activity 6: Chat, and watch it read</h4>
+          <ol>
+            <li>Replace the contents of <code>talk_to_your_engine.py</code> with the version below. It loads <code>qa_model_v3.pth</code>, lays the prompt out exactly like the book, and prints the pieces it read before it answers.</li>
+          </ol>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py</div>
+            <pre>
+import torch
+
+# No training this time. The model is loaded from the file you saved.
+from attention_engine import model
+from data_pipeline import encode, decode, itos
+
+model.load_state_dict(torch.load("qa_model_v3.pth"))
+model.eval()
+
+print("\n" + "=" * 55)
+print("ASK YOUR AI A PHYSICS QUESTION")
+print("=" * 55)
+print("Type a question. Type  quit  to stop.\n")
+
+while True:
+    question = input("You: ")
+    if question.lower() == "quit":
+        break
+
+    # Show exactly what it reads. Every character makes it through now.
+    pieces = [itos[i] for i in encode(question)]
+    print("   (it read: " + "|".join(pieces) + ")")
+
+    # Laid out exactly like every block in input.txt.
+    prompt = f"&lt;|user|&gt;\n{question}\n&lt;|assistant|&gt;\n"
+    ids = encode(prompt)
+
+    out = model.generate(torch.tensor([ids]), max_new_tokens=120)[0].tolist()
+
+    # Keep only the new text, and stop at the first signpost.
+    answer = decode(out[len(ids):])
+    for tag in ("&lt;|endoftext|&gt;", "&lt;|user|&gt;", "&lt;|assistant|&gt;"):
+        answer = answer.split(tag)[0]
+
+    print("\nAI: " + answer.strip() + "\n")
+            </pre>
+          </div>
+          <pre><code>python Term_2/talk_to_your_engine.py</code></pre>
+          <li>Ask it the questions that used to lose words: <code>How fast does light travel?</code>, <code>Explain gravity to me</code>, <code>what is gravity</code>. Then ask it something with a made-up word and watch the <i>(it read: …)</i> line.</li>
+        </div>
+
+        <div class="info-box">
+          <h4><i class="fas fa-terminal"></i> Expected output</h4>
+          <div class="code-block">
+            <div class="code-header">Terminal</div>
+            <pre>
+
+=======================================================
+ASK YOUR AI A PHYSICS QUESTION
+=======================================================
+Type a question. Type  quit  to stop.
+
+You: What is inertia?
+   (it read: What| is| inertia|?)
+
+AI: The hammer has significantly more mass than a hundvanced called friction "kinetic friction." You have to apply force to absolutely everything that has inertia while air is physically touches a specific an object like a hisece a condition?
+
+You: How fast does light travel?
+   (it read: How| fast| does| light| travel|?)
+
+AI: A vacuum is a eras, and the high drag is a low terminal loses. Al a slows on. They do stable tab if the table are front by foundation?
+
+You: quit
+            </pre>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             10. WHAT THIS FIXED, AND WHAT IT DIDN'T
+             ============================================================ -->
+        <h2>10. What This Fixed — And What It Didn't</h2>
+        <div class="s8-three">
+          <div class="s8-kind pieces">
+            <h4><i class="fas fa-check"></i> Fixed today</h4>
+            <ul>
+              <li class="good">It reads <b>every</b> question, including words the book never had.</li>
+              <li class="good">Punctuation, capitals and plurals no longer break words.</li>
+              <li class="good">The brain is 70% smaller and trains faster.</li>
+              <li class="good">It stopped reciting: its answers are mostly its own words.</li>
+            </ul>
+          </div>
+          <div class="s8-kind words">
+            <h4><i class="fas fa-times"></i> Not fixed today</h4>
+            <ul>
+              <li class="bad">Its own words are often wrong words. Spelling from pieces is harder than picking whole words, and 399 examples is not much practice.</li>
+              <li class="bad">It still cannot <i>know</i> anything the book does not say. It reads "entropy" perfectly and has nothing to say about it.</li>
+            </ul>
+          </div>
+          <div class="s8-kind">
+            <h4><i class="fas fa-arrow-right"></i> Why that is the right trade</h4>
+            <ul>
+              <li>Last week's fluent answers were copies. Fluent-but-copied cannot grow.</li>
+              <li>Today's model reads anything and composes. Give it more book, and it has somewhere to go. That is the next step — and it is a data problem, not an engine problem.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-stopwatch"></i> Measured: what more training does</h4>
+          <p>We trained today's model for <b>6,000</b> steps instead of 2,500 (about 14 minutes). Loss fell from 0.42 to <b>0.26</b>, and the answers started opening correctly — "What is inertia?" produced the book's inertia answer word-for-word, and "What is gravity?" began <i>"Gravity isn't just a simple…"</i> before wandering. The copy rate rose to 23%. That is the pattern to expect from a small model on a small book: <b>the longer you train, the more it recites</b>. Better answers that are not recitals need more text to learn from, not more laps of the same text.</p>
+        </div>
+
+        <!-- ============================================================
+             DIAGNOSTIC
+             ============================================================ -->
+        <section class="knowledge-check">
+          <div class="check-header">
+            <i class="fas fa-microchip"></i>
+            <h2>Mission Diagnostic: Level 2.08</h2>
+          </div>
+          <div class="mcq-container">
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">1. A student typed "What is entropy?" into last week's model. What did the model actually receive?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="The word tokenizer has no way to guess a spelling — it only has whole words from the book.">"What is entropy?" with a spelling guess for the unknown word.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Any word not on the 4,095-word list is deleted before the model sees anything, so the subject of the question vanished.">Just "What is" — the unknown word was thrown away.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="It does not crash. It silently drops the word, which is worse — nobody notices.">An error message about an unknown word.</button>
+              </div>
+            </div>
+
+            <div class="mcq-item q-green">
+              <p class="mcq-question">2. What is the one rule BPE repeats to choose its pieces?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Nobody types the pieces in. That is the whole point — they are learned from the book.">Glue together the pieces a human picked from a dictionary.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Count neighbouring pairs, glue the most common one into a new piece, repeat until the box has enough pieces.">Find the two neighbours that appear together most often and glue them.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Length has nothing to do with it — a pair is glued because it is common, not because it is long.">Glue the longest pair of letters first.</button>
+              </div>
+            </div>
+
+            <div class="mcq-item q-blue">
+              <p class="mcq-question">3. After the swap, the book became MORE tokens (22,182 → 39,414) but FEWER different tokens (4,095 → 1,024). Why?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. A rare word like 'entropy' becomes several pieces (more tokens), but those pieces are shared with hundreds of other words, so the list of different tokens is small.">Rare words are now spelled from several shared pieces.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The book did not change at all — only how it is cut up.">The book got longer.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Spaces were already handled before. The change is that words are split into shared pieces.">Spaces are now counted as tokens for the first time.</button>
+              </div>
+            </div>
+
+            <div class="mcq-item q-amber">
+              <p class="mcq-question">4. Why are the three signposts (like &lt;|user|&gt;) told to the tokenizer before it learns anything?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="They are actually quite common — one of each per question. Frequency is not the reason.">Because they are too rare to be learned.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. If a signpost were ever chopped into pieces, the model could not tell where a question stops and an answer starts.">So they always stay in one piece and mark where questions and answers begin.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="They take up three of the 1,024 pieces — a tiny fraction.">Because they would use up most of the vocabulary otherwise.</button>
+              </div>
+            </div>
+
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">5. Last week's final loss was 0.398. Today's is a different number. Can you compare them directly to see which model is better?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Loss is 'how surprised was it by the next TOKEN' — and the tokens are completely different sizes now.">Yes — lower loss always means a better model.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. One guess per word versus one guess per piece are different tests. You need a fair yardstick — like surprise per character, or simply what it reads and what it answers.">No — a guess-per-word and a guess-per-piece are different tests.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Random numbers would not fall steadily during training. Loss is real, it just measures a different thing now.">No — loss is a random number.</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-star"></i> Today's Biggest Takeaway</h4>
+          <h2 style="text-align:center; margin:25px 0;">A word it has never seen is just pieces it has.</h2>
+          <p>You did not touch the engine. You changed what a token <i>is</i> — and the model went from deleting a quarter of your question to reading every character of it, with a brain 70% smaller.</p>
+        </div>
+
+        <!-- ============================================================
+             HOMEWORK
+             ============================================================ -->
+        <section class="session-block homework-block">
+          <h2>Homework / Extension</h2>
+          <div class="homework-item standard">
+            <h3>Standard Task: Train It To The Same Depth</h3>
+            <p>In class you trained for 2,500 steps. Change <code>STEPS</code> in <code>train_qa.py</code> to <strong>6000</strong> and run it again (about 14 minutes — start it and do something else).</p>
+            <ul>
+              <li>Write down the final loss, then run <code>tokenizer_showdown.py</code> again.</li>
+              <li>For each question: does the answer now <i>open</i> correctly? What happens to the "copied word-for-word" percentage?</li>
+            </ul>
+            <p><strong>Prediction first:</strong> will training longer make it answer better, recite more, or both?</p>
+          </div>
+          <div class="homework-item advanced">
+            <h3>Advanced Task: How Big Should The Box Be?</h3>
+            <p>Change <code>VOCAB_SIZE</code> in <code>data_pipeline.py</code> to <strong>512</strong>, run <code>see_the_pieces.py</code>, then try <strong>2048</strong>. Record how many tokens the book becomes, how long the tokenizer takes, and how <code>gravitational</code> gets cut up each time. Retrain at one of them and compare the answers.</p>
+          </div>
+
+          <div class="homework-collapsible">
+            <div class="homework-toggle">
+              <span>Need Help? View Solutions &amp; Explanation</span>
+              <i class="fas fa-chevron-down toggle-arrow"></i>
+            </div>
+            <div class="homework-content">
+              <h4>Standard Task — what to expect</h4>
+              <p>Measured at <code>STEPS = 6000</code>, same seed: final loss <b>0.258</b> (from 0.42), about <b>139 ms per step</b>, 14 minutes in total. The answers start opening with the right sentence — "What is inertia?" produced the book's inertia answer word-for-word — and then drift. The copy rate climbs from a few percent to about <b>23%</b>. So: both. It answers better <i>and</i> recites more, because on a 137,000-character book, "learning it better" and "memorising it" are the same thing. That is the honest ceiling of a small model on a small book.</p>
+              <hr>
+              <h4>Advanced Task — what to expect</h4>
+              <p>Measured on the physics book:</p>
+              <table class="s8-table">
+                <tr><th>VOCAB_SIZE</th><th>Tokenizer time</th><th>Book becomes</th><th>Letters per token</th></tr>
+                <tr><td>512</td><td>about 3 s</td><td>49,329 tokens</td><td>2.8</td></tr>
+                <tr class="win"><td>1024 (today)</td><td>about 11 s</td><td>39,414 tokens</td><td>3.5</td></tr>
+                <tr><td>2048</td><td>about 40 s</td><td>32,722 tokens</td><td>4.2</td></tr>
+              </table>
+              <p>A bigger box means longer pieces: the book becomes fewer tokens and long words like <code>gravitational</code> survive whole — but the tokenizer takes far longer to learn, and rare pieces are seen less often, so they are learned worse. A smaller box chops everything finer: every piece is very well practised, but a 64-token window now holds fewer words. There is no free lunch — real labs pick the size by experiment, exactly as you just did.</p>
+              <div class="rule-callout">
+                <strong>Engineering Takeaway</strong><br><br>
+                Tokenization decides what the model can <i>see</i>. Training data decides what it can <i>know</i>. Today fixed the first. The second is a data problem, and it is what the next term is about.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="did-you-know-box">
+          <div class="dyk-icon"><i class="fas fa-lightbulb"></i></div>
+          <div class="dyk-text">
+            <h3>Did You Know?</h3>
+            <p>GPT-2 learned its pieces with exactly the glue rule you built today — it just ran it on 40 GB of web pages instead of one physics book, and stopped at 50,257 pieces. Modern models use around 100,000 to 200,000. The word "tokenizer" in every AI lab on Earth means this algorithm, or a close cousin of it.</p>
+          </div>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-arrow-right"></i> Where This Leaves Your Engine</h4>
+          <p>Term 2 is complete: a tokenizer, an embedding, four attention heads, LayerNorm, a feed-forward block, a training loop, a saved model, and a chat window — every line written by you. It reads anything. What it <i>knows</i> is limited to one small book. Making it know more is not an engine problem any more; it is a data problem, and that is where the incubator goes next.</p>
+        </div>
+
+        <details class="collapsible-box">
+          <summary><strong>⚙ Troubleshooting &amp; FAQs</strong></summary>
+          <div class="activity-box">
+            <div class="faq-item">
+              <h5>❓ RuntimeError: size mismatch … loading qa_model_v2.pth</h5>
+              <p>Last week's model has a 4,095-word vocabulary; today's engine builds itself for 1,024 pieces. <code>tokenizer_showdown.py</code> handles this by building a second engine with <code>PredictionEngine(len(words))</code> for the old weights. If you see this error, you are loading old weights into the new engine — check which file goes into which model.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ Every script pauses for 15–20 seconds before printing anything</h5>
+              <p>That is the tokenizer learning its 1,000 glue rules again, every single time <code>data_pipeline.py</code> is imported. It is the same "we never saved it" problem as Session 7 — a real project would save the rules to a file once. It is a good stretch task if you finish early.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ KeyError: '\n' — but I thought that was fixed?</h5>
+              <p>It was: <code>attention_engine.py</code> should say <code>NEWLINE = stoi.get("\n")</code>. Today that line gets a real number again, because <code>\n</code> is back as a piece. If you still see this error you are running an old copy of the engine from before Session 6's fix.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ I asked about a made-up word and it answered confidently</h5>
+              <p>Look at the <i>(it read: …)</i> line first: it read your invented word perfectly, as pieces. Then it wrote a physics-flavoured answer about nothing. That is the honest limit of today — the tokenizer fixed <b>reading</b>; <b>knowing</b> only comes from what was in the book. Reading a word is not the same as knowing what it means.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ My question had an emoji or a strange symbol and it disappeared</h5>
+              <p>The alphabet is every character in the book. A character the book never contained cannot be read, so <code>break_up()</code> skips it. Real tokenizers start from raw bytes so nothing is ever skipped — a good advanced upgrade.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ Last week's scripts (see_the_heads.py, showdown.py) now crash</h5>
+              <p>Expected. They were written for the word tokenizer and the word-vocabulary model. Once <code>data_pipeline.py</code> switched to pieces, the engine it builds no longer matches <code>qa_model_v2.pth</code>. That is exactly why today's showdown builds the old engine separately.</p>
+            </div>
+            <hr>
+            <div class="faq-item">
+              <h5>❓ My loss numbers look nothing like last week's</h5>
+              <p>They should not. Loss is surprise per <i>token</i>, and a token changed from a whole word to a piece of one. Compare what the model reads and what it answers; if you want one number, use the per-character version explained in Section 7.</p>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <div class="completion-zone">
+        <div class="completion-card">
+          <label class="checkbox-container">
+            <input type="checkbox" id="session-check" />
+            <span class="checkmark"></span>
+            I built a BPE tokenizer, plugged it into my pipeline, retrained my engine, and measured that it now reads every question with a smaller brain.
+          </label>
+        </div>
+      </div>
+
+      <div class="navigation-footer">
+        <a href="t2_session7.html" class="btn-secondary">Previous Session</a>
+        <button class="btn-primary" id="next-btn">
+          Mark Complete <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- REUSABLE MODALS -->
+  <div id="mcq-modal" class="mcq-modal">
+    <div class="mcq-modal-content">
+      <div id="mcq-modal-status-bar"></div>
+      <div class="mcq-modal-body">
+        <div id="mcq-modal-icon"></div>
+        <h3 id="mcq-modal-title">Checking Logic...</h3>
+        <p id="mcq-modal-feedback"></p>
+        <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+      </div>
+    </div>
+  </div>
+  <script src="../nexus-core.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    function toggleTerm1() {
+      var list = document.getElementById('term1-list');
+      var icon = document.getElementById('term1-icon');
+      if (list.style.display === 'none') {
+        list.style.display = 'block';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        list.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+  </script>
+    <!-- ==========================================================
+         Session 8 interactive visuals. Everything shown is calculated
+         here from real data, so the widgets can never disagree with
+         the numbers in the text.
+         ========================================================== -->
+    <script>
+var S8_VOCAB = "\"0.\" \"1,\" \"Friction \"Heavy \"Mass\" \"Newton's\" \"Resisting \"attraction\" \"carpet \"contact \"cosmic \"drag.\" \"free \"gold\" \"inactive.\" \"inertia\" \"kinetic \"lazy\" \"maximum \"outside \"permanent \"phantom \"prefer\" \"pull \"repulsion\" \"resists \"slap\" \"snaps\" \"static \"stuff\" \"swing \"temporary \"zero (0.000025 (1.6 (1/4) (1/6) (1/9) (2^2 (6.674 (60 (9.8 (Amontons' (Anti-lock (B, (F (F) (FN) (Fd (Fs (G (GPE)? (I), (M) (Magnetic (N) (N), (N). (N/kg), (Newtons) (Newtons). (North (T) (T), (T^2) (a (about (an (aphelion). (around (attraction) (auroras (before (bones, (boundary-layer (called (closer (constant (drag) (drag). (during (dynamo) (e.g. (electromagnetic (ferromagnetic (flowing (fluid (foci) (force) (g) (g). (gravitational (heat), (heat). (including (inertia) (inertia), (inertia). (iron, (kg) (kg), (kg). (known (left (like (m/s^2). (m1 (magnetic (magnetic) (moment (more (motion (motion) (moving (non-magnetic) (often (one (one-quarter). (or (our (p (parallel (perihelion) (pulled (r), (r^3). (reaching (represented (repulsion). (speed (stick-slip (such (the (things (velocity (voltage) (which (\u03bc (\u03bc) (\u03bck). (\u03bck)? (\u03bcs) (\u03bcs). * *around* *backward* *down* *forward* *into* - / 0). 0, 0. 0.00005 0.000065 0.01 0.1) 0.9) 1 1.5 1.5-volt 1.6 1/4th 1/6th 1/9th. 10 100 10^-11 10^-11) 10c, 11.2 130 15 17th 2 2.4 2.5 200 20c, 24 24.79 25 25% 27,000 28,000 3 3.7 38% 3D 4), 40,270 4WD 50 500 50c 50kg 50kg, 50kg. 588 5c, 6.674 60 65 75% 80 81 9.8 99.8% <|assistant|> <|endoftext|> <|user|> = A ABS Absolutely! According Actually, Adelaide, Air Alternating Aluminum An Areas) As Astronauts At Attraction Auroras Australia Australia, Australian B) B). Baggy Bearings Because Bobsledding Both Bowlers Braking But By Can Carpet Cars Centripetal Chalk Clocks Constant Contact Copper Crocodiles Curie Dad Definitely Do Does Drag Drifting Due During Dynamic Earth Earth's Earth's. Earth). Earth, Earth. Earth; Earth? Earth\u2019s Einstein Einstein's Electric Electromagnetic Ellipses) Energy Equal Escape Even Event Every F FN FN), FN). FN, Faraday's Ferromagnetic Ff Fg Field First First, Fk Flat Fluid Football For Force Forces Friction Frictional Fs(max) G G? GPE GPE, GPS Galileo Galileo's General Geographic Giant Gold Gravitation Gravitation? Gravitational Gravity Great Greek Grip Harmonies) He Heavy Here High-speed High-viscosity Hollywood Horizon Horizon? How However, Hydrostatic I Ice If Imagine Imaging) In Increasing Induction Inertia Inertia! Inertia, Inertia. Inside Instead Instead, International Is Isaac It It's Its Japan Jupiter Jupiter! Jupiter, Jupiter? Keeping Kepler's Kinetic Knots Latin Law Law! Law), Law, Law? Leaning Lenz's Less Light Lights Lights)! Lights)), Lights? Like M MRI Maglev Magna-Tiles) Magnetic Magnetism Magnets Mars Mars). Mars? Mass Massive Massless Microscopically, Momentum Moon Moon's Moon). Moon, Moon? Most Motion Motion? Moving Mum N N*m^2/kg^2), Near Net Newton Newton's Newton, Newtons Newtons, Newtons? Nickel Nikola No No, No. Nobody North North! North, North. North? Northern Not Ocean Oil On Once One Orbital Our Outside Over Palm Passing Pencil Performance Physical Physicists Physics Physics, Pisa Pisa? Planetary Plastic Point Pointy, Pole Pole. Polished Pure R R^2, Recycling Relativity Relativity, Relativity? Repulsion Resonance Right-Hand Rolling Rotational Rs Rubber Rubbing Rule Rule, Rule? Running SACE SI Sand Sanding Satellites School Schwarzschild Scientists Second Second, Shaking Since Sir Skateboard Slap) Slowing Sneakers Soap South South) South). South, Southern Space Squeaking Stage Standard Static Station Stationary Steel Stopping Streamlined Striking Sun Sun! Sun's Sun, Sun. Sun? Sweat Sweaty Systems) T) T^2 Take Terminal Tesla Tesla. Teslas! Teslas), Teslas, That The Their Then, Therefore, These They Think Third This Those Tides To Tower Treads Trying Turn Turning U Under Universal Unlike Using Velcro Viscosity W Water Weight What When Whenever Where While Why Without Woodchips Wooden Worst Yes, You You, Your Zippers a a). about above abrasive absolute absolute, absolutely absorb absorbs accelerate accelerate, accelerates accelerates, accelerating acceleration acceleration, acceleration. acceleration? accelerations, accelerator according account accurate? achieve across act act? acting action action-at-a-distance active actively acts actual actually add adding adjusts advanced aerodynamic affect affects after again against against. agent ahead! ahead. aimlessly, air air, air-hockey air. air? airplanes aisle! aisle, aisles alchemy! align align). align, align. aligned aligning alignment alignment, all all! all, all. all? allow allowing allows almost alone; along already also alter alters altitude aluminum always am amount amusement an analogy anchor anchoring and angle angle! angle? angles animal animals annoying another another. answer any anywhere apparent appear appears apple apples applied applied. applies apply approximately aqua-plane are are, are. area area, area. area? areas aren't arm arms around around, arrive arrow as aspects asphalt asphalt. asphalt? astronaut astronaut! astronaut's astronauts astronaut\u2019s astronomical astronomically at athlete athletes atmosphere atmosphere) atmosphere, atmosphere. atmosphere? atmospheric atom atomic atoms atoms, attach attempt attract attract, attract. attraction attraction. attractive attracts audio auroras automatically avoid away away, away. away? awesome axes. axis axis. axle, back back, back. background backing backpack backward backward. backward? backwards bad badly baggy bags balance balanced balanced, balanced. balances ball ball's ball), ball, ball. balls balls, band bank bar bare barreling barrier barrier, barrier. bars, bars? barycenter barycenter, barycenter? baseball based basically basketball basketball! battery). battery. battle be be? beaches bearings? beaten beautiful beautiful, because become becomes been before behavior! behind behind. being belongs below belt belt, belt. belts? bench bench, bending bends beneath between beyond bicycle bicycle? biggest billions binary bit black blackboard blades blades! blanket blast blasts blazing block block, blocked; blocks blocks? blow blowing blows board board. bob bobsled bodies body body's body), body, body. boiling bolted bond book books boost boss both both! both, bottle bottle! bottle, bottles, bottom bottom? bottoms boulder boulder, bounce boundary boundary, bow bow? bowlers bowling bowling.\" box box, box? boxes brake brake, brakes brakes, brakes. brakes? braking branch break breathe breathe. breeze bricks bricks? brilliant bring broken broom, broomstick? bucket bucket, build builders building building, buildings buildings, built bulge bulge, bulge. bulges bulges. bullied bumped bumps burn\" burning burns burst bus bush? but buttons buttons? buy by by: c c^2, cabinet calculate calculated calculates calibrated call called campfire: can can! can't can? cancel canceling cancelling cannot cans capable car car's car, car. car? carbon card card! cardboard cardboard, cards cargo cargo, carpet carpet, carries carry cars cars; cart cart? cartons case. cases catch catch! catches catching cause caused causes causing celestial cells center center, center. centers centers. centimeters centimeters. central centrifugal centripetal century. certain chain chair chairs chalk chalk, chalk? chamber change change\" change, change. changes changing channel channeling chaos! chaotic characteristic charge charge? charged charges charges, cheap chemical chemistry. circle circle, circles. circle\u2014like circular city, clamp clamping clash classic classical claws, clean clean, cleanly clever clicks climbers climbing climbs climbs, clings clock clocks clocks. close close, close. close? closed closed? closely closer closer, closer. closes, closest cloth cloth, clothes clothes? cloud cloud, clouds clumps clumsy clumsy, cluster coast coastal coaster coat coated coats cobalt) cobalt. code code. codes! coefficient coefficient), coefficient, coil coil, coil. coils coin coin, coins cold collapse collapse! collapse? collapses collide collides colliding collision collisions colorful combat combination combined combining come comes common compared comparison, compass compass. compasses complete completely completely! completely, completely. component compressed compressed, compresses compressing computer computer's computer, concentrate concentrated concentrating concepts concepts. concrete concrete, concrete. concrete? condition conductor cone confused connecting conservation considered constant constant, constant. constantly constantly? contact contact, contact. contain container contains continuous contrarian\u2014it control control. controlled controls conversation, converting converts conveyor cooktops cool coordinate copper copper, core core, core. core? corner corner. corners. corrections corrections? corrupted cosmic couch could count counteracts court? courts covered covers craft crane crash crash, crash. crashes crashes? crashing crate crawl! create created creates creating credit cricket critical croc crocodile, cross cross! cross? crossed, crosses crossing cruise cruise, cruising cruising? crumbs cube cup cupronickel, cups curled curling current current's current, current-carrying current. current? currents currents) currents, currents. curve curve, curve. curve? curved curves curving cushion cut cut? cuts cyclist\u2014it cylinder cylinders d-orbital damaged. dangerous dangerous? dangerously dark dark! data data. day day, day? days! dead dead, decelerating deceleration, decide deck decrease decreases decreases. deep deeper deeply deeply, define defined defines definitely definition deflected deflecting deflection). deformation deforming degeneracy) demagnetise demagnetizing demonstrate demonstrating demonstration dense density density, depend depending depends deployed, deploying describe describes designed desire desk desk, desk. desk? desks, destroy destroyed; destroying detailed device did didn't difference different different! different; differently difficult dig digging dilation). dimensionless dip direct direction direction) direction). direction, direction. direction; direction? directions directions, directions. direction\u2014which directly directly, directly. dirt dirt, disappeared disappeared, disappeared? disappears disc. discharges dishes dishes\" display dissipates distance distance! distance, distance. distances? distant distinguish distribute distributed divers diver\u2019s divide dividing do do, do. do? dock dodge does doesn't dog doing doing! doing\u2014traveling domain domain? domains domains, dominates don't don't! done door door, door. door? doors double doubles doubles, doubling down down, down. down; down? downward downward, drag drag). drag. drag? dragged dragging drain dramatically dramatically. drastically! draws drier! drift drift. drift? drifting drifts drink drive driver driver's drives driveway driving drop droplets dropped dropped? dropping drops dry due during dust dust. dynamic dynamo each earthquake easier easily easily, easily. easy eddy edge edges. effect effects effort effortlessly egg egg, either electric electrical electricity electricity? electromagnet electromagnet's electromagnet, electromagnet. electromagnet? electromagnetic electromagnetism. electromagnets electromagnets? electromotive electron electrons electrons, elements elevator eliminate eliminate.\" eliminated! eliminated. eliminates eliminating ellipse, ellipse. elliptical else. embodies empty empty, ends energy energy). energy, energy. engine engine's engineering engineers engines engines, enough ensure ensures ensuring enter enters entire entirely environment environment? equal equally equally. equals equation equations? equator equilibrium equilibrium? equivalence erased eraser erasing errors, escape escaped escapes essentially even evenly-spaced event eventually eventually? ever ever. every everyday everyone everything everything. everything\u2014from everywhere everywhere. exact exactly example example, exceeded exceeds exert exerted exist exists experience experience? experiences experiences, experiment experiments explain explained expose exposed external extra extra-high extreme extremely eyes, fabric fabric. face faces facing factors: failing? fall fall\" fall, fall. falling falling. falls falls, famous fan fans far farther fast fast, faster faster, faster. fast\u2014like fat feather feather. feather? feel feel. feels feet feet. fell felt ferromagnetic ferromagnetism. few fewer fiber fiber, fibers fibers. field field), field, field. field; field? fields fields, fields. fields? fiercely fiercely. fiery fight fighting fights files files? fill filled filling fills film film. find fine fingers finish finish. fire fire! fire. firmly first first, five fix fixed flakes flame? flap flap, flat flat-belly flat? flattening flexible flies flight. flip float floating floats floor floor, flow flowing flows fluctuates fluid fluid's fluid, fluid. fluids fluids. flux flux? fly fly-wheel flying focal follow follows food. foot football football), football, for force force! force\" force\"? force) force, force. force? forcefully forces forces! forces\" forces, forces. forces: forcing foreground forever forever, forever. form form? formal formation. formation? forms formula formula: forth forth, forth. forward forward! forward, forward. forward? foundation foundations four fraction frame frame, frames frames, free freely freely. friction friction! friction\" friction\"). friction), friction, friction. friction.\" friction? frictionless fridge from front froze froze, frozen fry frying fuel fuel. full fully functional fundamental funneled fur furnace! further fuse, fusing fusion fusion. g g, g? galaxies). galaxy game game? games. gaps, garbage gas gas. gases gases! gases, gate gate, gather gave generate generated generates generating generation generator gentle, geodynamo). geographic geometrical geometry geometry, geostationary get gets ghost giant giant, give given gives: giving glass glass, glass. glide global glossy glove glow glowing glue\" go go, go? goes going going. gold gold? golden golf grab grabs gradually gradually. grains grams graphite graphite, grass grass, grass. grass? gravel gravitational gravity gravity\" gravity's gravity). gravity, gravity. gravity? grease) grease, greater green, grind grinding grinding. grip grip. gripping grippy grippy! groovy ground ground! ground, ground. ground? grow guest guided gust gutters, gym-nasts gymnasts gyroscope h, had half, half? halfway hall? halt halt. hammer hand hand, hand? handbrakes, handle handlebars hands hands. hands? hanging happen happened, happens hard hard, hard-boiled harder harmful, has has! has, has. hates have have. having haywire! head head, head. headrest heaps hear heat heat, heat. heater! heating heavier heavy heavy, heavy-duty height. held help help. help? helps here! hero! hidden high high-energy high-friction, high-pressure high-speed high-tech! higher highest highly highway? hill, hill. him hinge hinge, hints hit hits hitting hockey hold holding holds hole hole's hole? holes holes, hollow homemade honey) hooks hooks, horizon, horizontal horizontally, hospital hot hot? hours hours. house\u2014it hover hovercraft how however, hull, hull. human hundreds hurts hydrogen hydrostatic ice ice, ice? icy icy, idea idea, identical identical, if ignites ignition ignore image. images immediately immediately? immense impossible! impossible. impossible\u2014even in in, in? incline includes increase increases increases, increases. increasing incredibly indefinitely indoor induce induced induces inducing induction induction). induction? inertia inertia! inertia) inertia, inertia. inertia; inertia? inertial inertia\u2014it infinite infinitely influence initial inner inside inside. instant, instantly instantly. instead insulated intense interact? interacting interlock interlocked interlocking interlocking. internal intersect intersection intervals into inventor inverse-square inversely invisible inward inward) inward, inward. iron iron). iron, iron-based iron. iron? is isn't it it! it's it), it, it. it: it? items its itself itself. itself? it\u2014like jagged jagged, jamming jar jerk jerked jet jets jewellers! jewelry jiggle joining joins joints, jump just keep keeping keeps kg kg) kg^2. kick kicked kicking kilogram kilograms kilograms. kilometers kilometers, kilometres kinetic kitchen km/h km/h! km/h), km/h). km/h, km/h. knees knot knots know known lab lab, lab? labs lacks land landing large large, larger latch lateral launch law law, law? lawnmower laws lay layer layer, laziness! lazy! lead leading leaks lean learn leaves leaving left left, leg legs lensing lensing? less lesson let letter letting level level. level? lid lid, lie! life life-hack! life-saving life. life? lifesavers lift lifts light light) light. light? lights lights. lightweight like limbs limit limit. limited line line! line's line, line. line? lined liner lines lines! lines), lines, lines. link links. liquid liquids liquids, literally little lived lives. loaded local localized location location. lock locked locking locks logical, long long, longer look looks loop loop. looped loops loops. loose loose, lose loses lost lost! lot loud low low-viscosity lower lower, lowering lowest lubricant lubricant, lubricant. lubricant; lubricating lunar lurch m m) m). m/s^2 m/s^2), m/s^2). m/s^2, m/s^2. m2) m^2 machine machine? machinery machines? macroscopic made madness! magic magically magician magnet magnet! magnet\"? magnet's magnet, magnet. magnet? magnetic magnetic! magnetic, magnetic. magnetic? magnetise magnetism magnetism, magnetism? magnetized magnetized. magnets magnets! magnets, magnets. magnets? magnifying magnitude main maintain maintaining major make makes making many map? marble marble, marbles mark. market marks mashes mass mass! mass, mass. mass? masses masses. massive massive, match matchbox matches matchsticks material material, material. materials materials. materials? mathematical mathematically matter matter). matter, matter. maximizes maximum me mean mean? meaning means measure measure: measure? measured measured? measurement measures measuring mechanical mechanics, mechanics? mechanism medicine. medium meets melt melting melting. melts messy messy, metal metal! metal, metal-on-metal metal. metal? metals metals. meters method microgravity microscope, microscopic microscopically. microtesla mid-air, mid-air\u2014a middle middle, milk millimeters millions mind-blowing miniature minimal minimizes minimizing minimum minute? misaligned, misconception! miss mixed mixture model molecules molecules, molecules. molecules; moment moment! momentum momentum, momentum. momentum? monopoles moon moon). more more! more, mortar! most motion motion\"? motion, motion. motor motor, motors motors, mountain mountains mountains. mounted move move, move. moved moved, movement movement, movement. movements. moves movies moving moving) moving, moving. moving? mu, much much! mud, muddy multiply multiplying muscles muscles, muscles. music. must my mysterious nail nail, nail? name named nasty natural, naturally nature nature! nature's navigation neap near nearby nearly neat, necessary neck necklace need needed needing needle needle's needle? needs negative negative). neoprene net neutron never new next nickel nickel, nickel. night, no no! noise non-contact non-inertial non-invasive non-magnetic non-magnetic, non-magnetic. non-magnetic? non-physical non-uniform none. normal north noses? not not, notice noticeable. notices now nuclear number numbers. obey obeying obeys object object's object) object, object. object; objects objects, objects. objects? object\u2019s oblate observe observed occur occurs ocean oceans oceans, oceans. oceans: oceans\u2014straight of of). off off! off, off. off? often of\u2014like oil oil, on on. once once, one one-fourth one-line one-ninth one-sixth one? ones only onto open open. operates, operator opponent oppose opposes opposing opposite opposite! or orbit orbit). orbit. orbit? orbital orbiting orbits orbits, order orderly ordinary organs orientation orientation? original other other's other, other. other? our out out! out), out, out-muscled out. out? outdoor outer outside outward outward. outward; oval. ovals over over, over. overcome overcomes overcoming own own, own. packed pad pad. pads page. pages painful paint! paint, painted painting? pair pairs pairs. palm palms pan paper paper, paper? paperclip paperclip) paperclip. parachute parachute, parachute? parachutes. parachutist paradoxes parallel parallel, park part partially particle particles particles, particles. parts parts, pass pass. passenger passenger's passes passing past patch path path. path? paths paths, paths. pattern? patterns pavement. peaks peaks, pebble pebble, pebble. pebble? peel pencil pencil, pendulum pendulum's pendulum. people per perfect perfectly perfectly! perfectly, perfectly. performed period permanent permanently, permeable, perpendicular person person's personal pesky phosphorus photons photos physical physically physicist physicists physics physics! physics, physics. physics? pick picking picky picky\u2014it piece pieces pieces) pier! pile pin pink, pinning pipe. pipe? pitch place place, place. place? placed plane plane's planet planet! planet's planet, planet-sized planet. planet? planetary planets planets' planets, planets. planets? plant plastic plastic! plastic), plastic, plastic. plastic? plate plate, plate. plates plates' platter platter. player players playground plops plummets plunge pockets point point, point. point? pointing points points. pointy pole pole! pole, poles poles! poles, poles. poles: poles? polish polished polished, pool port? position position, position? positioned positive possesses possible possible. pot potatoes, potatoes\u2014they potential poured pouring powder power power, power. power? powerful powers predict predict? present preserves press pressed pressing pressure pressure. prevailing prevent preventing prevents principle probably produce produces product professional program projects projects? prone propels properly. properties. property property! proportional protect protective protects provide provides providing proving puck puck's puck. pull pull! pull, pull. pull? pulled pulling pulls pulls, pumped pumping pure purely purple push push, push-start push. pushed pushed, pushed. pushes pushing put put, putting qualitatively quantitative quantitatively quantity quantity, quantity. question, quick quickly quickly! quickly. quickly? quite! r r) r), r. r^2, r^2. r^3 racing radial radially radiation radiation. radio radioactive, radius radius. rails rails. rainstorm, rainy raising ramp ramp, random random, randomize. ranges. ranging rapid rapidly rate rate. rather ratio ratio. raw rays rays. re-entering reach reach. reached reached? reaches reaching reactions reading real, realized rear-ended, reason recommended recording recycling red reduce reduces reducing reel reel? reference reference. reference? refuse refuses regardless region regions reinforce relate related relationship relationship. relative relativistic release releases relies rely remain remains remove removing reorganize repeatedly repeatedly, repeatedly. repel repel, repels replace replaced repose repose), repose? represent representation represented representing represents repulsion repulsion\u2014the require requires requiring resist resistance resistance, resistance. resisting resistive resists resonance respond rest rest, rest. rest? resting resting, resting. restores restoring result resulting resume revolve. ride ride's ride? ridges ridges. riding right right-hand ring rink ripples risking road road, road. roads roads, roads? rock rock! rock, rock-solid. rock. rock? rocket rocks. rogue role roll roll's roll. roller rolling rolling, rolling-gripped rolls rolls, room rope ropes rosin rotate rotate, rotates rotating rotating. rotation rotation, rotation. rotational rotor. rough rough, rough. rougher roughly roughness roughness, round rows. rub rubbed rubber rubber's rubber, rubbing rubbish! rubs rug rug! rugby ruining rule rule: rule; rules rules. run run? runners running runs safe safely safely. safer salvage same same! same, same. sand sanded sandy satellite satellite's satellites sauce save saving saw say says says, scalar scale scale's scale. scale? scales scaling scan scan? scatter school school, science science, science? scientific scientifically scientist scientist, scientists scramble scrambled scrape screw screw, seal sealed sealing seat seatbelt seatbelts second second, second. seconds? secret: sedan sedan, sedan. sedan? see segment semi-major semi-trailer senses sent separate separated separating set settle settling. several sewing sewn shadow shadows shaft shaft: shake shaken? shakes shakes, shape, shape. shapes shapes. shared sharp sharp, sharply? shaves sheet sheet. shelf shell shell, shelves shelves? shield shield, shields! shiny ship ship), ships shock shock? shoe shoe! shoes shoes, shoots shopping short should shouldn't show showing shows shredder, shuffling shut side side, side. sidestepping sideways sign signal signals significant significantly silent, silver simple simple: simply since single singularity sinking. sit sits sitting size size, skate skateboard skateboard. skateboarder skater skater's skater\u2019s skidding. skids, skier skier's skin skin) skin, skis skydiver skydiver's skydiver? skydivers skyrockets. slam slams sled sled, sleek sleek, slice slices slick slide slide! slide, slide. slider slides sliding sliding), sliding, sliding. sliding? slight slightly slightly. slip. slipperiness slippery slippery, slipping. slips sloshes sloshing sloshing, slow slow-motion slowed slower slowing slowly slows sluggish small small, smaller smaller, smallest smash smash, smashing smell smoke! smooth smooth, smoother smoothing smoothly snap snappy snaps snow. so soapy soccer socks soft softens soil, solar solenoid solenoid? soles soles? solid solid, solids solids, solids? solve some something sort sound. sound? sounds soup, space space! space). space, space-time space-time, space-time. space. space? spacecraft spaceship spaceship's speaker special specialized specific speck speed speed! speed, speed. speed? speeding speeds speeds, sphere? spheres spheroid spike spin spinning spinning, spinning. spins spins, split spool. sport. sports spot spot! spot. spots spots! spread spreading spring springy sprint sprinting spun sqrt(2 sqrt(G square squared squeak! squeaky squeal squeals. squeeze squeezes squeezing squirt squished squishes squishing stable stable. stalled stand standard standing stands staples star star's star, stars stars, stars? start started starting starts state state. statement states static stationary stationary, stay staying stays steady steals steel steel! steel, steel. steel? steer stems step, stick stick! stick. stick? sticking sticky stiff still still, still. still? stone stones stop stop, stop. stop? stopped stopped, stopped. stopping stopping! stopping, stopping? stops stops, stops. store stored stores storing stovetop, straight straight, straight-line straight. straightest streamlined strength strength, strength. strength; strength? stretches stretching stretchy strike string string, string? string\u2014it strip stripe stripe, stripes strips strong strong. strong; stronger stronger. stronger? strongest. strongly struck? structure structure. structures stubborn stubborn! stuck student studs study stuff substance substance\u2014it's subterranean such sucked sudden suddenly suddenly, suddenly. sum super-powerful super-strong supermarket supermarkets support supports surface surface, surface. surface? surfaces surfaces, surfaces. surround surrounding surrounds survive sweat sweeps swim swing swing, swinging swirl swirling switch switch! switching swung symbol system system. table table, table. tablecloth tablet tackle, tail take takeoff takeoff! takeoff, takeoff? takes taking talking tall tangle tangled tanker tankers tap tapped target team tear tears. technique teeth teeth, tell temperature temperature? temporarily temporary tendency tennis tension term terminal terminals test tether tether. textbook textbook? texture. textures than that the their them them, them. them? then theory there therefore thermal these they thick thickness). thin thin, thing thing, things things! things. things.\" things? this this, those though thousands threads three threshold through throughout throw throwing thrown thrown, thrown. thumb tick tidal tide tide? tides tides. tied tight tight, tighter tightly tightly. tightly? tile, tiles tilt tilted time time! time, time. time? times times, tins tiny tiny, tip tipped tire tire! tires tires? tissues, to toe together together, together. together? toilet tomato tonnes too too! took tool top top, tops torch, torques torso toss total touch touch! touch, touched touches touching tough, toward towards toy toys track track, tracks tracks. tracks? traction. traditional traffic. trailing train train, train? trains trait trampoline trampoline, trampoline. transforming transforms transition translates trap trapped traps travel travel, traveling travelled travels treads treads? treats tree trick trick! tricked\u2014the tricks tried tried! tries trigger trillions trip triple trolley trolley's trousers truck true true? try trying tucked tug-of-war! tugging tumble turbulent turn turn! turn, turn. turn? turned turning turning. turns twice twist twisting twists two type ultimate umbrella un-squishing unable unbelievable unchanged unchanged! under underneath underneath. underwater uneven unified uniform uniform, uninvited unison unit unit. unitless units units? universal universe universe, universe. unless unlocking unpaired unpowered unraveling unreliable until up up, up. up? uphill? upon upper upside upward upward, upwards us us, use used uses using usually utilizes v v). v^2). v_esc vacuum vacuum, vacuum? valleys valleys. value value. vanish varies vastly vector vehicle vehicle's vehicles velcro? velocity velocity). velocity, velocity. velocity? vertically very via vibrates vibrating vibrations vibrations. violently violently, violin viscosity. viscosity? visible visual voice void voltage waited walk walk. walking wall wall, walls walls, want wanting wants war! warm warm! warm. warmed warming warp warping warps was wasn't waste wastes water water) water). water, water. wave waves waves? way way, way: ways ways: we weak weak, weaker weaker. weakest weakest? wear wear. wear? wears wedge weigh weighs weight weight). weight, weight. weight? weightless weld welding welding! welding? well well-polished went were wet wet, wetsuit wetsuits what wheel wheel. wheels wheels' wheels, wheels. when whenever where whereas whether which while whip whiplash? white whiteboard whiteboard? whiteboards who whole why wide wide, wild wilderness will wind winding windowless winds windscreen. winter winter? wipe wiping wire wire! wire, wire. wires, with within without won't wood wood's wood, wood. wood? woodchips, woodchips? wooden word work work. work? working working, works worse, would wouldn't wrap wrapped wrapping wrecking write writing wrong. yank yanking yanks yard yards year! years yolk you you, you. your yourself zero zero! zero, zero. zigzag zigzag, zipper zone \u03bc) \u03bck \u03bcs \u221d".split(" ");
+    </script>
+    <script>
+      (function () {
+        var $ = function (id) { return document.getElementById(id); };
+
+        /* ---------- 1. watch your question vanish ---------- */
+        var vocab = {};
+        S8_VOCAB.forEach(function (w) { vocab[w] = true; });
+
+        function vanish(question) {
+          var tiles = $('s8-tiles'), sees = $('s8-sees'), count = $('s8-count');
+          tiles.innerHTML = '';
+          var words = question.trim().split(/\s+/).filter(Boolean);
+          if (!words.length) { sees.textContent = '—'; count.textContent = ''; return; }
+          var kept = [], lost = 0;
+          words.forEach(function (w, i) {
+            var t = document.createElement('span');
+            t.className = 's8-tile'; t.textContent = w; tiles.appendChild(t);
+            if (vocab[w]) { kept.push(w); }
+            else { lost++; setTimeout(function () { t.classList.add('gone'); }, 500 + i * 220); }
+          });
+          setTimeout(function () {
+            sees.textContent = kept.length ? kept.join(' ') : '(nothing at all)';
+            count.textContent = lost ? lost + ' of ' + words.length + ' words vanished before the AI saw them'
+                                     : 'Every word made it through - this exact spelling is in the book.';
+            count.style.color = lost ? '#dc2626' : '#15803d';
+          }, 600 + words.length * 220);
+        }
+        document.querySelectorAll('#s8-vanish .s8-chip').forEach(function (b) {
+          b.addEventListener('click', function () { $('s8-ask-input').value = b.textContent; vanish(b.textContent); });
+        });
+        $('s8-ask-btn').addEventListener('click', function () { vanish($('s8-ask-input').value); });
+        $('s8-ask-input').addEventListener('keydown', function (e) { if (e.key === 'Enter') vanish(e.target.value); });
+        vanish('What is entropy?');
+
+        /* ---------- 2. word -> pieces ---------- */
+        function playBreaks() {
+          document.querySelectorAll('#s8-breaks .s8-break').forEach(function (row, r) {
+            var out = row.querySelector('.s8-out'); out.innerHTML = '';
+            var word = row.getAttribute('data-word');
+            var pieces = row.getAttribute('data-pieces').split('|');
+            // stage 1: single letters
+            var letters = [];
+            word.split('').forEach(function (ch) {
+              var s = document.createElement('span'); s.className = 's8-piece';
+              s.textContent = ch === ' ' ? '␣' : ch; out.appendChild(s); letters.push(s);
+            });
+            // stage 2: glued pieces
+            setTimeout(function () {
+              out.innerHTML = '';
+              pieces.forEach(function (p) {
+                var s = document.createElement('span');
+                s.className = 's8-piece ' + (pieces.length === 1 && p.trim().length > 1 ? 'whole' : 'glued');
+                s.textContent = p.replace(/ /g, '␣'); out.appendChild(s);
+              });
+            }, 900 + r * 350);
+          });
+        }
+        $('s8-breaks-again').addEventListener('click', playBreaks);
+
+        /* ---------- 3. the glue stepper (real BPE on a tiny text) ---------- */
+        var SENTENCE = 'the cat sat on the mat. the cat ran.';
+        var MAX_MERGES = 8;
+        function chunks(text) {
+          // same idea as CHUNK in bpe_tokenizer.py: a word with its leading space, or one other character
+          return text.match(/ ?[A-Za-z0-9]+| ?[^A-Za-z0-9\s]|\s/g);
+        }
+        function countPairs(rows) {
+          var c = {};
+          rows.forEach(function (row) {
+            for (var i = 0; i < row.length - 1; i++) {
+              var k = row[i] + '' + row[i + 1];
+              c[k] = (c[k] || 0) + 1;
+            }
+          });
+          var list = Object.keys(c).map(function (k) { var ab = k.split(''); return { a: ab[0], b: ab[1], n: c[k] }; });
+          list.sort(function (x, y) { return y.n - x.n || (x.a + x.b).localeCompare(y.a + y.b); });
+          return list;
+        }
+        function glue(row, pair) {
+          var out = [];
+          for (var i = 0; i < row.length; i++) {
+            if (i < row.length - 1 && row[i] === pair.a && row[i + 1] === pair.b) { out.push(pair.a + pair.b); i++; }
+            else out.push(row[i]);
+          }
+          return out;
+        }
+        // precompute every stage so Back/Next are instant
+        var stages = [];
+        (function () {
+          var rows = chunks(SENTENCE).map(function (ch) { return ch.split(''); });
+          var vocabSet = {};
+          rows.forEach(function (r) { r.forEach(function (p) { vocabSet[p] = 1; }); });
+          for (var m = 0; m <= MAX_MERGES; m++) {
+            var pairs = countPairs(rows);
+            stages.push({ rows: rows.map(function (r) { return r.slice(); }), pairs: pairs.slice(0, 5),
+                          vocab: Object.keys(vocabSet).length, best: pairs[0], newPiece: null });
+            if (!pairs.length || m === MAX_MERGES) break;
+            var best = pairs[0];
+            rows = rows.map(function (r) { return glue(r, best); });
+            vocabSet[best.a + best.b] = 1;
+            stages[stages.length - 1].newPiece = best.a + best.b;
+          }
+        })();
+        var idx = 0, timer = null, playing = false;
+        function show(pieceHL) {
+          var st = stages[idx], host = $('s8-tt'); host.innerHTML = '';
+          var prevNew = idx > 0 ? stages[idx - 1].newPiece : null;
+          st.rows.forEach(function (row) {
+            row.forEach(function (p, i) {
+              var s = document.createElement('span'); s.className = 's8-tt';
+              if (p === ' ' || p === '\n') s.className += ' sp';
+              s.textContent = p.replace(/ /g, '␣');
+              if (prevNew && p === prevNew) s.className += ' new';
+              if (st.best && pieceHL && i < row.length - 1 && p === st.best.a && row[i + 1] === st.best.b) {
+                s.className += ' hot'; s.setAttribute('data-hot', '1');
+              }
+              if (st.best && pieceHL && i > 0 && p === st.best.b && row[i - 1] === st.best.a && row[i - 1] !== undefined) s.className += ' hot';
+              host.appendChild(s);
+            });
+          });
+          var tb = $('s8-pairtable').querySelector('tbody'); tb.innerHTML = '';
+          st.pairs.forEach(function (p, i) {
+            var tr = document.createElement('tr'); if (i === 0) tr.className = 'top';
+            tr.innerHTML = '<td>' + (p.a + p.b).replace(/ /g, '␣') + '</td><td>' + p.a.replace(/ /g, '␣') + ' + ' + p.b.replace(/ /g, '␣') + '</td><td style="text-align:right">' + p.n + '×</td>';
+            tb.appendChild(tr);
+          });
+          $('s8-st-status').textContent = idx === 0 ? 'Round 0: every chunk is single letters. The most common neighbours are highlighted.'
+            : (idx < stages.length - 1 || st.best ? 'Round ' + idx + ': glued "' + prevNew.replace(/ /g, '␣') + '". Next up is highlighted.' : 'Done: ' + MAX_MERGES + ' glues.');
+          $('s8-st-vocab').textContent = 'pieces in the box: ' + st.vocab + (prevNew ? '   (new: "' + prevNew.replace(/ /g, '␣') + '")' : '');
+          $('s8-st-back').disabled = idx === 0;
+          $('s8-st-next').disabled = idx >= stages.length - 1;
+        }
+        function stop() { playing = false; if (timer) clearTimeout(timer); timer = null; $('s8-st-play').innerHTML = '<i class="fas fa-play"></i> Play'; }
+        function tick() {
+          if (!playing) return;
+          if (idx >= stages.length - 1) { stop(); return; }
+          idx++; show(true);
+          timer = setTimeout(tick, 1500);
+        }
+        $('s8-st-next').addEventListener('click', function () { stop(); if (idx < stages.length - 1) { idx++; show(true); } });
+        $('s8-st-back').addEventListener('click', function () { stop(); if (idx > 0) { idx--; show(true); } });
+        $('s8-st-again').addEventListener('click', function () { stop(); idx = 0; show(true); });
+        $('s8-st-play').addEventListener('click', function () {
+          if (playing) { stop(); return; }
+          if (idx >= stages.length - 1) idx = 0;
+          playing = true; $('s8-st-play').innerHTML = '<i class="fas fa-pause"></i> Pause'; show(true); timer = setTimeout(tick, 1500);
+        });
+        show(true);
+
+        /* ---------- 4. bars + on-scroll starts ---------- */
+        function fillBars(host) { host.querySelectorAll('.fill').forEach(function (f) { f.style.width = f.getAttribute('data-w') + '%'; }); }
+        if ('IntersectionObserver' in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (!e.isIntersecting) return;
+              if (e.target.classList.contains('s8-bars')) fillBars(e.target);
+              if (e.target.id === 's8-breaks') playBreaks();
+              io.unobserve(e.target);
+            });
+          }, { threshold: 0.35 });
+          document.querySelectorAll('.s8-bars, #s8-breaks').forEach(function (el) { io.observe(el); });
+        } else {
+          document.querySelectorAll('.s8-bars').forEach(fillBars); playBreaks();
+        }
+      })();
+    </script>
+
+</body>
+</html>

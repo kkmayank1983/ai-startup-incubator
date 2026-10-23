@@ -1,0 +1,28 @@
+{
+  "name": "AI Startup Incubator",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.13-bookworm",
+
+  // Builds venv/ from requirements.txt and unpacks the big data files.
+  // Runs once, when the codespace is first created.
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  // Codespaces asks each student for their key when they create a codespace.
+  // It becomes an environment variable, so load_dotenv() / ChatOpenAI pick it up
+  // without a .env file.
+  "secrets": {
+    "OPENAI_API_KEY": {
+      "description": "Your OpenAI API key (starts with sk-). Needed for the LangChain / OpenAI sessions.",
+      "documentationUrl": "https://platform.openai.com/api-keys"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/venv/bin/python",
+        "python.terminal.activateEnvironment": true
+      }
+    }
+  }
+}
