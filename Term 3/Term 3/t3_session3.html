@@ -269,54 +269,54 @@
       .t3-chip { font-size:.68rem; padding:8px 2px; }
     }
 
-    /* ---------- slice-the-budget widget ---------- */
-    .t3-slice { margin-top:6px; }
-    .t3-slicebar { display:flex; gap:3px; height:52px; margin:14px 0 6px;
-                   transition:width .5s cubic-bezier(.22,.9,.3,1); }
-    .t3-seg { flex:1 1 0; border-radius:7px; background:#0c2234; border:1px solid #0ea5e9;
-              display:flex; flex-direction:column; align-items:center; justify-content:center;
-              font-family:monospace; color:#7dd3fc; overflow:hidden; min-width:0;
-              animation:t3seg .35s ease both; }
-    .t3-seg b { font-size:.82rem; color:#e0f2fe; }
-    .t3-seg span { font-size:.62rem; color:#64748b; letter-spacing:.04em; }
-    @keyframes t3seg { from { opacity:0; transform:scaleY(.6); } to { opacity:1; transform:none; } }
-    .t3-slicerail { background:#0b1424; border:1px dashed #334155; border-radius:9px; padding:6px; }
-    .t3-slicefacts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-    .t3-fact { background:#111f36; border:1px solid #334155; border-radius:9px; padding:10px 13px; }
-    .t3-fact b { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
-                 color:#64748b; margin-bottom:3px; font-weight:700; }
-    .t3-fact .n { font-family:monospace; font-size:1.05rem; color:#f8fafc;
-                  font-variant-numeric:tabular-nums; }
-    .t3-fact.locked { border-color:#16a34a; background:#0d2318; }
-    .t3-fact.locked .n { color:#4ade80; }
-    .t3-warn { margin-top:12px; font-size:.86rem; color:#fbbf24; min-height:1.4em; }
-
-    /* ---------- feed-forward shape ---------- */
-    .t3-pipe { display:flex; flex-direction:column; gap:9px; }
-    .t3-prow { display:grid; grid-template-columns:76px 1fr 96px; gap:11px; align-items:center;
-               font-size:.82rem; }
-    .t3-prow .plab { color:#94a3b8; font-family:monospace; }
-    .t3-prow .pbar { height:26px; border-radius:6px; background:#0ea5e9; width:0;
-                     transition:width 1s cubic-bezier(.22,.9,.3,1); }
-    .t3-prow .pbar.mid { background:#22c55e; }
-    .t3-prow .pnum { font-family:monospace; color:#f8fafc; text-align:right;
-                     font-variant-numeric:tabular-nums; font-size:.8rem; }
-    .t3-pipes { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
-    .t3-pipebox { border:1px solid #334155; border-radius:12px; padding:15px 17px; background:#111f36; }
-    .t3-pipebox.after { border-color:#16a34a; background:#0d2318; }
-    .t3-pipebox h5 { margin:0 0 4px; font-size:.84rem; color:#e2e8f0; font-weight:700; }
-    .t3-pipebox p { margin:10px 0 0; font-size:.8rem; color:#94a3b8; line-height:1.5; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .t3-seg { animation:none; }
-      .t3-slicebar, .t3-prow .pbar { transition:none; }
-    }
-    @media (max-width: 700px) {
-      .t3-pipes { grid-template-columns:1fr; }
-      .t3-slicefacts { grid-template-columns:1fr; }
-      .t3-seg b { font-size:.72rem; }
-      .t3-prow { grid-template-columns:58px 1fr 76px; font-size:.75rem; }
-    }
+    /* ---------- slice-the-budget widget ---------- */
+    .t3-slice { margin-top:6px; }
+    .t3-slicebar { display:flex; gap:3px; height:52px; margin:14px 0 6px;
+                   transition:width .5s cubic-bezier(.22,.9,.3,1); }
+    .t3-seg { flex:1 1 0; border-radius:7px; background:#0c2234; border:1px solid #0ea5e9;
+              display:flex; flex-direction:column; align-items:center; justify-content:center;
+              font-family:monospace; color:#7dd3fc; overflow:hidden; min-width:0;
+              animation:t3seg .35s ease both; }
+    .t3-seg b { font-size:.82rem; color:#e0f2fe; }
+    .t3-seg span { font-size:.62rem; color:#64748b; letter-spacing:.04em; }
+    @keyframes t3seg { from { opacity:0; transform:scaleY(.6); } to { opacity:1; transform:none; } }
+    .t3-slicerail { background:#0b1424; border:1px dashed #334155; border-radius:9px; padding:6px; }
+    .t3-slicefacts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .t3-fact { background:#111f36; border:1px solid #334155; border-radius:9px; padding:10px 13px; }
+    .t3-fact b { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+                 color:#64748b; margin-bottom:3px; font-weight:700; }
+    .t3-fact .n { font-family:monospace; font-size:1.05rem; color:#f8fafc;
+                  font-variant-numeric:tabular-nums; }
+    .t3-fact.locked { border-color:#16a34a; background:#0d2318; }
+    .t3-fact.locked .n { color:#4ade80; }
+    .t3-warn { margin-top:12px; font-size:.86rem; color:#fbbf24; min-height:1.4em; }
+
+    /* ---------- feed-forward shape ---------- */
+    .t3-pipe { display:flex; flex-direction:column; gap:9px; }
+    .t3-prow { display:grid; grid-template-columns:76px 1fr 96px; gap:11px; align-items:center;
+               font-size:.82rem; }
+    .t3-prow .plab { color:#94a3b8; font-family:monospace; }
+    .t3-prow .pbar { height:26px; border-radius:6px; background:#0ea5e9; width:0;
+                     transition:width 1s cubic-bezier(.22,.9,.3,1); }
+    .t3-prow .pbar.mid { background:#22c55e; }
+    .t3-prow .pnum { font-family:monospace; color:#f8fafc; text-align:right;
+                     font-variant-numeric:tabular-nums; font-size:.8rem; }
+    .t3-pipes { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .t3-pipebox { border:1px solid #334155; border-radius:12px; padding:15px 17px; background:#111f36; }
+    .t3-pipebox.after { border-color:#16a34a; background:#0d2318; }
+    .t3-pipebox h5 { margin:0 0 4px; font-size:.84rem; color:#e2e8f0; font-weight:700; }
+    .t3-pipebox p { margin:10px 0 0; font-size:.8rem; color:#94a3b8; line-height:1.5; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .t3-seg { animation:none; }
+      .t3-slicebar, .t3-prow .pbar { transition:none; }
+    }
+    @media (max-width: 700px) {
+      .t3-pipes { grid-template-columns:1fr; }
+      .t3-slicefacts { grid-template-columns:1fr; }
+      .t3-seg b { font-size:.72rem; }
+      .t3-prow { grid-template-columns:58px 1fr 76px; font-size:.75rem; }
+    }
   </style>
 </head>
 
@@ -359,7 +359,7 @@
 
       <section id="lesson-header">
         <h1>Session 3: Give It Room To Think</h1>
-        <p class="lead">Your model works out what a question is about and then has to answer immediately, with almost nowhere to keep what it knows. Today you fix both problems: <b>six</b> rounds of thinking instead of one, and six times the room to store what it learns. It grows from 1.3 million numbers to nearly 8 million, and its loss drops further today than in any session this term.</p>
+        <p class="lead">Your model usually understands what a question is asking. But it often can't finish a good answer. Today you find out why, and fix it. You give the model <b>six</b> rounds of thinking instead of one, and much more space to store the facts it learns. It grows from 1.3 million numbers to nearly 8 million, and it improves more today than in any other session this term.</p>
         <div class="stats-bar">
           <span><i class="far fa-clock"></i> 60 Minutes</span>
           <span><i class="fas fa-signal"></i> Level: AI Systems Architect</span>
@@ -385,7 +385,7 @@
           <div class="t3-map-card">
             <span class="t3-num">3</span>
             <h3>Change three numbers</h3>
-            <p>Deeper, wider, and a feed-forward with room in it.</p>
+            <p>More rounds of thinking, more numbers per word, and more space for facts.</p>
           </div>
           <div class="t3-map-card">
             <span class="t3-num">4</span>
@@ -396,20 +396,25 @@
 
         <div class="outcome-box">
           <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
-          <p>Turn a one-layer model into a six-layer one and give it somewhere to keep what it learns.
-          You go from <b>1,266,336</b> numbers to <b>7,951,872</b>, and from a loss of <b>2.510</b> to
-          <b>1.718</b> &mdash; the biggest single improvement of this term.</p>
+          <p>Turn a model that thinks once into one that thinks six times, and give it far more space
+          to store facts. It goes from <b>1,266,336</b> numbers to <b>7,951,872</b>. Its loss (how wrong
+          its guesses are &mdash; lower is better) falls from <b>2.510</b> to <b>1.718</b>. That is the
+          biggest single improvement of this term.</p>
         </div>
 
         <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
           <h4><i class="fas fa-download"></i> You are not training anything today</h4>
-          <p>You have run two training jobs on Colab already and you know how it works. Today's model
-          takes <b>about two hours</b> on a free T4 &mdash; too long for a lesson and too long to be
-          worth your time a third time.</p>
-          <p style="margin-bottom:0;">So you will build the model exactly, check it is right, and then
-          <b>download the trained version</b>. Section 6 shows you precisely what those two hours
-          bought, and the model you pick up came from the code you are about to write &mdash; not from
-          somewhere else.</p>
+          <p>You have already trained models on Colab twice, so you know how it works. Today's model is
+          much bigger. Training it takes <b>about two hours</b> on a free Colab T4 GPU &mdash; longer than
+          a whole lesson.</p>
+          <p>So today you will:</p>
+          <ol>
+            <li>Change the code to build the bigger model.</li>
+            <li>Check that you built it correctly.</li>
+            <li><b>Download a copy that has already been trained</b>, using exactly the code you are
+            about to write.</li>
+          </ol>
+          <p style="margin-bottom:0;">Section 6 explains where those two hours go.</p>
         </div>
 
         <!-- ============================================================
@@ -439,10 +444,10 @@
         <div class="tool-info-box">
           <h4><i class="fas fa-chart-column"></i> Where Session 2 left your model</h4>
           <p>Last session fixed the vocabulary. The broken words stopped, the repeating stopped, and the
-          model started talking about twenty subjects instead of four. But there is still something
-          wrong with the answers, and this time it is not the vocabulary.</p>
-          <p style="margin-bottom:0;">Here are the two measurements taken at the end of Session 2, across
-          the same twenty test questions. Read them together, not one at a time.</p>
+          model started talking about twenty subjects instead of four. But the answers are still not
+          good enough, and this time the vocabulary is not the problem.</p>
+          <p style="margin-bottom:0;">At the end of Session 2 we asked the model the same twenty test
+          questions and measured two things. Compare the two bars.</p>
         </div>
 
         <div class="t3-panel">
@@ -459,21 +464,29 @@
               <span class="val">9/20</span>
             </div>
           </div>
-          <p style="margin-top:18px;">The model worked out what you were asking about <b>fourteen</b>
-          times out of twenty. It got a finished answer out <b>nine</b> times. Those two numbers measure
-          different things. Understanding the question is one job. Building an answer out of what you
-          know is a second job, and the model is failing the second one.</p>
+          <p style="margin-top:18px;">The model understood what the question was about <b>14</b> times
+          out of 20. But it gave a complete, sensible answer only <b>9</b> times. These measure two
+          different skills:</p>
+          <ol>
+            <li><b>Understanding the question.</b> The model is fairly good at this.</li>
+            <li><b>Building an answer from what it knows.</b> This is where it fails.</li>
+          </ol>
         </div>
 
         <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
           <h4><i class="fas fa-lightbulb"></i> The gap between 14 and 9 is this whole session</h4>
-          <p>Your model is not confused about the question. It understands the question and then has
-          nowhere to go. Two things cause that, and you are fixing both today:</p>
+          <p>Your model is not confused by the questions. It understands them, and then gets stuck.
+          There are two reasons, and you fix both today:</p>
           <ol>
-            <li><b>It only gets one go.</b> It works out what is being asked, and then has to start
-            writing immediately. There is no second pass.</li>
-            <li><b>It has almost nowhere to store what it knows.</b> Under five per cent of the model is
-            built for holding facts. The rest is a lookup table for words.</li>
+            <li><b>It only thinks once.</b> It reads the question, works out what is being asked, and
+            then has to start writing straight away. It never gets a second pass to work out the
+            answer.</li>
+            <li><b>It has very little space to store facts.</b> Everything a model learns is kept as
+            numbers inside it. Only one small part of the model, called the <b>feed-forward</b>, is
+            where facts are stored. In your model that part is tiny: 18,624 numbers, about 1.5% of the
+            whole model. It's like trying to fit notes for twenty school subjects onto one sticky note.
+            Facts get squashed on top of each other, so the model can't find them again when it needs
+            them.</li>
           </ol>
         </div>
 
@@ -482,12 +495,66 @@
         <!-- ============================================================
              1. TWO LINES
              ============================================================ -->
+        <h2>What Is a Transformer?</h2>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-robot"></i> The kind of model you have been building all term</h4>
+          <p>A <b>Transformer</b> is a type of AI model. ChatGPT is a Transformer too &mdash; just a
+          much, much bigger one. Its job is always the same: <b>read some text and guess the next word
+          piece</b>. Repeat that guess over and over, adding each new piece to the end, and you get a
+          whole answer.</p>
+          <p style="margin-bottom:0;">Your Transformer has three parts. The text goes through them in
+          this order:</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>The three parts of your model</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Part</th><th>Name in the code</th><th>What it does</th></tr>
+              <tr>
+                <td><b>1. Dictionary in</b></td>
+                <td><code>token_embedding_table</code>, <code>position_embedding_table</code></td>
+                <td>Turns each word piece into a list of numbers, and records where it sits in the
+                sentence.</td>
+              </tr>
+              <tr style="background:#ecfeff;">
+                <td><b>2. The thinking part</b></td>
+                <td><code>sa_head</code> (attention) and <code>ffwd</code> (feed-forward)</td>
+                <td>Works out what the question means and what to say. This is the only part that
+                does any reasoning.</td>
+              </tr>
+              <tr>
+                <td><b>3. Dictionary out</b></td>
+                <td><code>lm_head</code></td>
+                <td>Turns the final numbers back into a guess for the next word piece.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-brain"></i> Where does a Transformer keep what it learns?</h4>
+          <p>Inside the model there are millions of numbers, called <b>parameters</b>. During training,
+          the model makes a guess, checks it against the real text, and nudges every number a tiny bit
+          so it will be less wrong next time. After thousands of guesses, those numbers hold everything
+          the model has learned.</p>
+          <p>There is no other memory. The model has no notebook, no database, and no copy of the book
+          it read. <b>If a fact is not stored in its numbers, the model does not know it.</b></p>
+          <p style="margin-bottom:0;">So the size of each part matters. If the part that stores facts
+          has very few numbers, it can only hold a few facts, however long you train it. That is your
+          model's problem today, and the rest of this session shows you how to fix it.</p>
+        </div>
+
+        <hr />
+
         <h2>1. Your Whole Transformer Is Two Lines</h2>
 
         <div class="tool-info-box">
           <h4><i class="fas fa-magnifying-glass"></i> Find them before you change anything</h4>
           <p>Open <code>attention_engine.py</code> and find the class called <code>PredictionEngine</code>.
-          Inside its <code>forward</code> method are these two lines:</p>
+          Inside it is a method called <code>forward</code>. That is the code that runs every time the
+          model makes a guess. In it are these two lines:</p>
           <div class="code-block python">
             <div class="code-header">attention_engine.py &mdash; inside PredictionEngine.forward</div>
             <pre>
@@ -495,17 +562,27 @@ x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
 x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
             </pre>
           </div>
-          <p style="margin-bottom:0;">That is the entire Transformer. Everything else in the file either
-          looks words up in a table or turns numbers back into words. These two lines are the only place
-          in your model where anything you could call reasoning happens.</p>
+          <p>These two lines are the whole thinking part of your Transformer. Everything else in the
+          file either turns words into numbers or turns numbers back into words. These two lines are
+          the only place where your model works anything out.</p>
+          <ul style="margin-bottom:0;">
+            <li><b>Line 1, <code>sa_head</code>, is attention.</b> It lets each word look at the words
+            before it.</li>
+            <li><b>Line 2, <code>ffwd</code>, is the feed-forward.</b> It adds facts the model learned
+            in training.</li>
+            <li><code>ln1</code> and <code>ln2</code> tidy the numbers to a sensible size before each
+            step.</li>
+            <li><code>x = x + ...</code> means &ldquo;keep what you already had, and add the new result
+            on top&rdquo;.</li>
+          </ul>
         </div>
 
         <div class="tool-info-box">
           <h4><i class="fas fa-users"></i> What those two lines actually do</h4>
-          <p style="margin-bottom:0;">Picture the question <i>&ldquo;What is photosynthesis?&rdquo;</i>
-          as students sitting in a row, one for every word piece, each with a notepad. Both lines
-          update those notepads &mdash; but they get what they write from <b>completely different
-          places</b>, and the quickest way to see that is to look at which way the arrows point.</p>
+          <p style="margin-bottom:0;">Imagine the question <i>&ldquo;What is photosynthesis?&rdquo;</i>
+          as a row of students. Each student holds one word piece and has a notepad. Both lines add
+          notes to the notepads, but the notes come from <b>different places</b>. Look at which way the
+          arrows point in each picture below.</p>
         </div>
 
         <div class="t3-panel">
@@ -543,21 +620,21 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
           <div class="t3-halfcap"><span class="off">Nobody looks sideways.</span> <b>Downwards.</b> Each student reaches into the shelf and adds something the row never had.</div>
         </div>
           </div>
-          <p style="margin-top:18px;"><b>Attention moves information around. The feed-forward brings
-          new information in.</b> Hold on to that, because the rest of the session depends on it
-          &mdash; if the model is going to know any facts at all, the feed-forward is the only place
-          they can live.</p>
-          <p class="t3-foot">The row runs left to right in the order the words were typed, and a
-          student can only read the notepads <i>to their left</i>. Nobody gets to see words that have
-          not been said yet.</p>
+          <p style="margin-top:18px;"><b>Attention moves information between the words. The
+          feed-forward adds new information the words did not have.</b> Remember this, because the
+          rest of the session depends on it: every fact your model knows is stored in the
+          feed-forward. Attention can only pass along what is already in the row.</p>
+          <p class="t3-foot">The row runs left to right, in the order the words were typed. A student
+          can only read the notepads <i>to their left</i>, so nobody sees words that have not been
+          typed yet.</p>
         </div>
 
         <div class="t3-panel">
           <span class="t3-badge">Watch one round happen</span>
-          <p style="margin-top:4px;">Four word pieces in a row, in the order they were typed. Each one
-          starts with a single note: <b>what it knows about itself</b>. We are following the last one,
-          <b>synthesis</b>, because that is the piece the model uses to pick the first word of its
-          answer. Watch <i>where each new line on its notepad comes from</i>.</p>
+          <p style="margin-top:4px;">Here are four word pieces in a row, in the order they were typed.
+          Each one starts with one note: <b>what it knows about itself</b>. We follow the last one,
+          <b>synthesis</b>, because the model uses the last piece to pick the first word of its answer.
+          Press the buttons and watch <i>where each new note comes from</i>.</p>
 
           <div class="t3-shelf" id="g-shelf">
             <span class="t3-shelf-tag">The shelf &mdash; what the feed-forward already knows</span>
@@ -610,17 +687,18 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
 
           <p class="t3-cap" id="g-cap">Every student has one note so far, about their own word. Nobody
           has read anybody else yet.</p>
-          <p class="t3-foot">There is one shelf, not one each. Every student reaches into the same one
-          &mdash; which is why making it bigger in Activity 3 helps every word in the question at
+          <p class="t3-foot">There is one shared shelf, not one per student. Every student reaches into
+          the same shelf, so making it bigger in Activity 3 helps every word in the question at
           once.</p>
         </div>
 
         <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
           <h4><i class="fas fa-layer-group"></i> Definition: one layer</h4>
-          <p>One look along the row plus one think on your own is called a <b>layer</b>. The number of
-          layers a model has is called its <b>depth</b>.</p>
-          <p style="margin-bottom:0;">Your model has a depth of one. It does a single look, a single
-          think, and then has to guess the next word. GPT-2 has twelve layers. GPT-3 has ninety-six.</p>
+          <p>One attention step (look along the row) plus one feed-forward step (take facts off the
+          shelf) is called a <b>layer</b>. The number of layers in a model is called its
+          <b>depth</b>.</p>
+          <p style="margin-bottom:0;">Your model has a depth of one. It looks once, thinks once, and
+          then has to guess the next word. For comparison, GPT-2 has 12 layers and GPT-3 has 96.</p>
         </div>
 
         <hr />
@@ -632,19 +710,19 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
 
         <div class="tool-info-box">
           <h4><i class="fas fa-rotate"></i> Round two does not start from the beginning</h4>
-          <p>Here is the part that makes depth worth anything at all.</p>
-          <p>When the group looks along the row a second time, they are not reading the original words
-          any more. They are reading each other's <b>updated notepads</b> &mdash; everything that was
-          worked out in round one. So round two starts from wherever round one finished, rather than
-          starting again from nothing.</p>
-          <p style="margin-bottom:0;">This is why six layers is not simply six times as much work. Each
-          round can do something that the round before it made possible. A fact that could not be
-          reached in round one is sitting on a notepad by round three.</p>
+          <p>This is why more layers help.</p>
+          <p>When the students look along the row a second time, they don't read the original words
+          again. They read each other's <b>updated notepads</b>, with everything worked out in round
+          one. So round two starts where round one finished, instead of starting again from
+          scratch.</p>
+          <p style="margin-bottom:0;">That means six layers do more than repeat the same work six
+          times. Each round builds on the one before it. A fact that was out of reach in round one can
+          be on a notepad by round three.</p>
         </div>
 
         <div class="t3-panel">
           <span class="t3-badge">Illustration &mdash; how understanding builds up over six rounds</span>
-          <p style="margin-top:4px;">Here is one plausible way that could play out for
+          <p style="margin-top:4px;">Here is one way six rounds could work for
           <i>&ldquo;What is photosynthesis?&rdquo;</i> Step through it one round at a time.</p>
           <div class="t3-rounds" id="rounds">
             <div class="t3-round" data-r="1">
@@ -685,11 +763,12 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
             <button type="button" class="t3-btn" id="r-reset">Start over</button>
             <span id="r-status" style="font-size:.85rem;color:#94a3b8;">Round 0 of 6</span>
           </div>
-          <p style="margin-top:18px;"><b>Your model stops after round 1.</b> It worked out that a
-          definition was wanted, and then its time was up. That is exactly the gap between understanding
-          fourteen questions and finishing nine answers.</p>
-          <p class="t3-foot">This panel shows the idea, not a readout from your model. Nobody can open up
-          a real layer and read a sentence out of it &mdash; the notes are only numbers.</p>
+          <p style="margin-top:18px;"><b>Your model stops after round 1.</b> It works out that a
+          definition is wanted, and then it has to start answering. That explains the gap: it
+          understood 14 questions but finished only 9 answers.</p>
+          <p class="t3-foot">This panel shows the idea. It is not a readout from your model. Inside a
+          real layer the &ldquo;notes&rdquo; are only numbers, so nobody can read sentences out of
+          them.</p>
         </div>
 
         <hr />
@@ -702,7 +781,8 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
         <div class="tool-info-box">
           <h4><i class="fas fa-calculator"></i> Count your Session 2 model, part by part</h4>
           <p style="margin-bottom:0;">A <b>parameter</b> is one number the model learned during training.
-          Here is where all 1,266,336 of yours currently sit.</p>
+          Your Session 2 model has 1,266,336 of them. This table shows which part of the model each one
+          belongs to.</p>
         </div>
 
         <div class="t3-tablebox">
@@ -734,11 +814,14 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
 
         <div class="rule-callout">
           <h4><i class="fas fa-triangle-exclamation"></i> Less than one twentieth of your model thinks</h4>
-          <p>The other 95.6% is a lookup table for turning words into numbers and back again. It is
-          necessary, but it does not reason about anything.</p>
-          <p style="margin-bottom:0;">This is worth knowing in general, not just here. When somebody says
-          a model has &ldquo;1.3 million parameters&rdquo;, that figure usually hides a split like this
-          one. <b>The size that matters is the size of the thinking part.</b></p>
+          <p>The other 95.6% is the dictionary: turning words into numbers and back again. The model
+          needs it, but it does not work anything out.</p>
+          <p>And the thinking part is split again. Of its 55,968 numbers, only <b>18,624</b> are in the
+          feed-forward, the part that stores facts. That is about <b>1.5%</b> of the whole model. This
+          is why your model can understand a question but can't find the facts to answer it.</p>
+          <p style="margin-bottom:0;">A useful tip for any AI model: when someone says it has
+          &ldquo;1.3 million parameters&rdquo;, ask how many are in the thinking part. <b>That is the
+          size that matters.</b></p>
         </div>
 
         <hr />
@@ -748,28 +831,31 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
              ============================================================ -->
         <h2>4. The Three Numbers That Change That</h2>
 
-        <p>Three settings decide how much of your model does the thinking. Play with the first two here
-        before you change them for real.</p>
+        <p>Three settings decide how big the thinking part of your model is. Try out the first two here
+        before you change them in the code.</p>
 
         <h3>4.1 &nbsp;<code>n_embd</code> &mdash; how wide the model is</h3>
 
         <div class="tool-info-box">
-          <p style="margin-bottom:0;"><code>n_embd</code> is how many numbers describe a single word
-          piece. In the study group it is <b>how many lines fit on one student's notepad</b>. Ninety-six
-          numbers have to hold everything about that piece at once: what it means, which of twenty
-          subjects it belongs to, what usually comes after it, whether it is a noun or a verb, and
-          whatever attention just copied onto it. For four physics topics that was enough. For twenty
-          subjects the notepad fills up and things get written over the top of each other.</p>
+          <p style="margin-bottom:0;"><code>n_embd</code> is how many numbers describe one word piece. In
+          the study group, it is <b>how many lines fit on one student's notepad</b>. Right now there are
+          96 lines, and they must hold everything about that word piece at once: what it means, which of
+          the twenty subjects it belongs to, what usually comes next, whether it is a noun or a verb,
+          and whatever attention just copied in. That was enough for four physics topics. For twenty
+          subjects the notepad fills up, and new notes get written over old ones.</p>
         </div>
 
         <h3>4.2 &nbsp;<code>n_head</code> &mdash; how that width is sliced up</h3>
 
         <div class="tool-info-box">
-          <p style="margin-bottom:0;">The heads do <b>not</b> each get their own numbers. They
-          <b>divide up</b> the numbers the model already has:
-          <code>head_size = n_embd &divide; n_head</code>. So more heads means more separate things the
-          model can look for at once, each described in less detail. Fewer heads means fewer things,
-          each described more richly. Try it &mdash; and watch the parameter count while you do.</p>
+          <p>Attention is split into <b>heads</b>. Each head looks for a different kind of link between
+          words. For example, one head might link a question word like &ldquo;why&rdquo; to the topic
+          of the question.</p>
+          <p style="margin-bottom:0;">The heads do <b>not</b> get extra numbers of their own. They
+          <b>share out</b> the numbers the model already has:
+          <code>head_size = n_embd &divide; n_head</code>. More heads means the model can look for more
+          things at once, but each head has fewer numbers to work with. Fewer heads means fewer things,
+          each in more detail. Try it below, and watch the parameter count as you do.</p>
         </div>
 
         <div class="t3-panel">
@@ -801,26 +887,37 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
             </div>
             <div class="t3-warn" id="sl-warn"></div>
           </div>
-          <p style="margin-top:14px;">Press every head button in turn. <b>The parameter count never
-          moves.</b> Heads are free &mdash; four heads of 64 and eight heads of 32 are the same budget,
-          cut up differently. Only the width changes the cost.</p>
-          <p class="t3-foot">Everyone who builds these models lands on somewhere between 32 and 128
-          numbers per head. At 96 wide you had 24, which was already thin. Today you go to 256 wide and
-          8 heads, which puts each head on 32.</p>
+          <p style="margin-top:14px;">Press each head button in turn. <b>The parameter count does not
+          change.</b> Adding heads costs nothing: four heads of 64 and eight heads of 32 use the same
+          256 numbers, just cut up differently. Only the width (<code>n_embd</code>) changes the
+          cost.</p>
+          <p class="t3-foot">Most real models give each head between 32 and 128 numbers. At 96 wide with
+          4 heads you had 24 per head, which is too few. Today you go to 256 wide with 8 heads, which
+          gives each head 32.</p>
         </div>
 
         <h3>4.3 &nbsp;The feed-forward &mdash; where facts actually live</h3>
 
         <div class="tool-info-box">
-          <p>Find <code>class FeedForward</code> in <code>attention_engine.py</code>. 96 numbers go in
-          and 96 come out, with nothing spread out in between.</p>
-          <p>That matters because of what a feed-forward really is. The first <code>nn.Linear</code>
-          spreads the word out into a wider set of numbers, and <b>each one of those middle numbers
-          behaves like a single thing the model has learned to recognise</b>. One lights up for
-          &ldquo;this is a chemical reaction&rdquo;, another for &ldquo;a unit is coming next&rdquo;. The
-          second <code>nn.Linear</code> then writes down what to do about whichever ones lit up.</p>
-          <p style="margin-bottom:0;">So the width of that middle is <b>a direct count of how many
-          separate things one layer can recognise</b>. Yours is 96.</p>
+          <p>Find <code>class FeedForward</code> in <code>attention_engine.py</code>. Right now 96
+          numbers go in, it stays 96 numbers wide in the middle, and 96 come out.</p>
+          <p>Here is how a feed-forward stores facts:</p>
+          <ol>
+            <li>The first <code>nn.Linear</code> spreads each word's numbers out into a <b>middle
+            layer</b>.</li>
+            <li>Think of each number in the middle as a <b>detector</b> for one thing the model has
+            learned to recognise. One might switch on for &ldquo;this is about a chemical
+            reaction&rdquo;. Another might switch on for &ldquo;a unit like metres comes next&rdquo;.</li>
+            <li>The second <code>nn.Linear</code> then decides what to write on the notepad, based on
+            which detectors switched on.</li>
+          </ol>
+          <p>So the width of the middle is <b>how many separate things one layer can recognise</b>.
+          Yours is 96.</p>
+          <p style="margin-bottom:0;"><b>This is why your model can't hold on to what it learned.</b>
+          Training did teach it facts about twenty subjects. But it only has 96 detectors to keep them
+          all in, so each detector has to cover many unrelated facts at once. The facts blur together,
+          and when the model needs one for an answer, it can't pick it out clearly. More detectors
+          means each fact gets clearer space of its own.</p>
         </div>
 
         <div class="t3-panel">
@@ -833,7 +930,7 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
                 <div class="t3-prow"><span class="plab">middle</span><span class="pbar mid" data-w="9"></span><span class="pnum">96</span></div>
                 <div class="t3-prow"><span class="plab">out</span><span class="pbar" data-w="9"></span><span class="pnum">96</span></div>
               </div>
-              <p>18,624 parameters. No room to lay anything out, so no room to recognise much.</p>
+              <p>18,624 parameters. Only 96 detectors, so it can recognise very little.</p>
             </div>
             <div class="t3-pipebox after">
               <h5>After &mdash; 256 in, 1,024 in the middle, 256 out</h5>
@@ -842,12 +939,13 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
                 <div class="t3-prow"><span class="plab">middle</span><span class="pbar mid" data-w="100"></span><span class="pnum">1,024</span></div>
                 <div class="t3-prow"><span class="plab">out</span><span class="pbar" data-w="25"></span><span class="pnum">256</span></div>
               </div>
-              <p>525,568 parameters, in each of six layers. That bulge in the middle is the shelf.</p>
+              <p>525,568 parameters in each of six layers. The wide middle is a much bigger shelf:
+              1,024 detectors.</p>
             </div>
           </div>
-          <p style="margin-top:18px;">Every real Transformer makes that middle <b>four times wider</b>
-          than the model itself. Yours had no bulge at all, which is why the model could understand a
-          question and still have nothing to say about it.</p>
+          <p style="margin-top:18px;">Real Transformers make the middle <b>four times wider</b> than the
+          model itself. Yours was not wider at all. That is why your model could understand a question
+          but not have the facts to answer it.</p>
         </div>
 
         <div class="t3-panel">
@@ -864,9 +962,10 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
               <span class="val">59.5%</span>
             </div>
           </div>
-          <p style="margin-top:18px;">Your model stops being a dictionary with a little thinking attached
-          and becomes a thinking machine with a dictionary attached. It goes from <b>1,266,336</b>
-          parameters to <b>7,951,872</b>, and <b>3,153,408</b> of the new ones land in the feed-forward.</p>
+          <p style="margin-top:18px;">Before, your model was mostly dictionary with a little thinking
+          attached. After, it is mostly thinking with a dictionary attached. It goes from
+          <b>1,266,336</b> parameters to <b>7,951,872</b>, and <b>3,153,408</b> of them are in the
+          feed-forward, where facts are stored.</p>
         </div>
 
         <hr />
@@ -906,21 +1005,28 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
               </div>
             </div>
           </div>
-          <p style="margin-top:18px;">Everything gets wider, the middle runs six times instead of once,
-          and the feed-forward inside each of those six gets four times bigger. There is also one new
-          <code>LayerNorm</code> called <code>ln_f</code> at the end: after six rounds of adding things
-          on top of each other the numbers have grown, and <code>lm_head</code> works far better on tidy
-          ones.</p>
+          <p style="margin-top:18px;">Three things change:</p>
+          <ul>
+            <li>Everything gets wider: 256 numbers per word piece instead of 96.</li>
+            <li>The thinking part runs six times instead of once.</li>
+            <li>The feed-forward in each of those six layers is four times wider in the middle.</li>
+          </ul>
+          <p>There is also one new <code>LayerNorm</code> at the end, called <code>ln_f</code>. After six
+          rounds of adding notes on top of each other, the numbers get large. <code>lm_head</code> works
+          much better when they are tidied to a sensible size first.</p>
         </div>
 
         <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
           <h4><i class="fas fa-triangle-exclamation"></i> Read this before you start editing</h4>
-          <p>Activities 1 to 3 all change <code>attention_engine.py</code>, and the model will not run
-          until all three are finished. Expect errors in between &mdash; that is normal.
-          <b>Activity 4 is where you find out whether you got it right.</b></p>
-          <p style="margin-bottom:0;">Your Session 2 model file, <code>qa_model_v5.pth</code>, will stop
-          loading into this code after today, because it came from a model with a different shape. You
-          still need it for the comparison in Activity 6, so do not delete it.</p>
+          <p>Activities 1 to 3 all change <code>attention_engine.py</code>. The model won't run until all
+          three are finished, so errors in between are normal. <b>Activity 4 checks whether you got it
+          right.</b></p>
+          <p>Your Session 2 model file, <code>qa_model_v5.pth</code>, won't load into the new code. It
+          was made for a smaller model, and a saved model only fits a model of exactly the same shape.
+          You still need it for the comparison in Activity 6, so don't delete it.</p>
+          <p style="margin-bottom:0;"><b>Tip:</b> because v5 only works with the old code, ask it the
+          five questions from Activity 6 <b>now</b>, before you change anything. Run
+          <code>python talk_to_your_engine.py qa_model_v5.pth</code> and write down its answers.</p>
         </div>
 
         <!-- ------------------------------ ACTIVITY 1 -->
@@ -951,8 +1057,16 @@ n_head = 8         # how many heads of attention the AI has
 n_layer = 6        # how many rounds of look-and-think it gets
             </pre>
           </div>
+          <p>What each setting means:</p>
+          <ul>
+            <li><code>n_embd = 256</code> &mdash; each word piece gets 256 numbers instead of 96. A
+            bigger notepad.</li>
+            <li><code>n_head = 8</code> &mdash; attention is split into 8 heads of 32 numbers each.</li>
+            <li><code>n_layer = 6</code> &mdash; a new setting: how many layers to stack. You use it in
+            Activity 2.</li>
+          </ul>
           <p>A few lines further down, inside <code>MultiHeadAttention.forward</code>, one comment is
-          now wrong. Correct it so the file stays honest:</p>
+          now wrong. Correct it so the comment matches the code:</p>
           <div class="code-block python">
             <div class="code-header">attention_engine.py &mdash; OLD, then NEW</div>
             <pre>
@@ -967,10 +1081,10 @@ n_layer = 6        # how many rounds of look-and-think it gets
         <div class="activity-box">
           <h4>&#128296; Activity 2: Put the two lines in a box, and ask for six</h4>
 
-          <p style="margin-top:14px;">You cannot ask Python for &ldquo;six of those two lines&rdquo; while
-          they sit loose inside a method. First they need a name. That is all a
-          <code>TransformerBlock</code> is &mdash; a name for the two lines you already have, so you can
-          ask for six copies of them.</p>
+          <p style="margin-top:14px;">Python can't make &ldquo;six copies of these two lines&rdquo; while
+          they sit loose inside a method. First you put them in their own class with a name:
+          <code>TransformerBlock</code>. A <code>TransformerBlock</code> is just a name for the two
+          lines you already have, so that you can ask for six of them.</p>
 
           <p style="margin-top:18px;"><strong>Step 1: Find what you are about to move</strong></p>
           <ul>
@@ -991,9 +1105,9 @@ class PredictionEngine(nn.Module):
         self.lm_head = nn.Linear(n_embd, vocab_size)
             </pre>
           </div>
-          <p>Four of those lines belong in the box, because they are the ones that need to exist six
-          separate times: <code>ln1</code>, <code>ln2</code>, <code>sa_head</code> and <code>ffwd</code>.
-          The other three stay where they are &mdash; there is only ever one dictionary.</p>
+          <p>Four of those lines move into the new class, because each layer needs its own copy of them:
+          <code>ln1</code>, <code>ln2</code>, <code>sa_head</code> and <code>ffwd</code>. The other
+          three stay where they are, because the model only ever needs one dictionary.</p>
 
           <p style="margin-top:18px;"><strong>Step 2: Replace all ten lines</strong></p>
           <ul>
@@ -1034,10 +1148,10 @@ class PredictionEngine(nn.Module):
         self.lm_head = nn.Linear(n_embd, vocab_size)
             </pre>
           </div>
-          <p><i class="fas fa-circle-info"></i> Compare the two <code>forward</code> bodies carefully. The
-          lines inside <code>TransformerBlock.forward</code> are the <b>exact</b> lines that used to sit
-          in <code>PredictionEngine.forward</code>, comments and all. You have not written any new logic
-          here. You have given old logic a name.</p>
+          <p><i class="fas fa-circle-info"></i> Look closely at <code>TransformerBlock.forward</code>.
+          Its two lines are <b>exactly</b> the lines that were in <code>PredictionEngine.forward</code>,
+          comments and all. You haven't written any new logic. You've just put the old logic in a
+          named box.</p>
 
           <p style="margin-top:18px;"><strong>Step 3: Use the stack</strong></p>
 
@@ -1046,9 +1160,9 @@ class PredictionEngine(nn.Module):
             <p style="margin-bottom:0;">You just pasted a copy of them into
             <code>TransformerBlock.forward</code>, and the originals are still sitting in
             <code>PredictionEngine.forward</code> further down the file. <b>You want the second
-            pair.</b> Do not use find-and-replace for this one &mdash; scroll down and check you are
-            inside <code>PredictionEngine</code> before you change anything. Getting the wrong pair
-            makes the model call itself forever, and the error it prints will not tell you that.</p>
+            pair.</b> Don't use find-and-replace for this one. Scroll down and check you are inside
+            <code>PredictionEngine</code> before you change anything. If you change the wrong pair, the
+            model breaks, and the error message won't point you to the real cause.</p>
           </div>
 
           <ul>
@@ -1072,16 +1186,17 @@ class PredictionEngine(nn.Module):
         x = self.ln_f(x)          # tidy up one last time
             </pre>
           </div>
-          <p><code>nn.Sequential</code> runs everything inside it in order and hands each block's output
-          to the next one. That handing-over is what makes six rounds beat one.</p>
+          <p><code>nn.Sequential</code> runs the six blocks in order, and passes each block's output to
+          the next one. That passing-on is what lets round two build on round one.</p>
         </div>
 
         <!-- ------------------------------ ACTIVITY 3 -->
         <div class="activity-box">
           <h4>&#128296; Activity 3: Give the feed-forward some shelf space</h4>
 
-          <p style="margin-top:14px;">Two lines change, and they are the biggest single edit of the day.
-          Over three million of your new numbers land here.</p>
+          <p style="margin-top:14px;">Only two lines change, but this is the biggest edit of the day:
+          over three million of your new numbers go here. This is where the model gets its bigger shelf
+          for facts.</p>
           <ul>
             <li>Find <code>class FeedForward</code> and these five lines:</li>
           </ul>
@@ -1102,8 +1217,7 @@ class PredictionEngine(nn.Module):
             <div class="code-header">attention_engine.py &mdash; the NEW lines</div>
             <pre>
         # Four times wider in the middle. This is where a Transformer
-        # keeps what it knows, and 256 in, 256 out left nowhere to put
-        # twenty subjects.
+        # keeps what it knows.
         self.net = nn.Sequential(
             nn.Linear(n_embd, 4 * n_embd),
             nn.ReLU(),
@@ -1111,25 +1225,26 @@ class PredictionEngine(nn.Module):
         )
             </pre>
           </div>
-          <p>256 numbers go in, spread out into 1,024, then come back down to 256 &mdash; the shape you
-          saw in Section 4.3.</p>
+          <p><code>4 * n_embd</code> means the middle is 4 &times; 256 = 1,024 numbers wide. So 256
+          numbers go in, spread out into 1,024 detectors, then come back down to 256. That's the shape
+          you saw in Section 4.3.</p>
         </div>
 
         <!-- ------------------------------ ACTIVITY 4 -->
         <div class="activity-box">
           <h4>&#128296; Activity 4: Count it before you go any further</h4>
 
-          <p style="margin-top:14px;">Five seconds of checking now, and the number has to be exactly
-          right &mdash; the trained model you are about to download will only load into a model of
-          precisely this shape.</p>
+          <p style="margin-top:14px;">This one-line command builds your model and counts its parameters.
+          It takes a few seconds. The number must be exactly right, because the trained model you
+          download next only fits a model of exactly this shape.</p>
           <div class="code-block python">
             <div class="code-header">terminal</div>
             <pre>
 python -c "from attention_engine import model; print(sum(p.numel() for p in model.parameters()))"
             </pre>
           </div>
-          <p>You should see <b>7951872</b>. If you see anything else, this table tells you which activity
-          did not take:</p>
+          <p>You should see <b>7951872</b>. If you see a different number, this table tells you which
+          activity didn't work:</p>
           <div class="t3-tablebox">
             <h4>Reading the number you got</h4>
             <div class="t3-scroll">
@@ -1154,11 +1269,11 @@ python -c "from attention_engine import model; print(sum(p.numel() for p in mode
 
         <div class="tool-info-box">
           <h4><i class="fas fa-hourglass-half"></i> What a six-times-bigger model costs to train</h4>
-          <p>Your model is six times bigger. Training is not six times slower &mdash; it is about
-          <b>eleven</b> times slower, because every one of the 14,000 steps now does roughly ten times
-          as much arithmetic.</p>
-          <p style="margin-bottom:0;">All three of these are real runs on the same free Colab T4, with
-          the same book and the same 14,000 steps.</p>
+          <p>Your model is about six times bigger, but training is about <b>eleven</b> times slower.
+          That's because each of the 14,000 training steps now does about ten times as much maths: six
+          layers instead of one, each with a much wider feed-forward.</p>
+          <p style="margin-bottom:0;">All three times below are real runs on the same free Colab T4
+          GPU, with the same book and the same 14,000 steps.</p>
         </div>
 
         <div class="t3-panel">
@@ -1180,20 +1295,20 @@ python -c "from attention_engine import model; print(sum(p.numel() for p in mode
               <span class="val">121</span>
             </div>
           </div>
-          <p style="margin-top:18px;">Two hours and one minute. That is why you are being handed the
-          finished model &mdash; and it is worth knowing, because this is the real cost of the thing you
-          just built. <b>Every time a model gets bigger, somebody pays for it in time or money.</b></p>
-          <p class="t3-foot">There are ways to make this much faster without making the model smaller.
-          They are real engineering and they are worth learning, but they are not what today is about.</p>
+          <p style="margin-top:18px;">Two hours and one minute. That's why you get the finished model
+          today. It's also worth remembering: <b>every time a model gets bigger, someone pays for it in
+          time or money.</b></p>
+          <p class="t3-foot">There are ways to train much faster without making the model smaller.
+          They're worth learning, but they're not what today is about.</p>
         </div>
 
         <!-- ------------------------------ ACTIVITY 5 -->
         <div class="activity-box">
           <h4>&#128296; Activity 5: Two small fixes in <code>train_qa.py</code></h4>
 
-          <p style="margin-top:14px;">You are not running this file today, but it has to be correct.
-          Anyone who wants to train the model themselves &mdash; and that is the advanced homework
-          &mdash; needs both of these.</p>
+          <p style="margin-top:14px;">You won't run this file today, but it still needs to be correct.
+          Anyone who trains the model themselves (that's the advanced homework) needs both of these
+          fixes.</p>
 
           <p style="margin-top:16px;"><strong>Step 1: Smaller nudges for a bigger model</strong></p>
           <div class="code-block python">
@@ -1210,10 +1325,11 @@ LEARNING_RATE = 3e-3   # pieces are small, so bigger nudges are safe (Session 5)
 LEARNING_RATE = 5e-4
             </pre>
           </div>
-          <p>The learning rate is how big a correction the model makes after each mistake. The right
-          size depends on how many parameters are being corrected at once, so a value that worked at
-          1.3 million is too big at 8 million. Leave it at <code>3e-3</code> and the loss bounces up and
-          down instead of settling.</p>
+          <p>The <b>learning rate</b> is how big a correction the model makes after each mistake. A
+          bigger model needs smaller corrections, because millions more numbers are being changed at
+          once. A value that worked for 1.3 million numbers is too big for 8 million. If you leave it at
+          <code>3e-3</code> (0.003), the loss jumps up and down instead of settling.
+          <code>5e-4</code> means 0.0005.</p>
 
           <p style="margin-top:18px;"><strong>Step 2: The new model's name</strong></p>
           <div class="code-block python">
@@ -1248,10 +1364,12 @@ checkpoint = sys.argv[1] if len(sys.argv) &gt; 1 else "qa_model_v6.pth"
             <li>Download <code>qa_model_v6.pth</code> from the link your instructor gives you. It is
             <b>44.5 MB</b>.</li>
             <li>Put it in your project folder, next to <code>qa_model_v5.pth</code>.</li>
-            <li>It was trained for 14,000 steps from the exact code you just wrote. If Activity 4 gave
-            you 7,951,872, it will load. If it did not, fix that first &mdash; the error you get
-            otherwise is a wall of red text about <code>state_dict</code>.</li>
+            <li>It was trained for 14,000 steps using the exact code you just wrote. If Activity 4 gave
+            you 7,951,872, it will load. If not, fix that first. Otherwise you'll get a wall of red
+            error text about <code>state_dict</code>.</li>
           </ul>
+          <p><b>Using a codespace?</b> <code>qa_model_v6.pth</code> is already in your main folder, so
+          you can skip this step.</p>
 
           <p style="margin-top:18px;"><strong>Step 2: Two models, five questions</strong></p>
           <div class="code-block python">
@@ -1277,10 +1395,10 @@ python talk_to_your_engine.py
             <li>Is air a mixture?</li>
           </ul>
 
-          <p><b>Be honest in your notes.</b> Some of the new model's answers will still be wrong &mdash;
-          a model this size is not an encyclopaedia. The thing you are measuring is whether it
-          <i>finishes a thought</i>. Mark each answer <b>finished</b> or <b>fell apart</b>, then count
-          them for the table in the next section.</p>
+          <p><b>Be honest in your notes.</b> Some of the new model's answers will still be wrong. A
+          model this small is not an encyclopaedia. What you are checking is whether it <i>finishes a
+          thought</i>. Mark each answer <b>finished</b> or <b>fell apart</b>, then count them for the
+          table in the next section.</p>
         </div>
 
         <hr />
@@ -1310,8 +1428,8 @@ python talk_to_your_engine.py
               <tr><td>Your five answers &mdash; how many finished?</td><td class="num t3-fill-me">?</td><td class="num t3-fill-me">?</td></tr>
             </table>
           </div>
-          <p>Loss is a measure of how surprised the model is by the next word, so lower is better. A drop
-          from 2.510 to 1.718 is the biggest single improvement of this term.</p>
+          <p><b>Loss</b> measures how surprised the model is by the real next word, so lower is better.
+          Dropping from 2.510 to 1.718 is the biggest single improvement of this term.</p>
         </div>
 
         <div class="t3-tablebox">
@@ -1331,9 +1449,9 @@ python talk_to_your_engine.py
               <tr style="background:#f8fafc;"><td><b>Total</b></td><td class="num"><b>1,266,336</b></td><td class="num"><b>7,951,872</b></td><td class="num"><b>6.3&times;</b></td></tr>
             </table>
           </div>
-          <p>You did not spread them evenly. The feed-forward went up <b>169 times</b> while the model as
-          a whole grew six &mdash; and that is the change most likely to show up in the answers, because
-          that is where a Transformer keeps what it knows.</p>
+          <p>The new numbers were not spread evenly. The whole model grew about 6 times, but the
+          feed-forward grew <b>169 times</b>. That's the change most likely to improve the answers,
+          because the feed-forward is where a Transformer stores what it knows.</p>
         </div>
 
         <div class="t3-panel">
@@ -1348,9 +1466,9 @@ python talk_to_your_engine.py
               <div class="t3-ba-text">&ldquo;Satellites stay in orbit because gravity pulls them toward Earth, but they're moving forward so fast that it keeps missing the ground.&rdquo;</div>
             </div>
           </div>
-          <p class="t3-foot">Both answering &ldquo;Why do satellites stay up instead of crashing?&rdquo;
-          Same book, same 14,000 steps, same sampling settings. The only difference is the size and
-          depth of the model.</p>
+          <p class="t3-foot">Both are answering &ldquo;Why do satellites stay up instead of
+          crashing?&rdquo; Same book, same 14,000 steps, same sampling settings. The only difference is
+          the size and depth of the model.</p>
         </div>
 
         <hr />
@@ -1361,8 +1479,8 @@ python talk_to_your_engine.py
         <h2>8. What Is Still Broken</h2>
 
         <div class="tool-info-box">
-          <p style="margin-bottom:0;">Being straight about what today did not fix. Every one of these has
-          a session attached to it.</p>
+          <p style="margin-bottom:0;">Here's what today did not fix, and which session deals with each
+          problem.</p>
         </div>
 
         <div class="t3-tablebox">
