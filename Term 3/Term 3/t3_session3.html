@@ -1,0 +1,1854 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Give It Room To Think</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* ================================================================
+       CODE BLOCKS - long lines must scroll, not get cut off.
+       style.css only turns this on below 480px, so every wide terminal
+       line was being clipped on a laptop. Fixed here for this session.
+       ================================================================ */
+    .lesson-body .code-block pre {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #64748b #1e293b;
+      padding-bottom: 14px;
+    }
+    .lesson-body .code-block pre::-webkit-scrollbar { height: 11px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-track {
+      background: #1e293b; border-radius: 999px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-thumb {
+      background: #64748b; border-radius: 999px; border: 2px solid #1e293b; }
+    .lesson-body .code-block pre::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* ---------- boxed data tables ---------- */
+    .t3-tablebox { background:#fff; border:1px solid #cbd5e1; border-radius:10px;
+                   padding:4px 0 0; margin:1.5rem 0; overflow:hidden;
+                   box-shadow:0 1px 4px rgba(15,23,42,.05); }
+    .t3-tablebox > h4 { margin:0; padding:13px 18px; background:#f1f5f9;
+                        border-bottom:1px solid #cbd5e1; font-size:.92rem; color:#0f172a; }
+    .t3-tablebox > .t3-scroll { padding:0 6px 6px; }
+    .t3-tablebox > p { margin:0; padding:12px 18px 14px; font-size:.92rem;
+                       color:#475569; border-top:1px solid #e2e8f0; line-height:1.6; }
+
+    /* ---------- phase banners ---------- */
+    .t3-phase { display:flex; align-items:flex-start; gap:13px; margin:34px 0 4px;
+                padding:14px 18px; border-radius:11px; font-size:.95rem; line-height:1.6;
+                border:1px solid #bae6fd; background:#f0f9ff; color:#075985; }
+    .t3-phase i { font-size:1.05rem; margin-top:2px; }
+    .t3-phase b { color:#0c4a6e; }
+    .t3-phase.landed { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
+    .t3-phase.landed b { color:#14532d; }
+
+    /* ---------- lesson roadmap ---------- */
+    .t3-map { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+    .t3-map-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 16px 14px;
+                   box-shadow:0 2px 10px rgba(15,23,42,.05); }
+    .t3-map-card h3 { margin:8px 0 6px; font-size:.98rem; color:#0f172a; }
+    .t3-map-card p { margin:0; font-size:.83rem; color:#64748b; line-height:1.5; }
+    .t3-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px;
+              border-radius:8px; background:#0ea5e9; color:#fff; font-weight:700; font-size:.82rem; }
+
+    /* ---------- where we are strip ---------- */
+    .t3-recap { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0; }
+    .t3-recap > div { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 14px;
+                      font-size:.85rem; color:#475569; line-height:1.5; }
+    .t3-recap b { display:block; color:#0f172a; margin-bottom:4px; font-size:.8rem;
+                  text-transform:uppercase; letter-spacing:.05em; }
+    .t3-recap .today { background:#ecfeff; border-color:#67e8f9; }
+    .t3-recap .today b { color:#0e7490; }
+
+    /* ---------- dark demo panel ---------- */
+    .t3-panel { border:1px solid #1e293b; border-radius:14px; padding:24px 26px; margin:22px 0;
+                background:#0f172a; box-shadow:0 8px 26px rgba(2,6,23,.28); }
+    .t3-panel, .t3-panel p, .t3-panel li, .t3-panel td, .t3-panel th { color:#cbd5e1; }
+    .t3-panel h3, .t3-panel h4 { color:#f8fafc; margin-top:0; }
+    .t3-panel b, .t3-panel strong { color:#f8fafc; }
+    .t3-panel code { background:#1e293b; color:#7dd3fc; padding:2px 7px; border-radius:4px; }
+    .t3-panel p { font-size:.95rem; line-height:1.65; }
+    .t3-badge { display:inline-block; background:#0ea5e9; color:#04222f; font-weight:700; font-size:.78rem;
+                letter-spacing:.06em; padding:4px 14px; border-radius:999px; margin-bottom:10px; }
+    .t3-badge.good { background:#22c55e; color:#052e16; }
+    .t3-badge.warn { background:#f59e0b; color:#3b2406; }
+    .t3-foot { font-size:.82rem; color:#64748b; margin-top:12px; }
+
+    /* ---------- buttons inside dark panels ---------- */
+    .t3-btn { font-family:inherit; font-size:.85rem; padding:8px 18px; border-radius:999px;
+              border:1px solid #334155; background:#1e293b; color:#e2e8f0; cursor:pointer;
+              transition:background .18s ease, border-color .18s ease, color .18s ease; }
+    .t3-btn:hover:not([disabled]) { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-btn[disabled] { opacity:.35; cursor:default; }
+    .t3-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px; }
+
+    /* ---------- tables ---------- */
+    .t3-table { width:100%; border-collapse:collapse; margin:0; font-size:.9rem; }
+    .t3-table th, .t3-table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+    .t3-table th { font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; color:#64748b;
+                   background:#f8fafc; }
+    .t3-table tr:last-child td { border-bottom:none; }
+    .t3-table td.num { font-family:monospace; text-align:right; font-variant-numeric:tabular-nums; }
+    .t3-panel .t3-table { margin:14px 0; }
+    .t3-panel .t3-table th { background:transparent; }
+    .t3-panel .t3-table th, .t3-panel .t3-table td { border-bottom-color:#1e293b; }
+    .t3-scroll { overflow-x:auto; }
+
+    /* ---------- the six rounds visual ---------- */
+    .t3-rounds { display:flex; flex-direction:column; gap:9px; margin-top:6px; }
+    .t3-round { display:grid; grid-template-columns:30px 1fr; gap:14px; align-items:start;
+                padding:12px 15px; border:1px solid #334155; border-radius:10px; background:#111f36;
+                transition:border-color .3s ease, background .3s ease, box-shadow .3s ease; }
+    .t3-round.on { border-color:#0ea5e9; background:#0c2234;
+                   box-shadow:0 0 0 1px #0ea5e9, 0 6px 18px rgba(14,165,233,.18); }
+    .t3-round.done { border-color:#16a34a; background:#0d2318; }
+    .t3-rlab { display:flex; align-items:center; justify-content:center; width:30px; height:30px;
+               border-radius:8px; background:#1e293b; color:#7dd3fc; font-weight:700; font-size:.85rem; }
+    .t3-round.on .t3-rlab { background:#0ea5e9; color:#04222f; }
+    .t3-round.done .t3-rlab { background:#16a34a; color:#052e16; }
+    .t3-rtext { font-size:.92rem; line-height:1.6; color:#cbd5e1; }
+    .t3-round.on .t3-rtext { color:#f1f5f9; }
+
+    /* ---------- bars ---------- */
+    .t3-bars { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+    .t3-bar { display:grid; grid-template-columns:168px 1fr 70px; gap:12px; align-items:center;
+              font-size:.86rem; }
+    .t3-bar .lab { color:#94a3b8; }
+    .t3-bar .track { display:block; background:#1e293b; border-radius:999px; height:15px;
+                     overflow:hidden; }
+    /* display:block matters -- .fill is a span, and a span inside a non-flex
+       parent stays inline, which silently ignores width and height. */
+    .t3-bar .fill { display:block; width:0; height:100%; border-radius:999px; background:#0ea5e9;
+                    transition:width 1.1s cubic-bezier(.22,.9,.3,1); }
+    .t3-bar .fill.good { background:#22c55e; }
+    .t3-bar .fill.warn { background:#f59e0b; }
+    .t3-bar .val { font-family:monospace; color:#f8fafc; text-align:right;
+                   font-variant-numeric:tabular-nums; }
+    @media (prefers-reduced-motion: reduce) {
+      .t3-bar .fill { transition:none; }
+      .t3-round { transition:none; }
+    }
+
+    /* ---------- before / after code ---------- */
+    .t3-ba { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .t3-ba-card { border-radius:12px; padding:16px 18px; border:1px solid #334155; background:#111f36; }
+    .t3-ba-card.after { border-color:#16a34a; background:#0d2318; }
+    .t3-ba-tag { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700;
+                 margin-bottom:8px; display:block; color:#f87171; }
+    .t3-ba-card.after .t3-ba-tag { color:#4ade80; }
+    .t3-ba-text { font-size:.9rem; line-height:1.6; color:#e2e8f0; min-height:5.2em; }
+
+    /* ---------- the stack diagram ---------- */
+    .t3-stack { display:flex; flex-direction:column; gap:7px; align-items:center; margin:8px 0; }
+    .t3-slab { width:100%; max-width:430px; text-align:center; padding:9px 12px; border-radius:9px;
+               font-size:.84rem; border:1px solid #334155; background:#111f36; color:#cbd5e1; }
+    .t3-slab.blk { border-color:#0ea5e9; background:#0c2234; color:#e0f2fe; font-weight:600; }
+    .t3-slab.edge { border-color:#475569; background:#1a2436; color:#94a3b8; font-size:.78rem; }
+    .t3-arrow { color:#475569; font-size:.8rem; }
+
+    /* ---------- pending results ---------- */
+    .t3-fill-me { font-family:monospace; color:#b45309; font-weight:700; }
+
+    /* ---------- the study-group walkthrough ---------- */
+    .t3-shelf { border:1px dashed #475569; border-radius:12px; padding:13px 16px 14px;
+                background:#131f33; transition:border-color .35s ease, background .35s ease,
+                box-shadow .35s ease; }
+    .t3-shelf.lit { border-color:#4ade80; border-style:solid; background:#0d2318;
+                    box-shadow:0 0 0 1px #4ade80, 0 8px 22px rgba(74,222,128,.16); }
+    .t3-shelf-tag { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.07em;
+                    color:#94a3b8; font-weight:700; margin-bottom:9px; }
+    .t3-shelf.lit .t3-shelf-tag { color:#4ade80; }
+    .t3-chips { display:flex; flex-wrap:wrap; gap:7px; }
+    .t3-chips span { font-size:.78rem; background:#1e293b; color:#cbd5e1; border-radius:999px;
+                     padding:4px 11px; border:1px solid #334155; }
+    .t3-shelf.lit .t3-chips span { border-color:#166534; background:#14321f; color:#dcfce7; }
+    .t3-drop { text-align:center; color:#334155; font-size:1rem; margin:6px 0;
+               transition:color .3s ease, transform .3s ease; }
+    .t3-drop.lit { color:#4ade80; transform:translateY(3px); }
+
+    .t3-group { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:4px;
+                align-items:start; }
+    .t3-seat { border:1px solid #334155; border-radius:11px; background:#111f36; padding:11px 11px 12px;
+               transition:border-color .3s ease, background .3s ease, box-shadow .3s ease; }
+    .t3-seat.focus { border-color:#0ea5e9; background:#0c2234; }
+    .t3-seat.sending { border-color:#7dd3fc; background:#14314a;
+                       box-shadow:0 0 0 1px #7dd3fc, 0 6px 18px rgba(125,211,252,.25); }
+    .t3-seat-word { display:block; font-family:monospace; font-size:.92rem; color:#f8fafc;
+                    font-weight:700; text-align:center; padding-bottom:8px;
+                    border-bottom:1px solid #243449; margin-bottom:8px; }
+    .t3-seat.focus .t3-seat-word { color:#7dd3fc; }
+    .t3-you { display:block; font-size:.62rem; text-transform:uppercase; letter-spacing:.07em;
+              color:#0ea5e9; font-weight:700; text-align:center; margin-bottom:5px; }
+    .t3-pad { display:flex; flex-direction:column; gap:5px; }
+    .t3-note { font-size:.74rem; line-height:1.4; border-radius:7px; padding:6px 8px;
+               border-left:3px solid; }
+    .t3-note.arrived { animation:t3in .45s ease both; }
+    .t3-note.own     { background:#1a2436; border-left-color:#64748b; color:#cbd5e1; }
+    .t3-note.copied  { background:#10243a; border-left-color:#38bdf8; color:#bae6fd; }
+    .t3-note.known   { background:#13301f; border-left-color:#4ade80; color:#dcfce7; }
+    .t3-note b { display:block; font-size:.63rem; text-transform:uppercase; letter-spacing:.05em;
+                 margin-bottom:2px; font-weight:700; }
+    .t3-note.own b    { color:#94a3b8; }
+    .t3-note.copied b { color:#7dd3fc; }
+    .t3-note.known b  { color:#86efac; }
+    @keyframes t3in { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:none; } }
+
+    .t3-key { display:flex; gap:18px; flex-wrap:wrap; font-size:.79rem; color:#94a3b8; margin-top:16px; }
+    .t3-key span { display:flex; align-items:center; gap:7px; }
+    .t3-key i { width:13px; height:13px; border-radius:3px; display:inline-block; }
+    .t3-cap { font-size:.92rem; line-height:1.6; color:#cbd5e1; margin-top:14px; min-height:3.2em; }
+    .t3-cap b { color:#f8fafc; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .t3-note.arrived { animation:none; }
+      .t3-shelf, .t3-seat, .t3-drop { transition:none; }
+    }
+    /* A 2x2 grid is not a row, so narrow screens get one column instead. */
+    @media (max-width: 700px) {
+      .t3-group { grid-template-columns:1fr; gap:8px; }
+      .t3-seat-word { text-align:left; }
+      .t3-you { text-align:left; }
+    }
+
+    /* ---------- smaller type inside the big tool boxes ---------- */
+    .page-session .tool-info-box > p,
+    .page-session .tool-info-box > ul,
+    .page-session .tool-info-box > ol { font-size:1.02rem; line-height:1.7; }
+    .page-session .tool-info-box > h4 { margin:0 0 10px; font-size:1.05rem; color:#0b4f8a; }
+    .page-session .tool-info-box .code-block { font-size:1rem; }
+    .rule-callout ul, .rule-callout ol { margin:10px 0 0; padding-left:20px; line-height:1.8; }
+    .rule-callout li { font-weight:400; }
+
+    @media (max-width: 900px) {
+      .t3-map, .t3-recap { grid-template-columns:1fr 1fr; }
+      .t3-ba { grid-template-columns:1fr; }
+      .t3-bar { grid-template-columns:118px 1fr 58px; font-size:.8rem; }
+    }
+    @media (max-width: 560px) {
+      .t3-map, .t3-recap { grid-template-columns:1fr; }
+      .t3-bar { grid-template-columns:1fr; gap:4px; }
+      .t3-bar .val { text-align:left; }
+    }
+    /* ---------- the two lines, side by side ---------- */
+    .t3-two { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px; }
+    .t3-half { border:1px solid #334155; border-radius:12px; padding:15px 16px 16px;
+               background:#111f36; display:flex; flex-direction:column; }
+    .t3-half.lit-b { border-color:#38bdf8; background:#0c2234; }
+    .t3-half.lit-g { border-color:#4ade80; background:#0d2318; }
+    .t3-halftag { font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; font-weight:700;
+                  display:block; margin-bottom:14px; }
+    .t3-half.lit-b .t3-halftag { color:#7dd3fc; }
+    .t3-half.lit-g .t3-halftag { color:#86efac; }
+
+    .t3-shelfmini { border:1px dashed #334155; border-radius:9px; padding:7px 10px; text-align:center;
+                    font-size:.74rem; color:#475569; background:#0b1424; }
+    .t3-half.lit-g .t3-shelfmini { border-style:solid; border-color:#4ade80; color:#dcfce7;
+                                   background:#14321f; }
+    .t3-downs { display:flex; justify-content:space-around; padding:0 6%; margin:5px 0 3px;
+                font-size:.95rem; color:#1e293b; letter-spacing:0; }
+    .t3-half.lit-g .t3-downs { color:#4ade80; }
+
+    .t3-wrow { display:flex; align-items:stretch; gap:3px; }
+    .t3-chip { flex:1 1 0; min-width:0; border:1px solid #334155; border-radius:8px; background:#1a2436;
+               padding:9px 4px; text-align:center; font-family:monospace; font-size:.74rem;
+               color:#cbd5e1; display:flex; align-items:center; justify-content:center; }
+    .t3-chip.me { border-color:#64748b; background:#243247; color:#f1f5f9; font-weight:700; }
+    .t3-sar { flex:0 0 16px; display:flex; align-items:center; justify-content:center;
+              font-size:.9rem; color:#1e293b; }
+    .t3-half.lit-b .t3-sar { color:#38bdf8; }
+    .t3-halfcap { margin-top:13px; font-size:.84rem; line-height:1.55; color:#94a3b8; }
+    .t3-half.lit-b .t3-halfcap b { color:#7dd3fc; }
+    .t3-half.lit-g .t3-halfcap b { color:#86efac; }
+    .t3-halfcap .off { color:#475569; }
+
+    @media (max-width: 700px) {
+      .t3-two { grid-template-columns:1fr; }
+      .t3-chip { font-size:.68rem; padding:8px 2px; }
+    }
+
+    /* ---------- slice-the-budget widget ---------- */
+    .t3-slice { margin-top:6px; }
+    .t3-slicebar { display:flex; gap:3px; height:52px; margin:14px 0 6px;
+                   transition:width .5s cubic-bezier(.22,.9,.3,1); }
+    .t3-seg { flex:1 1 0; border-radius:7px; background:#0c2234; border:1px solid #0ea5e9;
+              display:flex; flex-direction:column; align-items:center; justify-content:center;
+              font-family:monospace; color:#7dd3fc; overflow:hidden; min-width:0;
+              animation:t3seg .35s ease both; }
+    .t3-seg b { font-size:.82rem; color:#e0f2fe; }
+    .t3-seg span { font-size:.62rem; color:#64748b; letter-spacing:.04em; }
+    @keyframes t3seg { from { opacity:0; transform:scaleY(.6); } to { opacity:1; transform:none; } }
+    .t3-slicerail { background:#0b1424; border:1px dashed #334155; border-radius:9px; padding:6px; }
+    .t3-slicefacts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .t3-fact { background:#111f36; border:1px solid #334155; border-radius:9px; padding:10px 13px; }
+    .t3-fact b { display:block; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+                 color:#64748b; margin-bottom:3px; font-weight:700; }
+    .t3-fact .n { font-family:monospace; font-size:1.05rem; color:#f8fafc;
+                  font-variant-numeric:tabular-nums; }
+    .t3-fact.locked { border-color:#16a34a; background:#0d2318; }
+    .t3-fact.locked .n { color:#4ade80; }
+    .t3-warn { margin-top:12px; font-size:.86rem; color:#fbbf24; min-height:1.4em; }
+
+    /* ---------- feed-forward shape ---------- */
+    .t3-pipe { display:flex; flex-direction:column; gap:9px; }
+    .t3-prow { display:grid; grid-template-columns:76px 1fr 96px; gap:11px; align-items:center;
+               font-size:.82rem; }
+    .t3-prow .plab { color:#94a3b8; font-family:monospace; }
+    .t3-prow .pbar { height:26px; border-radius:6px; background:#0ea5e9; width:0;
+                     transition:width 1s cubic-bezier(.22,.9,.3,1); }
+    .t3-prow .pbar.mid { background:#22c55e; }
+    .t3-prow .pnum { font-family:monospace; color:#f8fafc; text-align:right;
+                     font-variant-numeric:tabular-nums; font-size:.8rem; }
+    .t3-pipes { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+    .t3-pipebox { border:1px solid #334155; border-radius:12px; padding:15px 17px; background:#111f36; }
+    .t3-pipebox.after { border-color:#16a34a; background:#0d2318; }
+    .t3-pipebox h5 { margin:0 0 4px; font-size:.84rem; color:#e2e8f0; font-weight:700; }
+    .t3-pipebox p { margin:10px 0 0; font-size:.8rem; color:#94a3b8; line-height:1.5; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .t3-seg { animation:none; }
+      .t3-slicebar, .t3-prow .pbar { transition:none; }
+    }
+    @media (max-width: 700px) {
+      .t3-pipes { grid-template-columns:1fr; }
+      .t3-slicefacts { grid-template-columns:1fr; }
+      .t3-seg b { font-size:.72rem; }
+      .t3-prow { grid-template-columns:58px 1fr 76px; font-size:.75rem; }
+    }
+  </style>
+</head>
+
+<body class="page-session" data-current-session="t3_s3">
+  <nav class="navbar">
+    <a href="../index.html" class="site-logo">
+      <img src="../Images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+    </a>
+    <div class="nav-links">
+      <span class="user-status">Status: <strong>AI Systems Architect</strong></span>
+      <a href="term3.html" class="btn-primary">My Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section" data-sidebar-term="3">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>TERM 3: THE INSTRUCTION-TUNED PLATFORM</span>
+          <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+        </h3>
+        <ul style="display: block;">
+          <li data-session-id="t3_s1"><a href="t3_session1.html"><i class="fas fa-earth-asia"></i> S1: Same Engine, Bigger World</a></li>
+          <li data-session-id="t3_s2"><a href="t3_session2.html"><i class="fas fa-dice"></i> S2: Twenty Subjects, One Mouth</a></li>
+          <li data-session-id="t3_s3" class="active"><a href="t3_session3.html"><i class="fas fa-layer-group"></i> S3: Give It Room To Think</a></li>
+          <li data-session-id="t3_s4"><a href="t3_session4.html"><i class="fas fa-highlighter"></i> S4: Learn From The Answer</a></li>
+          <li data-session-id="t3_s5"><a href="t3_session5.html"><i class="fas fa-shield"></i> S5: Ready For Strangers</a></li>
+          <li data-session-id="t3_s6"><a href="t3_session6.html"><i class="fas fa-thumbs-up"></i> S6: Teaching It What Good Means</a></li>
+          <li data-session-id="t3_s7"><a href="t3_session7.html"><i class="fas fa-clipboard-check"></i> S7: Is It Actually Any Good?</a></li>
+          <li data-session-id="t3_s8"><a href="t3_session8.html"><i class="fas fa-code"></i> S8: Build the Website</a></li>
+          <li data-session-id="t3_s9"><a href="t3_session9.html"><i class="fas fa-rocket"></i> S9: Put Your Model Online</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" class="resizer"></div>
+
+    <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 3 / Session 3 / Give It Room To Think</nav>
+
+      <section id="lesson-header">
+        <h1>Session 3: Give It Room To Think</h1>
+        <p class="lead">Your model works out what a question is about and then has to answer immediately, with almost nowhere to keep what it knows. Today you fix both problems: <b>six</b> rounds of thinking instead of one, and six times the room to store what it learns. It grows from 1.3 million numbers to nearly 8 million, and its loss drops further today than in any session this term.</p>
+        <div class="stats-bar">
+          <span><i class="far fa-clock"></i> 60 Minutes</span>
+          <span><i class="fas fa-signal"></i> Level: AI Systems Architect</span>
+        </div>
+      </section>
+
+      <section class="lesson-body">
+
+        <!-- ============================================================
+             ROADMAP
+             ============================================================ -->
+        <div class="t3-map">
+          <div class="t3-map-card">
+            <span class="t3-num">1</span>
+            <h3>Find the whole Transformer</h3>
+            <p>It is two lines of code, and your model runs them once.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">2</span>
+            <h3>See where the numbers went</h3>
+            <p>Only 4.4% of your model does any thinking. Find out why.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">3</span>
+            <h3>Change three numbers</h3>
+            <p>Deeper, wider, and a feed-forward with room in it.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">4</span>
+            <h3>Meet the trained model</h3>
+            <p>Two hours of training, already done for you.</p>
+          </div>
+        </div>
+
+        <div class="outcome-box">
+          <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+          <p>Turn a one-layer model into a six-layer one and give it somewhere to keep what it learns.
+          You go from <b>1,266,336</b> numbers to <b>7,951,872</b>, and from a loss of <b>2.510</b> to
+          <b>1.718</b> &mdash; the biggest single improvement of this term.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-download"></i> You are not training anything today</h4>
+          <p>You have run two training jobs on Colab already and you know how it works. Today's model
+          takes <b>about two hours</b> on a free T4 &mdash; too long for a lesson and too long to be
+          worth your time a third time.</p>
+          <p style="margin-bottom:0;">So you will build the model exactly, check it is right, and then
+          <b>download the trained version</b>. Section 6 shows you precisely what those two hours
+          bought, and the model you pick up came from the code you are about to write &mdash; not from
+          somewhere else.</p>
+        </div>
+
+        <!-- ============================================================
+             0. WHERE WE ARE
+             ============================================================ -->
+        <h2>0. Where We Are</h2>
+
+        <div class="t3-recap">
+          <div>
+            <b>Session 1</b>
+            A real book, a 256-token window, word pieces instead of single letters, and the GPU.
+          </div>
+          <div>
+            <b>Session 2</b>
+            Twenty subjects, 6,144 word pieces, and four sampling controls that stopped the broken words.
+          </div>
+          <div class="today">
+            <b>Today</b>
+            Six rounds of thinking instead of one, and room to keep what it learns.
+          </div>
+          <div>
+            <b>Next</b>
+            Session 4 stops the model wasting a third of its effort on your questions.
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-chart-column"></i> Where Session 2 left your model</h4>
+          <p>Last session fixed the vocabulary. The broken words stopped, the repeating stopped, and the
+          model started talking about twenty subjects instead of four. But there is still something
+          wrong with the answers, and this time it is not the vocabulary.</p>
+          <p style="margin-bottom:0;">Here are the two measurements taken at the end of Session 2, across
+          the same twenty test questions. Read them together, not one at a time.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge warn">Session 2 &mdash; measured over 20 questions</span>
+          <div class="t3-bars t3-scale">
+            <div class="t3-bar">
+              <span class="lab">Understood the question</span>
+              <span class="track"><span class="fill good" data-w="70"></span></span>
+              <span class="val">14/20</span>
+            </div>
+            <div class="t3-bar">
+              <span class="lab">Finished a real answer</span>
+              <span class="track"><span class="fill warn" data-w="45"></span></span>
+              <span class="val">9/20</span>
+            </div>
+          </div>
+          <p style="margin-top:18px;">The model worked out what you were asking about <b>fourteen</b>
+          times out of twenty. It got a finished answer out <b>nine</b> times. Those two numbers measure
+          different things. Understanding the question is one job. Building an answer out of what you
+          know is a second job, and the model is failing the second one.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-lightbulb"></i> The gap between 14 and 9 is this whole session</h4>
+          <p>Your model is not confused about the question. It understands the question and then has
+          nowhere to go. Two things cause that, and you are fixing both today:</p>
+          <ol>
+            <li><b>It only gets one go.</b> It works out what is being asked, and then has to start
+            writing immediately. There is no second pass.</li>
+            <li><b>It has almost nowhere to store what it knows.</b> Under five per cent of the model is
+            built for holding facts. The rest is a lookup table for words.</li>
+          </ol>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             1. TWO LINES
+             ============================================================ -->
+        <h2>1. Your Whole Transformer Is Two Lines</h2>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-magnifying-glass"></i> Find them before you change anything</h4>
+          <p>Open <code>attention_engine.py</code> and find the class called <code>PredictionEngine</code>.
+          Inside its <code>forward</code> method are these two lines:</p>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; inside PredictionEngine.forward</div>
+            <pre>
+x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
+x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">That is the entire Transformer. Everything else in the file either
+          looks words up in a table or turns numbers back into words. These two lines are the only place
+          in your model where anything you could call reasoning happens.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-users"></i> What those two lines actually do</h4>
+          <p style="margin-bottom:0;">Picture the question <i>&ldquo;What is photosynthesis?&rdquo;</i>
+          as students sitting in a row, one for every word piece, each with a notepad. Both lines
+          update those notepads &mdash; but they get what they write from <b>completely different
+          places</b>, and the quickest way to see that is to look at which way the arrows point.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">The two lines, side by side</span>
+          <div class="t3-two">
+        <div class="t3-half lit-b">
+          <span class="t3-halftag">Line 1 &mdash; attention</span>
+          <div class="t3-shelfmini">what the model already knows</div>
+          <div class="t3-downs"><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span></div>
+          <div class="t3-wrow">
+            <span class="t3-chip">What</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip">is</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip">photo</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip me">synthesis</span>
+          </div>
+          <div class="t3-halfcap"><b>Sideways.</b> Each student reads the notepads to their left and copies what is useful. <span class="off">The shelf is not touched &mdash; nothing new comes in.</span></div>
+        </div>
+
+        <div class="t3-half lit-g">
+          <span class="t3-halftag">Line 2 &mdash; the feed-forward</span>
+          <div class="t3-shelfmini">what the model already knows</div>
+          <div class="t3-downs"><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span></div>
+          <div class="t3-wrow">
+            <span class="t3-chip">What</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip">is</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip">photo</span>
+            <span class="t3-sar">&#9654;</span>
+            <span class="t3-chip">synthesis</span>
+          </div>
+          <div class="t3-halfcap"><span class="off">Nobody looks sideways.</span> <b>Downwards.</b> Each student reaches into the shelf and adds something the row never had.</div>
+        </div>
+          </div>
+          <p style="margin-top:18px;"><b>Attention moves information around. The feed-forward brings
+          new information in.</b> Hold on to that, because the rest of the session depends on it
+          &mdash; if the model is going to know any facts at all, the feed-forward is the only place
+          they can live.</p>
+          <p class="t3-foot">The row runs left to right in the order the words were typed, and a
+          student can only read the notepads <i>to their left</i>. Nobody gets to see words that have
+          not been said yet.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Watch one round happen</span>
+          <p style="margin-top:4px;">Four word pieces in a row, in the order they were typed. Each one
+          starts with a single note: <b>what it knows about itself</b>. We are following the last one,
+          <b>synthesis</b>, because that is the piece the model uses to pick the first word of its
+          answer. Watch <i>where each new line on its notepad comes from</i>.</p>
+
+          <div class="t3-shelf" id="g-shelf">
+            <span class="t3-shelf-tag">The shelf &mdash; what the feed-forward already knows</span>
+            <div class="t3-chips">
+              <span>plants</span><span>sunlight</span><span>chlorophyll</span>
+              <span>leaves are green</span><span>a definition names the thing first</span>
+            </div>
+          </div>
+          <div class="t3-drop" id="g-drop">&#9660;</div>
+
+          <div class="t3-group" id="g-row">
+            <div class="t3-seat">
+              <span class="t3-seat-word">What</span>
+              <div class="t3-pad">
+                <div class="t3-note own"><b>its own</b>This is a question.</div>
+              </div>
+            </div>
+            <div class="t3-seat">
+              <span class="t3-seat-word">is</span>
+              <div class="t3-pad">
+                <div class="t3-note own"><b>its own</b>It wants a definition.</div>
+              </div>
+            </div>
+            <div class="t3-seat">
+              <span class="t3-seat-word">photo</span>
+              <div class="t3-pad">
+                <div class="t3-note own"><b>its own</b>Part of the word photosynthesis.</div>
+              </div>
+            </div>
+            <div class="t3-seat focus">
+              <span class="t3-you">we follow this one</span>
+              <span class="t3-seat-word">synthesis</span>
+              <div class="t3-pad" id="g-pad">
+                <div class="t3-note own"><b>its own</b>End of the word photosynthesis.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="t3-controls">
+            <button type="button" class="t3-btn" id="g-s1">Step 1 &mdash; look along the row</button>
+            <button type="button" class="t3-btn" id="g-s2">Step 2 &mdash; think alone</button>
+            <button type="button" class="t3-btn" id="g-reset">Start over</button>
+          </div>
+
+          <div class="t3-key">
+            <span><i style="background:#64748b;"></i> what it already knew about itself</span>
+            <span><i style="background:#38bdf8;"></i> copied from a student on its left</span>
+            <span><i style="background:#4ade80;"></i> came off the shelf</span>
+          </div>
+
+          <p class="t3-cap" id="g-cap">Every student has one note so far, about their own word. Nobody
+          has read anybody else yet.</p>
+          <p class="t3-foot">There is one shelf, not one each. Every student reaches into the same one
+          &mdash; which is why making it bigger in Activity 3 helps every word in the question at
+          once.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-layer-group"></i> Definition: one layer</h4>
+          <p>One look along the row plus one think on your own is called a <b>layer</b>. The number of
+          layers a model has is called its <b>depth</b>.</p>
+          <p style="margin-bottom:0;">Your model has a depth of one. It does a single look, a single
+          think, and then has to guess the next word. GPT-2 has twelve layers. GPT-3 has ninety-six.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             2. WHY ONE ROUND IS NOT ENOUGH
+             ============================================================ -->
+        <h2>2. Why One Round Is Not Enough</h2>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-rotate"></i> Round two does not start from the beginning</h4>
+          <p>Here is the part that makes depth worth anything at all.</p>
+          <p>When the group looks along the row a second time, they are not reading the original words
+          any more. They are reading each other's <b>updated notepads</b> &mdash; everything that was
+          worked out in round one. So round two starts from wherever round one finished, rather than
+          starting again from nothing.</p>
+          <p style="margin-bottom:0;">This is why six layers is not simply six times as much work. Each
+          round can do something that the round before it made possible. A fact that could not be
+          reached in round one is sitting on a notepad by round three.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Illustration &mdash; how understanding builds up over six rounds</span>
+          <p style="margin-top:4px;">Here is one plausible way that could play out for
+          <i>&ldquo;What is photosynthesis?&rdquo;</i> Step through it one round at a time.</p>
+          <div class="t3-rounds" id="rounds">
+            <div class="t3-round" data-r="1">
+              <span class="t3-rlab">1</span>
+              <span class="t3-rtext"><b>Look:</b> the word <i>photosynthesis</i> notices <i>What is</i>
+              sitting in front of it. <b>Think:</b> its note now reads <i>somebody is asking me for a
+              definition</i>.</span>
+            </div>
+            <div class="t3-round" data-r="2">
+              <span class="t3-rlab">2</span>
+              <span class="t3-rtext"><b>Look:</b> every other student reads that note. <b>Think:</b> the
+              whole row now knows a definition is coming, not a yes-or-no answer.</span>
+            </div>
+            <div class="t3-round" data-r="3">
+              <span class="t3-rlab">3</span>
+              <span class="t3-rtext"><b>Think:</b> with the type of question settled, the feed-forward
+              can bring in what it knows about the topic &mdash; plants, sunlight, leaves, green.</span>
+            </div>
+            <div class="t3-round" data-r="4">
+              <span class="t3-rlab">4</span>
+              <span class="t3-rtext"><b>Look:</b> those facts get shared along the row. <b>Think:</b>
+              they are sorted into what belongs in a definition and what is merely related.</span>
+            </div>
+            <div class="t3-round" data-r="5">
+              <span class="t3-rlab">5</span>
+              <span class="t3-rtext"><b>Think:</b> a shape for the sentence appears &mdash; name the
+              thing, say what it does, say what it needs.</span>
+            </div>
+            <div class="t3-round" data-r="6">
+              <span class="t3-rlab">6</span>
+              <span class="t3-rtext">Only now does the model pick the first word of its answer, with all
+              five earlier rounds behind it.</span>
+            </div>
+          </div>
+          <div class="t3-controls">
+            <button type="button" class="t3-btn" id="r-all">Walk through all six</button>
+            <button type="button" class="t3-btn" id="r-step">Next round</button>
+            <button type="button" class="t3-btn" id="r-reset">Start over</button>
+            <span id="r-status" style="font-size:.85rem;color:#94a3b8;">Round 0 of 6</span>
+          </div>
+          <p style="margin-top:18px;"><b>Your model stops after round 1.</b> It worked out that a
+          definition was wanted, and then its time was up. That is exactly the gap between understanding
+          fourteen questions and finishing nine answers.</p>
+          <p class="t3-foot">This panel shows the idea, not a readout from your model. Nobody can open up
+          a real layer and read a sentence out of it &mdash; the notes are only numbers.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             3. MOSTLY DICTIONARY
+             ============================================================ -->
+        <h2>3. Your Model Is Mostly Dictionary, Not Brain</h2>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-calculator"></i> Count your Session 2 model, part by part</h4>
+          <p style="margin-bottom:0;">A <b>parameter</b> is one number the model learned during training.
+          Here is where all 1,266,336 of yours currently sit.</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>Session 2 model &mdash; 1,266,336 parameters</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr>
+                <th>Part</th><th>What it is</th><th style="text-align:right;">Parameters</th><th style="text-align:right;">Share</th>
+              </tr>
+              <tr>
+                <td><code>token_embedding_table</code> + <code>lm_head</code></td>
+                <td>the dictionary, both directions</td>
+                <td class="num">1,185,792</td><td class="num">93.6%</td>
+              </tr>
+              <tr>
+                <td><code>position_embedding_table</code></td><td>where each word piece sits</td>
+                <td class="num">24,576</td><td class="num">1.9%</td>
+              </tr>
+              <tr style="background:#ecfeff;">
+                <td><b>the two lines</b></td><td><b>attention and the feed-forward &mdash; the thinking</b></td>
+                <td class="num"><b>55,968</b></td><td class="num"><b>4.4%</b></td>
+              </tr>
+              <tr style="background:#f8fafc;">
+                <td colspan="2"><b>Total</b></td><td class="num"><b>1,266,336</b></td><td class="num"><b>100%</b></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-triangle-exclamation"></i> Less than one twentieth of your model thinks</h4>
+          <p>The other 95.6% is a lookup table for turning words into numbers and back again. It is
+          necessary, but it does not reason about anything.</p>
+          <p style="margin-bottom:0;">This is worth knowing in general, not just here. When somebody says
+          a model has &ldquo;1.3 million parameters&rdquo;, that figure usually hides a split like this
+          one. <b>The size that matters is the size of the thinking part.</b></p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             4. THE THREE NUMBERS
+             ============================================================ -->
+        <h2>4. The Three Numbers That Change That</h2>
+
+        <p>Three settings decide how much of your model does the thinking. Play with the first two here
+        before you change them for real.</p>
+
+        <h3>4.1 &nbsp;<code>n_embd</code> &mdash; how wide the model is</h3>
+
+        <div class="tool-info-box">
+          <p style="margin-bottom:0;"><code>n_embd</code> is how many numbers describe a single word
+          piece. In the study group it is <b>how many lines fit on one student's notepad</b>. Ninety-six
+          numbers have to hold everything about that piece at once: what it means, which of twenty
+          subjects it belongs to, what usually comes after it, whether it is a noun or a verb, and
+          whatever attention just copied onto it. For four physics topics that was enough. For twenty
+          subjects the notepad fills up and things get written over the top of each other.</p>
+        </div>
+
+        <h3>4.2 &nbsp;<code>n_head</code> &mdash; how that width is sliced up</h3>
+
+        <div class="tool-info-box">
+          <p style="margin-bottom:0;">The heads do <b>not</b> each get their own numbers. They
+          <b>divide up</b> the numbers the model already has:
+          <code>head_size = n_embd &divide; n_head</code>. So more heads means more separate things the
+          model can look for at once, each described in less detail. Fewer heads means fewer things,
+          each described more richly. Try it &mdash; and watch the parameter count while you do.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Slice the budget yourself</span>
+          <div class="t3-slice">
+            <div class="t3-slicerail">
+              <div class="t3-slicebar" id="sl-bar"></div>
+            </div>
+            <div class="t3-controls" style="margin-top:14px;">
+              <span style="font-size:.82rem;color:#94a3b8;">width</span>
+              <button type="button" class="t3-btn" data-w="96">n_embd = 96</button>
+              <button type="button" class="t3-btn" data-w="256">n_embd = 256</button>
+              <span style="font-size:.82rem;color:#94a3b8;margin-left:10px;">heads</span>
+              <button type="button" class="t3-btn" data-h="1">1</button>
+              <button type="button" class="t3-btn" data-h="2">2</button>
+              <button type="button" class="t3-btn" data-h="4">4</button>
+              <button type="button" class="t3-btn" data-h="8">8</button>
+              <button type="button" class="t3-btn" data-h="16">16</button>
+            </div>
+            <div class="t3-slicefacts">
+              <div class="t3-fact">
+                <b>numbers per head</b>
+                <span class="n" id="sl-hs">24</span>
+              </div>
+              <div class="t3-fact locked">
+                <b>parameters in one attention layer</b>
+                <span class="n" id="sl-pp">36,960</span>
+              </div>
+            </div>
+            <div class="t3-warn" id="sl-warn"></div>
+          </div>
+          <p style="margin-top:14px;">Press every head button in turn. <b>The parameter count never
+          moves.</b> Heads are free &mdash; four heads of 64 and eight heads of 32 are the same budget,
+          cut up differently. Only the width changes the cost.</p>
+          <p class="t3-foot">Everyone who builds these models lands on somewhere between 32 and 128
+          numbers per head. At 96 wide you had 24, which was already thin. Today you go to 256 wide and
+          8 heads, which puts each head on 32.</p>
+        </div>
+
+        <h3>4.3 &nbsp;The feed-forward &mdash; where facts actually live</h3>
+
+        <div class="tool-info-box">
+          <p>Find <code>class FeedForward</code> in <code>attention_engine.py</code>. 96 numbers go in
+          and 96 come out, with nothing spread out in between.</p>
+          <p>That matters because of what a feed-forward really is. The first <code>nn.Linear</code>
+          spreads the word out into a wider set of numbers, and <b>each one of those middle numbers
+          behaves like a single thing the model has learned to recognise</b>. One lights up for
+          &ldquo;this is a chemical reaction&rdquo;, another for &ldquo;a unit is coming next&rdquo;. The
+          second <code>nn.Linear</code> then writes down what to do about whichever ones lit up.</p>
+          <p style="margin-bottom:0;">So the width of that middle is <b>a direct count of how many
+          separate things one layer can recognise</b>. Yours is 96.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">The same layer, before and after</span>
+          <div class="t3-pipes t3-pipescale">
+            <div class="t3-pipebox">
+              <h5>Now &mdash; 96 in, 96 out</h5>
+              <div class="t3-pipe">
+                <div class="t3-prow"><span class="plab">in</span><span class="pbar" data-w="9"></span><span class="pnum">96</span></div>
+                <div class="t3-prow"><span class="plab">middle</span><span class="pbar mid" data-w="9"></span><span class="pnum">96</span></div>
+                <div class="t3-prow"><span class="plab">out</span><span class="pbar" data-w="9"></span><span class="pnum">96</span></div>
+              </div>
+              <p>18,624 parameters. No room to lay anything out, so no room to recognise much.</p>
+            </div>
+            <div class="t3-pipebox after">
+              <h5>After &mdash; 256 in, 1,024 in the middle, 256 out</h5>
+              <div class="t3-pipe">
+                <div class="t3-prow"><span class="plab">in</span><span class="pbar" data-w="25"></span><span class="pnum">256</span></div>
+                <div class="t3-prow"><span class="plab">middle</span><span class="pbar mid" data-w="100"></span><span class="pnum">1,024</span></div>
+                <div class="t3-prow"><span class="plab">out</span><span class="pbar" data-w="25"></span><span class="pnum">256</span></div>
+              </div>
+              <p>525,568 parameters, in each of six layers. That bulge in the middle is the shelf.</p>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Every real Transformer makes that middle <b>four times wider</b>
+          than the model itself. Yours had no bulge at all, which is why the model could understand a
+          question and still have nothing to say about it.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">What the three changes do to the balance</span>
+          <div class="t3-bars t3-scale">
+            <div class="t3-bar">
+              <span class="lab">Now &mdash; the thinking part</span>
+              <span class="track"><span class="fill warn" data-w="4.4"></span></span>
+              <span class="val">4.4%</span>
+            </div>
+            <div class="t3-bar">
+              <span class="lab">After &mdash; the thinking part</span>
+              <span class="track"><span class="fill good" data-w="59.5"></span></span>
+              <span class="val">59.5%</span>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Your model stops being a dictionary with a little thinking attached
+          and becomes a thinking machine with a dictionary attached. It goes from <b>1,266,336</b>
+          parameters to <b>7,951,872</b>, and <b>3,153,408</b> of the new ones land in the feed-forward.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             5. WHAT YOU ARE BUILDING
+             ============================================================ -->
+        <h2>5. What You Are Building</h2>
+
+        <div class="t3-panel">
+          <h4 style="margin-bottom:14px;">The model, before and after</h4>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">Now</span>
+              <div class="t3-stack">
+                <div class="t3-slab edge">words in</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab">embeddings &mdash; 96 wide</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab blk">look &amp; think &times;1</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab">lm_head</div>
+              </div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">After</span>
+              <div class="t3-stack">
+                <div class="t3-slab edge">words in</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab">embeddings &mdash; 256 wide</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab blk">look &amp; think &times;6</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab edge">ln_f</div>
+                <div class="t3-arrow">&#9660;</div>
+                <div class="t3-slab">lm_head</div>
+              </div>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Everything gets wider, the middle runs six times instead of once,
+          and the feed-forward inside each of those six gets four times bigger. There is also one new
+          <code>LayerNorm</code> called <code>ln_f</code> at the end: after six rounds of adding things
+          on top of each other the numbers have grown, and <code>lm_head</code> works far better on tidy
+          ones.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+          <h4><i class="fas fa-triangle-exclamation"></i> Read this before you start editing</h4>
+          <p>Activities 1 to 3 all change <code>attention_engine.py</code>, and the model will not run
+          until all three are finished. Expect errors in between &mdash; that is normal.
+          <b>Activity 4 is where you find out whether you got it right.</b></p>
+          <p style="margin-bottom:0;">Your Session 2 model file, <code>qa_model_v5.pth</code>, will stop
+          loading into this code after today, because it came from a model with a different shape. You
+          still need it for the comparison in Activity 6, so do not delete it.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 1 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 1: Change the three numbers</h4>
+
+          <p style="margin-top:14px;">Open <code>attention_engine.py</code>. Near the top is the group of
+          settings:</p>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the OLD lines</div>
+            <pre>
+# Small, real numbers. Session 6 grows these up.
+n_embd = 96        # numbers used to describe each token
+block_size = 256   # how many tokens the AI can see at once
+batch_size = 64    # how many windows get trained on together, per step
+n_head = 4         # how many heads of attention the AI has
+            </pre>
+          </div>
+          <p>Replace them with this. Two numbers change and one is new:</p>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the NEW lines</div>
+            <pre>
+# The three numbers that decide what the model can do.
+n_embd = 256       # numbers used to describe each token
+block_size = 256   # how many tokens the AI can see at once
+batch_size = 64    # how many windows get trained on together, per step
+n_head = 8         # how many heads of attention the AI has
+n_layer = 6        # how many rounds of look-and-think it gets
+            </pre>
+          </div>
+          <p>A few lines further down, inside <code>MultiHeadAttention.forward</code>, one comment is
+          now wrong. Correct it so the file stays honest:</p>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; OLD, then NEW</div>
+            <pre>
+        # 4 heads x 24 numbers = the 96 we started with.
+
+        # 8 heads x 32 numbers = the 256 we started with.
+            </pre>
+          </div>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 2 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 2: Put the two lines in a box, and ask for six</h4>
+
+          <p style="margin-top:14px;">You cannot ask Python for &ldquo;six of those two lines&rdquo; while
+          they sit loose inside a method. First they need a name. That is all a
+          <code>TransformerBlock</code> is &mdash; a name for the two lines you already have, so you can
+          ask for six copies of them.</p>
+
+          <p style="margin-top:18px;"><strong>Step 1: Find what you are about to move</strong></p>
+          <ul>
+            <li>Scroll down to <code>class PredictionEngine</code>. It currently starts like this:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the OLD code, ten lines</div>
+            <pre>
+class PredictionEngine(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.ln1 = nn.LayerNorm(n_embd)   # tidy up before attention
+        self.ln2 = nn.LayerNorm(n_embd)   # tidy up before thinking
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd)
+        self.sa_head = MultiHeadAttention(n_head, n_embd // n_head)
+        self.ffwd = FeedForward(n_embd)
+        self.lm_head = nn.Linear(n_embd, vocab_size)
+            </pre>
+          </div>
+          <p>Four of those lines belong in the box, because they are the ones that need to exist six
+          separate times: <code>ln1</code>, <code>ln2</code>, <code>sa_head</code> and <code>ffwd</code>.
+          The other three stay where they are &mdash; there is only ever one dictionary.</p>
+
+          <p style="margin-top:18px;"><strong>Step 2: Replace all ten lines</strong></p>
+          <ul>
+            <li>Select from <code>class PredictionEngine(nn.Module):</code> down to and including
+            <code>self.lm_head = ...</code> &mdash; exactly the ten lines above.</li>
+            <li><b>Replace the whole lot</b> with this:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the NEW code</div>
+            <pre>
+class TransformerBlock(nn.Module):
+    """One round of look-and-think.
+
+    These are the same two lines the model always ran. Giving them a
+    name is what lets us ask for six of them instead of one."""
+    def __init__(self):
+        super().__init__()
+        self.ln1 = nn.LayerNorm(n_embd)   # tidy up before attention
+        self.ln2 = nn.LayerNorm(n_embd)   # tidy up before thinking
+        self.sa_head = MultiHeadAttention(n_head, n_embd // n_head)
+        self.ffwd = FeedForward(n_embd)
+
+    def forward(self, x):
+        x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
+        x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+        return x
+
+
+class PredictionEngine(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd)
+        # Six rounds, one after another. Round 2 reads what round 1 wrote,
+        # which is the whole reason six beats one.
+        self.blocks = nn.Sequential(*[TransformerBlock() for _ in range(n_layer)])
+        self.ln_f = nn.LayerNorm(n_embd)  # one last tidy before guessing
+        self.lm_head = nn.Linear(n_embd, vocab_size)
+            </pre>
+          </div>
+          <p><i class="fas fa-circle-info"></i> Compare the two <code>forward</code> bodies carefully. The
+          lines inside <code>TransformerBlock.forward</code> are the <b>exact</b> lines that used to sit
+          in <code>PredictionEngine.forward</code>, comments and all. You have not written any new logic
+          here. You have given old logic a name.</p>
+
+          <p style="margin-top:18px;"><strong>Step 3: Use the stack</strong></p>
+
+          <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+            <h4><i class="fas fa-triangle-exclamation"></i> These two lines now appear <u>twice</u></h4>
+            <p style="margin-bottom:0;">You just pasted a copy of them into
+            <code>TransformerBlock.forward</code>, and the originals are still sitting in
+            <code>PredictionEngine.forward</code> further down the file. <b>You want the second
+            pair.</b> Do not use find-and-replace for this one &mdash; scroll down and check you are
+            inside <code>PredictionEngine</code> before you change anything. Getting the wrong pair
+            makes the model call itself forever, and the error it prints will not tell you that.</p>
+          </div>
+
+          <ul>
+            <li>Scroll down to <code>PredictionEngine.forward</code> &mdash; past the whole of
+            <code>TransformerBlock</code> &mdash; and find these two lines:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the OLD lines</div>
+            <pre>
+        x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
+        x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+            </pre>
+          </div>
+          <ul>
+            <li>Replace <b>both</b> with these two:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the NEW lines</div>
+            <pre>
+        x = self.blocks(x)        # six rounds of look-and-think
+        x = self.ln_f(x)          # tidy up one last time
+            </pre>
+          </div>
+          <p><code>nn.Sequential</code> runs everything inside it in order and hands each block's output
+          to the next one. That handing-over is what makes six rounds beat one.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 3 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 3: Give the feed-forward some shelf space</h4>
+
+          <p style="margin-top:14px;">Two lines change, and they are the biggest single edit of the day.
+          Over three million of your new numbers land here.</p>
+          <ul>
+            <li>Find <code>class FeedForward</code> and these five lines:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the OLD lines</div>
+            <pre>
+        self.net = nn.Sequential(
+            nn.Linear(n_embd, n_embd),
+            nn.ReLU(),
+            nn.Linear(n_embd, n_embd),
+        )
+            </pre>
+          </div>
+          <ul>
+            <li>Replace them with this:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; the NEW lines</div>
+            <pre>
+        # Four times wider in the middle. This is where a Transformer
+        # keeps what it knows, and 256 in, 256 out left nowhere to put
+        # twenty subjects.
+        self.net = nn.Sequential(
+            nn.Linear(n_embd, 4 * n_embd),
+            nn.ReLU(),
+            nn.Linear(4 * n_embd, n_embd),
+        )
+            </pre>
+          </div>
+          <p>256 numbers go in, spread out into 1,024, then come back down to 256 &mdash; the shape you
+          saw in Section 4.3.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 4 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 4: Count it before you go any further</h4>
+
+          <p style="margin-top:14px;">Five seconds of checking now, and the number has to be exactly
+          right &mdash; the trained model you are about to download will only load into a model of
+          precisely this shape.</p>
+          <div class="code-block python">
+            <div class="code-header">terminal</div>
+            <pre>
+python -c "from attention_engine import model; print(sum(p.numel() for p in model.parameters()))"
+            </pre>
+          </div>
+          <p>You should see <b>7951872</b>. If you see anything else, this table tells you which activity
+          did not take:</p>
+          <div class="t3-tablebox">
+            <h4>Reading the number you got</h4>
+            <div class="t3-scroll">
+              <table class="t3-table">
+                <tr><th>If it says</th><th>Then</th></tr>
+                <tr style="background:#ecfeff;"><td class="num">7951872</td><td><b>Correct. Move on.</b></td></tr>
+                <tr><td class="num">1266336</td><td>None of the changes took. You are running the old file, or you saved into a different folder.</td></tr>
+                <tr><td class="num">1546368</td><td>Activity 2 worked. Activities 1 and 3 did not.</td></tr>
+                <tr><td class="num">4800768</td><td>Activity 3 is missing &mdash; the feed-forward is still 256 in, 256 out.</td></tr>
+                <tr><td>an error about <code>ln1</code></td><td><code>PredictionEngine</code> is still reaching for something that now lives inside <code>TransformerBlock</code>. You missed Step 3 of Activity 2.</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             6. TWO HOURS OF TRAINING
+             ============================================================ -->
+        <h2>6. The Two Hours You Are Not Spending</h2>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-hourglass-half"></i> What a six-times-bigger model costs to train</h4>
+          <p>Your model is six times bigger. Training is not six times slower &mdash; it is about
+          <b>eleven</b> times slower, because every one of the 14,000 steps now does roughly ten times
+          as much arithmetic.</p>
+          <p style="margin-bottom:0;">All three of these are real runs on the same free Colab T4, with
+          the same book and the same 14,000 steps.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge warn">Measured on a Colab T4 &mdash; 14,000 steps each, in minutes</span>
+          <div class="t3-bars t3-scale">
+            <div class="t3-bar">
+              <span class="lab">Session 1 model</span>
+              <span class="track"><span class="fill good" data-w="1"></span></span>
+              <span class="val">1.4</span>
+            </div>
+            <div class="t3-bar">
+              <span class="lab">Session 2 model</span>
+              <span class="track"><span class="fill good" data-w="9"></span></span>
+              <span class="val">11.0</span>
+            </div>
+            <div class="t3-bar">
+              <span class="lab">Today's model</span>
+              <span class="track"><span class="fill warn" data-w="100"></span></span>
+              <span class="val">121</span>
+            </div>
+          </div>
+          <p style="margin-top:18px;">Two hours and one minute. That is why you are being handed the
+          finished model &mdash; and it is worth knowing, because this is the real cost of the thing you
+          just built. <b>Every time a model gets bigger, somebody pays for it in time or money.</b></p>
+          <p class="t3-foot">There are ways to make this much faster without making the model smaller.
+          They are real engineering and they are worth learning, but they are not what today is about.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 5 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 5: Two small fixes in <code>train_qa.py</code></h4>
+
+          <p style="margin-top:14px;">You are not running this file today, but it has to be correct.
+          Anyone who wants to train the model themselves &mdash; and that is the advanced homework
+          &mdash; needs both of these.</p>
+
+          <p style="margin-top:16px;"><strong>Step 1: Smaller nudges for a bigger model</strong></p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the OLD line</div>
+            <pre>
+LEARNING_RATE = 3e-3   # pieces are small, so bigger nudges are safe (Session 5)
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the NEW lines</div>
+            <pre>
+# 3e-3 suited a 1.3M model. At 8M the same nudge overshoots and the loss
+# bounces instead of settling, so the steps get smaller as the model grows.
+LEARNING_RATE = 5e-4
+            </pre>
+          </div>
+          <p>The learning rate is how big a correction the model makes after each mistake. The right
+          size depends on how many parameters are being corrected at once, so a value that worked at
+          1.3 million is too big at 8 million. Leave it at <code>3e-3</code> and the loss bounces up and
+          down instead of settling.</p>
+
+          <p style="margin-top:18px;"><strong>Step 2: The new model's name</strong></p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+torch.save(model.state_dict(), "qa_model_v5.pth")
+print("Saved qa_model_v5.pth")
+
+torch.save(model.state_dict(), "qa_model_v6.pth")
+print("Saved qa_model_v6.pth")
+            </pre>
+          </div>
+          <ul>
+            <li>And in <code>talk_to_your_engine.py</code>, the same change to the default:</li>
+          </ul>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; OLD, then NEW</div>
+            <pre>
+checkpoint = sys.argv[1] if len(sys.argv) &gt; 1 else "qa_model_v5.pth"
+
+checkpoint = sys.argv[1] if len(sys.argv) &gt; 1 else "qa_model_v6.pth"
+            </pre>
+          </div>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 6 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 6: Pick up the model, and ask them both the same thing</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Download it</strong></p>
+          <ul>
+            <li>Download <code>qa_model_v6.pth</code> from the link your instructor gives you. It is
+            <b>44.5 MB</b>.</li>
+            <li>Put it in your project folder, next to <code>qa_model_v5.pth</code>.</li>
+            <li>It was trained for 14,000 steps from the exact code you just wrote. If Activity 4 gave
+            you 7,951,872, it will load. If it did not, fix that first &mdash; the error you get
+            otherwise is a wall of red text about <code>state_dict</code>.</li>
+          </ul>
+
+          <p style="margin-top:18px;"><strong>Step 2: Two models, five questions</strong></p>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; last session's model</div>
+            <pre>
+python talk_to_your_engine.py qa_model_v5.pth
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; today's model</div>
+            <pre>
+python talk_to_your_engine.py
+            </pre>
+          </div>
+
+          <p style="margin-top:14px;">Ask <b>both</b> models these five, and write both sets of answers
+          down:</p>
+          <ul>
+            <li>Why do satellites stay up instead of crashing?</li>
+            <li>Why does a straw look bent in a glass of water?</li>
+            <li>Why does iron go rusty?</li>
+            <li>What is photosynthesis?</li>
+            <li>Is air a mixture?</li>
+          </ul>
+
+          <p><b>Be honest in your notes.</b> Some of the new model's answers will still be wrong &mdash;
+          a model this size is not an encyclopaedia. The thing you are measuring is whether it
+          <i>finishes a thought</i>. Mark each answer <b>finished</b> or <b>fell apart</b>, then count
+          them for the table in the next section.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             7. WHAT CHANGED
+             ============================================================ -->
+        <h2>7. What This Changed</h2>
+
+        <div class="t3-tablebox">
+          <h4>Session 2 against today, side by side</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr>
+                <th>What</th>
+                <th style="text-align:right;">Session 2 &mdash; v5</th>
+                <th style="text-align:right;">Today &mdash; v6</th>
+              </tr>
+              <tr><td>Layers</td><td class="num">1</td><td class="num">6</td></tr>
+              <tr><td>Numbers per word piece</td><td class="num">96</td><td class="num">256</td></tr>
+              <tr><td>Attention heads</td><td class="num">4 &times; 24</td><td class="num">8 &times; 32</td></tr>
+              <tr><td>Feed-forward middle</td><td class="num">96</td><td class="num">1,024</td></tr>
+              <tr><td>Parameters</td><td class="num">1,266,336</td><td class="num">7,951,872</td></tr>
+              <tr><td>Share that does the thinking</td><td class="num">4.4%</td><td class="num">59.5%</td></tr>
+              <tr><td>Training time</td><td class="num">11.0 min</td><td class="num">121 min</td></tr>
+              <tr style="background:#ecfeff;"><td><b>Final loss</b></td><td class="num"><b>2.510</b></td><td class="num"><b>1.718</b></td></tr>
+              <tr><td>Your five answers &mdash; how many finished?</td><td class="num t3-fill-me">?</td><td class="num t3-fill-me">?</td></tr>
+            </table>
+          </div>
+          <p>Loss is a measure of how surprised the model is by the next word, so lower is better. A drop
+          from 2.510 to 1.718 is the biggest single improvement of this term.</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>Where the six and a half million new parameters landed</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr>
+                <th>Part</th>
+                <th style="text-align:right;">Session 2</th>
+                <th style="text-align:right;">Today</th>
+                <th style="text-align:right;">Times bigger</th>
+              </tr>
+              <tr><td>the dictionary, both directions</td><td class="num">1,185,792</td><td class="num">3,151,872</td><td class="num">2.7&times;</td></tr>
+              <tr style="background:#ecfeff;"><td><b>the feed-forward &mdash; stored knowledge</b></td><td class="num">18,624</td><td class="num"><b>3,153,408</b></td><td class="num"><b>169&times;</b></td></tr>
+              <tr><td>attention</td><td class="num">36,960</td><td class="num">1,574,400</td><td class="num">43&times;</td></tr>
+              <tr><td>everything else</td><td class="num">24,960</td><td class="num">72,192</td><td class="num">2.9&times;</td></tr>
+              <tr style="background:#f8fafc;"><td><b>Total</b></td><td class="num"><b>1,266,336</b></td><td class="num"><b>7,951,872</b></td><td class="num"><b>6.3&times;</b></td></tr>
+            </table>
+          </div>
+          <p>You did not spread them evenly. The feed-forward went up <b>169 times</b> while the model as
+          a whole grew six &mdash; and that is the change most likely to show up in the answers, because
+          that is where a Transformer keeps what it knows.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">The same question, put to both models</span>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">v5 &mdash; 1,266,336 parameters</span>
+              <div class="t3-ba-text">&ldquo;When you're in a sports, it can help with different weather patterns. When they get bigger or more active and see how much energy changes!&rdquo;</div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">v6 &mdash; 7,951,872 parameters</span>
+              <div class="t3-ba-text">&ldquo;Satellites stay in orbit because gravity pulls them toward Earth, but they're moving forward so fast that it keeps missing the ground.&rdquo;</div>
+            </div>
+          </div>
+          <p class="t3-foot">Both answering &ldquo;Why do satellites stay up instead of crashing?&rdquo;
+          Same book, same 14,000 steps, same sampling settings. The only difference is the size and
+          depth of the model.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================
+             8. STILL BROKEN
+             ============================================================ -->
+        <h2>8. What Is Still Broken</h2>
+
+        <div class="tool-info-box">
+          <p style="margin-bottom:0;">Being straight about what today did not fix. Every one of these has
+          a session attached to it.</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>Known problems, and when each one gets dealt with</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Problem</th><th>Fixed today?</th><th>Why, and when</th></tr>
+              <tr>
+                <td>Loses the thread halfway through an answer</td>
+                <td><b style="color:#16a34a;">Much better</b></td>
+                <td>This is exactly what depth and feed-forward width are for.</td>
+              </tr>
+              <tr>
+                <td>Confidently states things that are false</td>
+                <td><b style="color:#dc2626;">No</b></td>
+                <td>Twenty subjects is a lot to learn from one book read five times.</td>
+              </tr>
+              <tr style="background:#fffbeb;">
+                <td><b>A third of its effort goes on learning your questions</b></td>
+                <td><b style="color:#dc2626;">No</b></td>
+                <td>It is graded on predicting what <i>you</i> typed as hard as on what it should answer. <b>Session 4 fixes exactly this.</b></td>
+              </tr>
+              <tr>
+                <td>Never says &ldquo;I don't know&rdquo;</td>
+                <td><b style="color:#dc2626;">No</b></td>
+                <td>It was never taught that it is allowed to. Session 5.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             KNOWLEDGE CHECK
+             ============================================================ -->
+        <section class="knowledge-check">
+          <div class="check-header">
+            <i class="fas fa-microchip"></i>
+            <h2>Mission Diagnostic: Level 3.03</h2>
+          </div>
+          <div class="mcq-container">
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">1. What does a second layer get to work with that the first one did not?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. That is the whole idea behind depth. Layer 1 works out that a definition is wanted; layer 2 can act on that, because it reads layer 1's output instead of the raw words.">Whatever layer 1 worked out. It reads layer 1's output, not the original words.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The window is still 256 tokens. block_size was not touched today.">A bigger window, so it can see more of the question.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Every layer sees the whole question. What differs is how much work has already been done on it.">A different part of the question, split between the six layers.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-green">
+              <p class="mcq-question">2. Your feed-forward went from 18,624 parameters to 3,153,408. What is all that room for?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Deciding what to look at is attention's job. The feed-forward runs afterwards, on each word separately, with no looking around.">Deciding which words in the question to pay attention to.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Attention moves information along the row; the feed-forward is the only place new information comes in from. 96 in and 96 out gave it no shelf at all.">Storing what the model knows. That is where a Transformer keeps its facts.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The vocabulary is unchanged at 6,144 pieces. That is lm_head's business, not the feed-forward's.">Holding more vocabulary pieces, so fewer words get broken up.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-blue">
+              <p class="mcq-question">3. You changed <code>n_head</code> from 4 to 8. How many parameters did that add?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct, and you watched it happen in Section 4.2 -- the counter never moved. head_size = n_embd / n_head, so the heads divide up numbers the model already has. What changes is how many separate things the layer can look for at once, not how big it is.">None. The heads split <code>n_embd</code> between themselves, so eight smaller heads cost the same as four bigger ones.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="That would be true if each head had its own fixed size. It does not -- head_size is worked out as n_embd / n_head, so doubling the heads halves each one.">Twice as many, because there are twice as many heads.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The growth came from n_embd, the feed-forward and the six layers. Set n_head back to 4, re-run Activity 4, and you still get 7,951,872.">About a million, which is why the model grew to nearly 8 million.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-amber">
+              <p class="mcq-question">4. In Session 2, 93.6% of the model was the dictionary. Today it is 39.6%. Did the dictionary shrink?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="The vocabulary is unchanged at 6,144 pieces. What changed is how many numbers describe each one -- 96 became 256 -- so the dictionary got bigger, not smaller.">Yes, we cut the vocabulary down to make room.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. The dictionary went from 1,185,792 to 3,151,872 -- nearly three times bigger. The thinking part went up 59 times, so the dictionary is now a small share of a much bigger model.">No. It nearly tripled. The thinking part just grew far faster, so its share fell.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Nothing was removed today. Every change added parameters; the question is only where they went.">Yes, <code>lm_head</code> was removed and replaced by the six layers.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">5. Session 2's model trained in 11 minutes. Today's takes 121, which is eleven times longer for a model six times bigger. Why more than six?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Steps are unchanged at 14,000 in both runs. That is what makes the two times comparable at all.">Because we trained it for more steps.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. Counting the parameters and counting the work are two different things. Six layers each do attention and a feed-forward four times wider, so the arithmetic per step went up about ten times even though the parameter count went up six.">Counting parameters and counting work are different. Each step now does about ten times the arithmetic.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="It was the same free T4 for both runs. That is why the comparison is fair.">The GPU was slower that day.</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             HOMEWORK
+             ============================================================ -->
+        <section class="session-block homework-block">
+          <h2>Homework / Extension</h2>
+          <div class="homework-item standard">
+            <h3>Standard Task: Find The Breaking Point</h3>
+            <p>Go back to the slider in Section 4.2 and set the width to 256. Now work these out
+            <b>on paper</b> before you touch anything:</p>
+            <ul>
+              <li>How many numbers per head would you get with <b>32</b> heads? With <b>64</b>?</li>
+              <li>At what number of heads does each head get fewer numbers than it had in Session 2
+              (which was 24)?</li>
+              <li><code>n_embd</code> has to divide exactly by <code>n_head</code>. Which head counts
+              are <i>not</i> allowed at 256 wide?</li>
+            </ul>
+            <p style="margin-bottom:0;">Then actually set <code>n_head = 7</code> in your file and
+            run the count from Activity 4. Write down exactly what happens and why &mdash; then put it
+            back to 8 before you do anything else.</p>
+          </div>
+          <div class="homework-item advanced">
+            <h3>Advanced Task: Open The Model And Add It Up</h3>
+            <p>A <code>.pth</code> file is not magic. It is a dictionary of named lists of numbers, and
+            you can open it and look. Rebuild the table from Section 7 yourself, straight from the
+            file.</p>
+            <div class="code-block python">
+              <div class="code-header">count_it.py &mdash; start from this</div>
+              <pre>
+import torch
+
+saved = torch.load("qa_model_v6.pth", map_location="cpu")
+print("pieces in the file:", len(saved))
+
+total = 0
+for name, numbers in saved.items():
+    total += numbers.numel()
+    print(f"{name:52s} {tuple(numbers.shape)!s:20s} {numbers.numel():>9,}")
+
+print("\ntotal:", f"{total:,}")
+              </pre>
+            </div>
+            <p><b>You will not get 7,951,872.</b> You will get <b>11,097,600</b>, and that gap is the
+            whole point of this task.</p>
+            <ol>
+              <li>Find the entries that explain the difference. There are 48 of them, they all have the
+              same name, and they are all the same shape.</li>
+              <li>Work out what that thing is. <b>Go and look at where it is created</b> in
+              <code>attention_engine.py</code> &mdash; the answer is in one line of that file.</li>
+              <li>Explain in a sentence why it sits in the saved file but does <b>not</b> count as a
+              parameter.</li>
+            </ol>
+            <p style="margin-bottom:0;">Then group the rest and check you can reproduce all four rows
+            of the Section 7 table: <b>3,151,872</b> for the dictionary, <b>3,153,408</b> for the
+            feed-forward, <b>1,574,400</b> for attention, and <b>72,192</b> for everything else.</p>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             TROUBLESHOOTING
+             ============================================================ -->
+        <details class="collapsible-box">
+          <summary><strong>&#9881; Troubleshooting &amp; FAQs</strong></summary>
+          <div class="faq-item">
+            <h4>The parameter count is not 7,951,872</h4>
+            <p>Activity 4 has a table of the common wrong numbers and what each one means. Work through
+            that before anything else. <b>The downloaded model will not load until this number is
+            exactly right.</b></p>
+          </div>
+          <div class="faq-item">
+            <h4><code>AttributeError: 'PredictionEngine' object has no attribute 'ln1'</code></h4>
+            <p>Step 2 of Activity 2 is done but Step 3 is not. <code>ln1</code> now lives inside
+            <code>TransformerBlock</code>, so <code>PredictionEngine.forward</code> can no longer reach
+            it. Replace those two lines with <code>self.blocks(x)</code> and <code>self.ln_f(x)</code>.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>RuntimeError: Error(s) in loading state_dict</code> &mdash; a wall of red text</h4>
+            <p>Read the <b>first two lines</b> of it, not all of it. If it says <i>Missing key(s)</i> with
+            names like <code>blocks.3.sa_head...</code>, your model has fewer layers than the file
+            expects &mdash; Activity 1 or 2 did not take. If it says <i>size mismatch</i>, your
+            <code>n_embd</code> or feed-forward is wrong. Either way, run Activity 4 and fix the count
+            first.</p>
+          </div>
+          <div class="faq-item">
+            <h4>I am loading <code>qa_model_v5.pth</code> and it fails</h4>
+            <p>Expected. Last session's model has one layer and 96 numbers per piece; today's code wants
+            six layers and 256. They cannot be swapped. For the Activity 6 comparison, run
+            <code>talk_to_your_engine.py qa_model_v5.pth</code> <b>before</b> you make today's changes,
+            or keep a copy of the Session 2 folder.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>ValueError</code> or a shape error mentioning heads</h4>
+            <p><code>n_embd</code> must divide exactly by <code>n_head</code>. 256 &divide; 8 is 32, which
+            is fine. 256 &divide; 7 is not a whole number, and neither is 96 &divide; 8 &mdash; so if you
+            changed one of the two numbers and not the other, this is why.</p>
+          </div>
+          <div class="faq-item">
+            <h4>The new model still gets things wrong</h4>
+            <p>It will. 7,951,872 numbers is tiny next to anything you have used online, and it has read
+            one book about twenty subjects. What you should see is answers that <b>hold together</b> for
+            a whole sentence, which the Session 2 model mostly could not do. Being right more often is
+            what Sessions 4 and 5 are for.</p>
+          </div>
+        </details>
+      </section>
+
+
+      <div class="completion-zone">
+        <div class="completion-card">
+          <label class="checkbox-container">
+            <input type="checkbox" id="session-check">
+            <span class="checkmark"></span>
+            I moved the two lines into a TransformerBlock, stacked six of them, gave the feed-forward four times the room, checked my model had 7,951,872 parameters, and compared the trained version against last session's model.
+          </label>
+        </div>
+      </div>
+
+      <div class="session-nav" style="display:flex;justify-content:space-between;margin-top:30px;">
+        <a href="t3_session2.html" class="btn-secondary">Previous Session</a>
+        <button class="btn-primary" id="next-btn">Mark Complete &amp; Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </main>
+  </div>
+
+  <div id="mcq-modal" class="mcq-modal">
+    <div class="mcq-modal-content">
+      <div id="mcq-modal-status-bar"></div>
+      <div class="mcq-modal-body">
+        <div id="mcq-modal-icon"></div>
+        <h3 id="mcq-modal-title">Checking Logic...</h3>
+        <p id="mcq-modal-feedback"></p>
+        <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../nexus-core.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    (function () {
+      function $(id) { return document.getElementById(id); }
+      var slow = window.matchMedia &&
+                 window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function group(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+      /* ================================================================
+         SLICE THE BUDGET
+         head_size = n_embd / n_head, so the heads divide up numbers the
+         model already has. The parameter counter is the point of the
+         widget: it must never move when the head buttons are pressed.
+            attention parameters = 4 * n_embd^2 + n_embd
+            (Query, Key, Value and the projection, plus its bias)
+         ================================================================ */
+      var slW = 96, slH = 4;
+      var bar = $('sl-bar');
+
+      function slPaint() {
+        if (!bar) { return; }
+        var hs = slW / slH;
+        bar.style.width = (slW / 256 * 100) + '%';
+        bar.innerHTML = '';
+        for (var i = 0; i < slH; i++) {
+          var seg = document.createElement('div');
+          seg.className = 't3-seg';
+          seg.style.animationDelay = (slow ? 0 : i * 35) + 'ms';
+          seg.innerHTML = '<b>' + hs + '</b><span>head ' + (i + 1) + '</span>';
+          bar.appendChild(seg);
+        }
+        $('sl-hs').textContent = hs;
+        $('sl-pp').textContent = group(4 * slW * slW + slW);
+
+        var msg = '';
+        if (slH === 1) {
+          msg = 'One head can only look for one kind of relationship at a time. '
+              + 'No real model does this.';
+        } else if (hs < 16) {
+          msg = 'Only ' + hs + ' numbers per head. That is too few to describe a useful '
+              + 'pattern — the heads start getting in each other’s way.';
+        } else if (hs > 128) {
+          msg = hs + ' numbers is more than a single head can use well. Slice it finer.';
+        }
+        $('sl-warn').textContent = msg;
+
+        var btns = document.querySelectorAll('[data-w],[data-h]');
+        for (var b = 0; b < btns.length; b++) {
+          var el = btns[b], on =
+            (el.hasAttribute('data-w') && +el.getAttribute('data-w') === slW) ||
+            (el.hasAttribute('data-h') && +el.getAttribute('data-h') === slH);
+          el.style.background = on ? '#0ea5e9' : '';
+          el.style.borderColor = on ? '#0ea5e9' : '';
+          el.style.color = on ? '#04222f' : '';
+        }
+      }
+
+      if (bar) {
+        var all = document.querySelectorAll('[data-w],[data-h]');
+        for (var i = 0; i < all.length; i++) {
+          all[i].addEventListener('click', function () {
+            if (this.hasAttribute('data-w')) { slW = +this.getAttribute('data-w'); }
+            else { slH = +this.getAttribute('data-h'); }
+            slPaint();
+          });
+        }
+        slPaint();
+      }
+
+      /* ================================================================
+         THE STUDY GROUP, ONE ROUND AT A TIME
+         ================================================================ */
+      var pad = $('g-pad'), shelf = $('g-shelf'), drop = $('g-drop'), cap = $('g-cap');
+      var seats = Array.prototype.slice.call(document.querySelectorAll('#g-row .t3-seat'));
+      var gTimers = [], gStage = 0, gSeen = false;
+      var START = pad ? pad.innerHTML : '';
+
+      var COPIED = [
+        [0, 'What',  'This is a question.'],
+        [1, 'is',    'It wants a definition.'],
+        [2, 'photo', 'Part of the word photosynthesis.']
+      ];
+      var KNOWN = [
+        'Plants, sunlight, leaves, chlorophyll.',
+        'A definition names the thing first.'
+      ];
+
+      function gLater(fn, ms) { gTimers.push(setTimeout(fn, ms)); }
+
+      function gNote(kind, from, text) {
+        var el = document.createElement('div');
+        el.className = 't3-note arrived ' + kind;
+        el.innerHTML = '<b>' + from + '</b>' + text;
+        pad.appendChild(el);
+      }
+
+      function gButtons() {
+        if ($('g-s1')) { $('g-s1').disabled = gStage !== 0; }
+        if ($('g-s2')) { $('g-s2').disabled = gStage !== 1; }
+      }
+
+      function gReset() {
+        for (var i = 0; i < gTimers.length; i++) { clearTimeout(gTimers[i]); }
+        gTimers = [];
+        gStage = 0;
+        pad.innerHTML = START;
+        for (var j = 0; j < seats.length; j++) { seats[j].classList.remove('sending'); }
+        shelf.classList.remove('lit');
+        drop.classList.remove('lit');
+        cap.innerHTML = 'Every student has one note so far, about their own word. Nobody has read '
+          + 'anybody else yet.';
+        gButtons();
+      }
+
+      function gStep1() {
+        if (gStage !== 0) { return; }
+        gStage = 1; gButtons();
+        cap.innerHTML = '<b>Attention.</b> Reading the notepads to the left, one student at a time.';
+        COPIED.forEach(function (row, n) {
+          var t = slow ? n * 200 : n * 900;
+          gLater(function () { seats[row[0]].classList.add('sending'); }, t);
+          gLater(function () { gNote('copied', 'copied from ' + row[1], row[2]); },
+                 t + (slow ? 60 : 400));
+          gLater(function () { seats[row[0]].classList.remove('sending'); },
+                 t + (slow ? 120 : 800));
+        });
+        gLater(function () {
+          cap.innerHTML = 'Three blue notes, and every one of them is a sentence that was already '
+            + 'sitting somewhere in the row. Attention only <b>moved</b> them across. It did not know '
+            + 'one single fact about plants.';
+        }, slow ? 700 : 2700);
+      }
+
+      function gStep2() {
+        if (gStage !== 1) { return; }
+        gStage = 2; gButtons();
+        cap.innerHTML = '<b>The feed-forward.</b> No looking around now. Reaching into the shelf.';
+        shelf.classList.add('lit');
+        drop.classList.add('lit');
+        KNOWN.forEach(function (text, n) {
+          gLater(function () { gNote('known', 'off the shelf', text); },
+                 slow ? 80 + n * 80 : 700 + n * 950);
+        });
+        gLater(function () {
+          shelf.classList.remove('lit');
+          drop.classList.remove('lit');
+          cap.innerHTML = 'Now look at the colours. <b>Nothing green could ever have come from looking '
+            + 'along the row</b> — nobody in it had heard of chlorophyll. New facts only get in '
+            + 'through the shelf. That shelf is the feed-forward, and in Activity 3 you make it more '
+            + 'than ten times bigger.';
+        }, slow ? 400 : 2700);
+      }
+
+      if (pad) {
+        if ($('g-s1')) { $('g-s1').addEventListener('click', gStep1); }
+        if ($('g-s2')) { $('g-s2').addEventListener('click', gStep2); }
+        if ($('g-reset')) { $('g-reset').addEventListener('click', gReset); }
+        gButtons();
+        if ('IntersectionObserver' in window && !slow) {
+          var go = new IntersectionObserver(function (entries) {
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].isIntersecting && !gSeen) {
+                gSeen = true;
+                go.disconnect();
+                gLater(gStep1, 600);
+                gLater(gStep2, 7200);
+              }
+            }
+          }, { threshold: 0.2 });
+          go.observe(pad.parentNode.parentNode.parentNode);
+        }
+      }
+
+      /* ================================================================
+         THE SIX ROUNDS
+         ================================================================ */
+      var rounds = Array.prototype.slice.call(
+        document.querySelectorAll('#rounds .t3-round'));
+      var at = 0, timer = null, played = false;
+
+      function paint() {
+        for (var i = 0; i < rounds.length; i++) {
+          rounds[i].classList.toggle('on', i === at - 1);
+          rounds[i].classList.toggle('done', i < at - 1);
+        }
+        var s = $('r-status');
+        if (s) { s.textContent = 'Round ' + at + ' of ' + rounds.length; }
+        var step = $('r-step');
+        if (step) { step.disabled = at >= rounds.length; }
+      }
+
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+      function stepOne() { if (at < rounds.length) { at += 1; paint(); } }
+
+      function playAll() {
+        stop();
+        at = 0; paint();
+        timer = setInterval(function () {
+          stepOne();
+          if (at >= rounds.length) { stop(); }
+        }, slow ? 350 : 950);
+      }
+
+      if (rounds.length) {
+        if ($('r-step')) { $('r-step').addEventListener('click', function () { stop(); stepOne(); }); }
+        if ($('r-all')) { $('r-all').addEventListener('click', playAll); }
+        if ($('r-reset')) { $('r-reset').addEventListener('click', function () { stop(); at = 0; paint(); }); }
+        paint();
+        if ('IntersectionObserver' in window && !slow) {
+          var ro = new IntersectionObserver(function (entries) {
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].isIntersecting && !played) {
+                played = true;
+                ro.disconnect();
+                setTimeout(playAll, 400);
+              }
+            }
+          }, { threshold: 0.25 });
+          ro.observe(rounds[0].parentNode);
+        }
+      }
+
+      /* ================================================================
+         BARS AND PIPES
+         Each fill carries its own width in data-w. Filled when scrolled
+         to, and unconditionally after 2 seconds, so nothing is ever left
+         sitting at zero.
+         ================================================================ */
+      var panels = Array.prototype.slice.call(
+        document.querySelectorAll('.t3-scale, .t3-pipescale'));
+
+      function fill(panel) {
+        if (panel.dataset.filled === '1') { return; }
+        panel.dataset.filled = '1';
+        var bars = panel.querySelectorAll('.fill, .pbar');
+        for (var i = 0; i < bars.length; i++) {
+          (function (b, n) {
+            var w = parseFloat(b.getAttribute('data-w') || '0');
+            setTimeout(function () { b.style.width = w + '%'; }, slow ? 0 : 70 + n * 110);
+          })(bars[i], i);
+        }
+      }
+
+      function fillEverything() {
+        for (var i = 0; i < panels.length; i++) { fill(panels[i]); }
+      }
+
+      if (panels.length) {
+        if ('IntersectionObserver' in window && !slow) {
+          var bo = new IntersectionObserver(function (entries) {
+            for (var i = 0; i < entries.length; i++) {
+              if (entries[i].isIntersecting) {
+                fill(entries[i].target);
+                bo.unobserve(entries[i].target);
+              }
+            }
+          }, { threshold: 0.2, rootMargin: '0px 0px -40px 0px' });
+          for (var j = 0; j < panels.length; j++) { bo.observe(panels[j]); }
+          setTimeout(fillEverything, 2000);
+        } else {
+          fillEverything();
+        }
+      }
+
+    })();
+  </script>
+
+</body>
+
+</html>
