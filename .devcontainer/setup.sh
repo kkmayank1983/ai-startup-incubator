@@ -19,4 +19,4 @@ venv/bin/python -m pip install --upgrade pip --quiet
 venv/bin/python -m pip install -r requirements.txt
 
 echo
-echo "== Setup complete. Run:  source venv/bin/activate =="
+echo "== Setup complete. Try:  python torch_basics.py =="

@@ -5,17 +5,17 @@
 1. Sign in to GitHub.
 2. On this page, click **Code → Codespaces → Create codespace on main**.
 3. If it asks for `OPENAI_API_KEY`, paste your OpenAI key.
-4. Wait for setup to finish the first time (a few minutes). The terminal will say
-   **Setup complete**.
+4. Wait for setup to finish the first time (a few minutes). The editor opens when
+   it's done.
 5. In the terminal:
 
    ```
-   source venv/bin/activate
    python torch_basics.py
    ```
 
-Everything is already installed. You do **not** need to run `python -m venv venv`
-or `pip install`.
+Everything is already installed and the venv is always on. You do **not** need to
+run `python -m venv venv`, `pip install` or `source venv/bin/activate`. Running the
+activate line anyway is harmless.
 
 ## Something broke?
 

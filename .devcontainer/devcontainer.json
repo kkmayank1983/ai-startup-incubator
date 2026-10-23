@@ -6,6 +6,16 @@
   // Runs once, when the codespace is first created.
   "postCreateCommand": "bash .devcontainer/setup.sh",
 
+  // Don't open the editor until venv/ is built, or students run python too early.
+  "waitFor": "postCreateCommand",
+
+  // venv/bin comes first on PATH, so "python" and "pip" are the course venv
+  // in every terminal, whether or not the student ran "source venv/bin/activate".
+  "remoteEnv": {
+    "PATH": "${containerWorkspaceFolder}/venv/bin:${containerEnv:PATH}",
+    "VIRTUAL_ENV": "${containerWorkspaceFolder}/venv"
+  },
+
   // Codespaces asks each student for their key when they create a codespace.
   // It becomes an environment variable, so load_dotenv() / ChatOpenAI pick it up
   // without a .env file.
