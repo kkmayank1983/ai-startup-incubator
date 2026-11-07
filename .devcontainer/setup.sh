@@ -13,6 +13,9 @@ find . -name '*.xz' -not -path './.git/*' -not -path './venv/*' | while read -r 
   fi
 done
 
+echo "== Downloading trained models =="
+bash .devcontainer/get_models.sh
+
 echo "== Building venv/ =="
 python3 -m venv venv
 venv/bin/python -m pip install --upgrade pip --quiet
