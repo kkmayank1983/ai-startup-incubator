@@ -10,5 +10,4 @@ __pycache__/
 /tokens.pt
 
 # Downloaded by .devcontainer/get_models.sh
-/qa_model_v7.pth
 /qa_model_v8.pth

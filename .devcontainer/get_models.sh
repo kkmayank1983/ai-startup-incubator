@@ -10,7 +10,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 BASE="https://github.com/kkmayank1983/ai-startup-incubator/releases/download/models"
-MODELS="qa_model_v7.pth qa_model_v8.pth"
+MODELS="qa_model_v8.pth"
 
 for f in $MODELS; do
   if [ -f "$f" ]; then
