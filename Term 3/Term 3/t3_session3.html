@@ -437,7 +437,7 @@
           </div>
           <div>
             <b>Next</b>
-            Session 4 stops the model wasting a third of its effort on your questions.
+            Session 4 stops the model wasting a quarter of its effort on your questions.
           </div>
         </div>
 
@@ -1039,13 +1039,14 @@ x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
             <div class="code-header">attention_engine.py &mdash; the OLD lines</div>
             <pre>
 # Small, real numbers. Session 6 grows these up.
-n_embd = 96        # numbers used to describe each token
-block_size = 256   # how many tokens the AI can see at once
+n_embd = 256        # numbers used to describe each token
+block_size = 64    # how many tokens the AI can see at once
 batch_size = 64    # how many windows get trained on together, per step
 n_head = 4         # how many heads of attention the AI has
             </pre>
           </div>
-          <p>Replace them with this. Two numbers change and one is new:</p>
+          <p>Replace them with this. Two numbers change and one is new. (Your file may say
+          <code>n_embd = 96</code> and <code>block_size = 256</code> instead; replace the block either way.)</p>
           <div class="code-block python">
             <div class="code-header">attention_engine.py &mdash; the NEW lines</div>
             <pre>
@@ -1251,9 +1252,11 @@ python -c "from attention_engine import model; print(sum(p.numel() for p in mode
               <table class="t3-table">
                 <tr><th>If it says</th><th>Then</th></tr>
                 <tr style="background:#ecfeff;"><td class="num">7951872</td><td><b>Correct. Move on.</b></td></tr>
-                <tr><td class="num">1266336</td><td>None of the changes took. You are running the old file, or you saved into a different folder.</td></tr>
+                <tr><td class="num">3563264</td><td>None of the changes took. You are running the old file, or you saved into a different folder. (1266336 means the same, if your file started at 96 wide.)</td></tr>
+                <tr><td class="num">7902720</td><td>Activity 1 is missing &mdash; six wide layers, but <code>block_size</code> is still 64, so the downloaded model will not fit.</td></tr>
                 <tr><td class="num">1546368</td><td>Activity 2 worked. Activities 1 and 3 did not.</td></tr>
-                <tr><td class="num">4800768</td><td>Activity 3 is missing &mdash; the feed-forward is still 256 in, 256 out.</td></tr>
+                <tr><td class="num">5587968</td><td>Activity 3 is missing &mdash; the feed-forward is still 256 in, 256 out.</td></tr>
+                <tr><td class="num">4006400</td><td>Activity 2 is missing &mdash; wide and four times deeper in the middle, but still only one layer.</td></tr>
                 <tr><td>an error about <code>ln1</code></td><td><code>PredictionEngine</code> is still reaching for something that now lives inside <code>TransformerBlock</code>. You missed Step 3 of Activity 2.</td></tr>
               </table>
             </div>
@@ -1467,7 +1470,7 @@ python talk_to_your_engine.py
             </div>
           </div>
           <p class="t3-foot">Both are answering &ldquo;Why do satellites stay up instead of
-          crashing?&rdquo; Same book, same 14,000 steps, same sampling settings. The only difference is
+          crashing?&rdquo; Same book, same 14,000 steps, both answers picked the same way. The only difference is
           the size and depth of the model.</p>
         </div>
 
@@ -1499,7 +1502,7 @@ python talk_to_your_engine.py
                 <td>Twenty subjects is a lot to learn from one book read five times.</td>
               </tr>
               <tr style="background:#fffbeb;">
-                <td><b>A third of its effort goes on learning your questions</b></td>
+                <td><b>A quarter of its effort goes on learning your questions</b></td>
                 <td><b style="color:#dc2626;">No</b></td>
                 <td>It is graded on predicting what <i>you</i> typed as hard as on what it should answer. <b>Session 4 fixes exactly this.</b></td>
               </tr>

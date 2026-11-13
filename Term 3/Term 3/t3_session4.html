@@ -1,0 +1,1298 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Learn From The Answer</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* INSTRUCTOR NOTE: every number on this page is measured (v7 trained on a
+       Colab T4 on 2026-10-30, scored with test_session4.py). Nothing to fill in. */
+
+    /* code blocks: long lines scroll instead of being cut off */
+    .lesson-body .code-block pre { overflow-x:auto; scrollbar-width:thin; scrollbar-color:#64748b #1e293b; padding-bottom:14px; }
+    .lesson-body .code-block pre::-webkit-scrollbar { height:11px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-track { background:#1e293b; border-radius:999px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-thumb { background:#64748b; border-radius:999px; border:2px solid #1e293b; }
+
+    /* boxed data tables */
+    .t3-tablebox { background:#fff; border:1px solid #cbd5e1; border-radius:10px; padding:4px 0 0; margin:1.5rem 0; overflow:hidden; box-shadow:0 1px 4px rgba(15,23,42,.05); }
+    .t3-tablebox > h4 { margin:0; padding:13px 18px; background:#f1f5f9; border-bottom:1px solid #cbd5e1; font-size:.92rem; color:#0f172a; }
+    .t3-tablebox > .t3-scroll { padding:0 6px 6px; }
+    .t3-tablebox > p { margin:0; padding:12px 18px 14px; font-size:.92rem; color:#475569; border-top:1px solid #e2e8f0; line-height:1.6; }
+
+    /* roadmap + recap strip */
+    .t3-map { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+    .t3-map-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 16px 14px; box-shadow:0 2px 10px rgba(15,23,42,.05); }
+    .t3-map-card h3 { margin:8px 0 6px; font-size:.98rem; color:#0f172a; }
+    .t3-map-card p { margin:0; font-size:.83rem; color:#64748b; line-height:1.5; }
+    .t3-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:8px; background:#0ea5e9; color:#fff; font-weight:700; font-size:.82rem; }
+    .t3-recap { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0; }
+    .t3-recap > div { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 14px; font-size:.85rem; color:#475569; line-height:1.5; }
+    .t3-recap b { display:block; color:#0f172a; margin-bottom:4px; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+    .t3-recap .today { background:#ecfeff; border-color:#67e8f9; }
+    .t3-recap .today b { color:#0e7490; }
+
+    /* dark demo panel */
+    .t3-panel { border:1px solid #1e293b; border-radius:14px; padding:24px 26px; margin:22px 0; background:#0f172a; box-shadow:0 8px 26px rgba(2,6,23,.28); }
+    .t3-panel, .t3-panel p, .t3-panel li, .t3-panel td, .t3-panel th { color:#cbd5e1; }
+    .t3-panel h3, .t3-panel h4 { color:#f8fafc; margin-top:0; }
+    .t3-panel b, .t3-panel strong { color:#f8fafc; }
+    .t3-panel code { background:#1e293b; color:#7dd3fc; padding:2px 7px; border-radius:4px; }
+    .t3-panel p { font-size:.95rem; line-height:1.65; }
+    .t3-badge { display:inline-block; background:#0ea5e9; color:#04222f; font-weight:700; font-size:.78rem; letter-spacing:.06em; padding:4px 14px; border-radius:999px; margin-bottom:10px; }
+    .t3-badge.good { background:#22c55e; color:#052e16; }
+    .t3-badge.warn { background:#f59e0b; color:#3b2406; }
+    .t3-foot { font-size:.82rem; color:#64748b; margin-top:12px; }
+    .t3-btn { font-family:inherit; font-size:.85rem; padding:8px 18px; border-radius:999px; border:1px solid #334155; background:#1e293b; color:#e2e8f0; cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease; }
+    .t3-btn:hover:not([disabled]) { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-btn.on { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px; }
+
+    /* tables */
+    .t3-table { width:100%; border-collapse:collapse; margin:0; font-size:.9rem; }
+    .t3-table th, .t3-table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+    .t3-table th { font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; color:#64748b; background:#f8fafc; }
+    .t3-table tr:last-child td { border-bottom:none; }
+    .t3-table td.num { font-family:monospace; text-align:right; font-variant-numeric:tabular-nums; }
+    .t3-panel .t3-table { margin:14px 0; }
+    .t3-panel .t3-table th { background:transparent; }
+    .t3-panel .t3-table th, .t3-panel .t3-table td { border-bottom-color:#1e293b; }
+    .t3-scroll { overflow-x:auto; }
+    .t3-fill-me { font-family:monospace; color:#b45309; font-weight:700; }
+
+    /* bars */
+    .t3-bars { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+    .t3-bar { display:grid; grid-template-columns:168px 1fr 70px; gap:12px; align-items:center; font-size:.86rem; }
+    .t3-bar .lab { color:#94a3b8; }
+    .t3-bar .track { display:block; background:#1e293b; border-radius:999px; height:15px; overflow:hidden; }
+    .t3-bar .fill { display:block; width:0; height:100%; border-radius:999px; background:#0ea5e9; transition:width 1.1s cubic-bezier(.22,.9,.3,1); }
+    .t3-bar .fill.good { background:#22c55e; }
+    .t3-bar .fill.warn { background:#f59e0b; }
+    .t3-bar .fill.dim { background:#475569; }
+    .t3-bar .val { font-family:monospace; color:#f8fafc; text-align:right; font-variant-numeric:tabular-nums; }
+
+    /* the red-pen widget */
+    .t4-block { background:#0b1424; border:1px solid #334155; border-radius:12px; padding:16px 18px; line-height:2.1; font-family:monospace; font-size:.86rem; }
+    .t4-tok { display:inline-block; padding:2px 7px; margin:2px 2px; border-radius:6px; border:1px solid transparent; transition:opacity .35s ease, background .35s ease; }
+    .t4-tok.topic  { background:#1e293b; color:#94a3b8; border-color:#334155; }
+    .t4-tok.tag    { background:#1e293b; color:#64748b; border-color:#334155; font-weight:700; }
+    .t4-tok.user   { background:#1c2f4a; color:#bae6fd; border-color:#1e4a6e; }
+    .t4-tok.answer { background:#13301f; color:#dcfce7; border-color:#166534; }
+    .t4-tok.graded { box-shadow:0 0 0 2px #f87171; }
+    .t4-tok.off { opacity:.28; }
+    .t4-key { display:flex; gap:18px; flex-wrap:wrap; font-size:.79rem; color:#94a3b8; margin-top:14px; }
+    .t4-key span { display:flex; align-items:center; gap:7px; }
+    .t4-key i { width:13px; height:13px; border-radius:3px; display:inline-block; }
+    .t4-cap { font-size:.92rem; line-height:1.6; color:#cbd5e1; margin-top:14px; min-height:3em; }
+    .t4-cap b { color:#f8fafc; }
+
+    /* before / after cards */
+    .t3-ba { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .t3-ba-card { border-radius:12px; padding:16px 18px; border:1px solid #334155; background:#111f36; }
+    .t3-ba-card.after { border-color:#16a34a; background:#0d2318; }
+    .t3-ba-tag { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; margin-bottom:8px; display:block; color:#f87171; }
+    .t3-ba-card.after .t3-ba-tag { color:#4ade80; }
+    .t3-ba-text { font-size:.9rem; line-height:1.6; color:#e2e8f0; min-height:5.2em; }
+
+    /* ---------- Session 4 clarity additions ---------- */
+    .t4-plain { background:#fffbeb; border:1px solid #fcd34d; border-left:5px solid #f59e0b; border-radius:10px; padding:14px 18px; margin:18px 0; font-size:1.02rem; line-height:1.65; color:#1e293b; }
+    .t4-plain b.lab { display:block; font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#b45309; margin-bottom:4px; }
+    .t4-fig { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:14px 16px 10px; margin:20px 0; box-shadow:0 1px 4px rgba(15,23,42,.05); }
+    .t4-fig svg { width:100%; height:auto; display:block; font-family:"Segoe UI",Tahoma,Verdana,sans-serif; }
+    .t4-fig figcaption { font-size:.88rem; color:#64748b; margin-top:10px; line-height:1.5; }
+    .t4-check { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 16px; margin:16px 0; }
+    .t4-check summary { cursor:pointer; font-weight:600; color:#1e40af; }
+    .t4-check p { margin:10px 0 4px; line-height:1.6; }
+    .t4-gloss { display:grid; grid-template-columns:repeat(2,1fr); gap:10px 18px; margin:12px 0 0; }
+    .t4-gloss div { font-size:.95rem; line-height:1.55; }
+    .t4-gloss b { color:#0f172a; }
+    @media (max-width:700px){ .t4-gloss { grid-template-columns:1fr; } }
+
+    /* smaller type inside the big tool boxes */
+    .page-session .tool-info-box > p, .page-session .tool-info-box > ul, .page-session .tool-info-box > ol { font-size:1.02rem; line-height:1.7; }
+    .page-session .tool-info-box > h4 { margin:0 0 10px; font-size:1.05rem; color:#0b4f8a; }
+    .page-session .tool-info-box .code-block { font-size:1rem; }
+    .rule-callout ul, .rule-callout ol { margin:10px 0 0; padding-left:20px; line-height:1.8; }
+    .rule-callout li { font-weight:400; }
+
+    @media (prefers-reduced-motion: reduce) { .t3-bar .fill, .t4-tok { transition:none; } }
+    @media (max-width: 900px) { .t3-map, .t3-recap { grid-template-columns:1fr 1fr; } .t3-ba { grid-template-columns:1fr; } .t3-bar { grid-template-columns:118px 1fr 58px; font-size:.8rem; } }
+    @media (max-width: 560px) { .t3-map, .t3-recap { grid-template-columns:1fr; } .t3-bar { grid-template-columns:1fr; gap:4px; } .t3-bar .val { text-align:left; } }
+  </style>
+</head>
+
+<body class="page-session" data-current-session="t3_s4">
+  <nav class="navbar">
+    <a href="../index.html" class="site-logo">
+      <img src="../Images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+    </a>
+    <div class="nav-links">
+      <span class="user-status">Status: <strong>AI Systems Architect</strong></span>
+      <a href="term3.html" class="btn-primary">My Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section" data-sidebar-term="3">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>TERM 3: THE INSTRUCTION-TUNED PLATFORM</span>
+          <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+        </h3>
+        <ul style="display: block;">
+          <li data-session-id="t3_s1"><a href="t3_session1.html"><i class="fas fa-earth-asia"></i> S1: Same Engine, Bigger World</a></li>
+          <li data-session-id="t3_s2"><a href="t3_session2.html"><i class="fas fa-dice"></i> S2: Twenty Subjects, One Mouth</a></li>
+          <li data-session-id="t3_s3"><a href="t3_session3.html"><i class="fas fa-layer-group"></i> S3: Give It Room To Think</a></li>
+          <li data-session-id="t3_s4" class="active"><a href="t3_session4.html"><i class="fas fa-highlighter"></i> S4: Learn From The Answer</a></li>
+          <li data-session-id="t3_s5"><a href="t3_session5.html"><i class="fas fa-shield"></i> S5: Ready For Strangers</a></li>
+          <li data-session-id="t3_s6"><a href="t3_session6.html"><i class="fas fa-thumbs-up"></i> S6: Teaching It What Good Means</a></li>
+          <li data-session-id="t3_s7"><a href="t3_session7.html"><i class="fas fa-clipboard-check"></i> S7: Is It Actually Any Good?</a></li>
+          <li data-session-id="t3_s8"><a href="t3_session8.html"><i class="fas fa-code"></i> S8: Build the Website</a></li>
+          <li data-session-id="t3_s9"><a href="t3_session9.html"><i class="fas fa-rocket"></i> S9: Put Your Model Online</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" class="resizer"></div>
+
+    <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 3 / Session 4 / Learn From The Answer</nav>
+
+      <section id="lesson-header">
+        <h1>Session 4: Learn From The Answer</h1>
+        <p class="lead">Last session you made the model bigger. Today you do not touch the model at all. You
+        change <b>how it is marked</b> while it learns. Right now it is being marked on guessing <i>your
+        questions</i>, typos and all, as well as on the answers. That is wasted effort. You fix it with a few
+        lines of code, then let the model carry on learning from where it stopped last time.
+        <code>attention_engine.py</code> stays exactly as it is.</p>
+        <div class="stats-bar">
+          <span><i class="far fa-clock"></i> 60 Minutes</span>
+          <span><i class="fas fa-signal"></i> Level: AI Systems Architect</span>
+        </div>
+      </section>
+
+      <section class="lesson-body">
+
+        <!-- ============================================================ ROADMAP -->
+        <div class="t3-map">
+          <div class="t3-map-card">
+            <span class="t3-num">1</span>
+            <h3>See what gets marked</h3>
+            <p>The model is marked on every word in the book, even the words it will never have to write.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">2</span>
+            <h3>Mark only the answer</h3>
+            <p>Five lines in <code>train_qa.py</code> so only the tutor's replies count.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">3</span>
+            <h3>Keep reading</h3>
+            <p>v6 has read each fact about six times. v7 starts from v6 and reads them six more times.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">4</span>
+            <h3>Test it fairly</h3>
+            <p>One script, both models, the same 300 chunks of the book, no dice.</p>
+          </div>
+        </div>
+
+        <div class="outcome-box">
+          <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+          <p>Change <b>what the model is marked on</b>, not the model itself. Mark only the tutor's replies,
+          carry on from the Session 3 model instead of starting again, and test the difference fairly.
+          v6 scores <b>1.845</b> on the test (lower is better). Today's model, v7, scores <b>1.509</b>.
+          That is 18% better, for two more hours on Colab and about ten lines of code.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-download"></i> Same deal as last session</h4>
+          <p>Training v7 takes about two hours on a Colab GPU, so it has been trained for you with exactly
+          the code you are about to write. Today you will:</p>
+          <ol>
+            <li>Make the changes in <code>train_qa.py</code>.</li>
+            <li>Run it for <b>two steps</b> to check nothing is broken.</li>
+            <li>Download <code>qa_model_v7.pth</code> and test it against v6.</li>
+          </ol>
+          <p style="margin-bottom:0;">If you want to run the full two hours yourself, that is the advanced homework.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-book"></i> Words you will meet today</h4>
+          <div class="t4-gloss">
+            <div><b>The book</b> &mdash; <code>input.txt</code>. Twenty subjects, written as conversations between a student and a tutor. It is the only thing the model ever learns from.</div>
+            <div><b>A block</b> &mdash; one conversation in the book: a topic line, a student's question and a tutor's reply, with tags around them.</div>
+            <div><b>A chunk</b> &mdash; 256 word pieces cut from the book at a random spot. One chunk is one "page" the model reads during training.</div>
+            <div><b>A tag</b> &mdash; a special word piece like <code>&lt;|assistant|&gt;</code> that says "the tutor's reply starts here". Signposts, not words.</div>
+            <div><b>A mark</b> &mdash; how wrong one guess was. The <b>loss</b> is the average of all the marks. Lower is better.</div>
+            <div><b>Graded</b> &mdash; a word piece the red pen is allowed to mark. Today, only the tutor's reply is graded.</div>
+            <div><b>A step</b> &mdash; the model reads 64 chunks, gets marked, and nudges its numbers once. Training is 14,000 steps.</div>
+            <div><b>A trip through the book</b> &mdash; enough steps to have read every word piece in the book once. v6 made about six trips.</div>
+          </div>
+        </div>
+
+        <figure class="t4-fig">
+          <svg viewBox="0 0 900 215" role="img" aria-label="Today in one picture: Session 3 marking, two changes, a fair test, and the result">
+            <defs>
+              <marker id="s4arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+            </defs>
+            <g font-size="13" fill="#0f172a">
+              <!-- A -->
+              <rect x="15" y="62" width="200" height="90" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+              <text x="115" y="86" text-anchor="middle" font-weight="bold">Session 3 marking</text>
+              <text x="115" y="106" text-anchor="middle" fill="#475569">red pen marks</text>
+              <text x="115" y="122" text-anchor="middle" fill="#475569">every word piece</text>
+              <text x="115" y="142" text-anchor="middle" font-family="monospace" fill="#b91c1c">answer loss 1.845</text>
+              <!-- B -->
+              <rect x="265" y="18" width="230" height="74" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+              <text x="380" y="42" text-anchor="middle" font-weight="bold" fill="#c2410c">Change 1</text>
+              <text x="380" y="62" text-anchor="middle">mark only the tutor's reply</text>
+              <text x="380" y="80" text-anchor="middle" fill="#475569" font-size="12">about 10 lines in train_qa.py</text>
+              <!-- C -->
+              <rect x="265" y="122" width="230" height="74" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+              <text x="380" y="146" text-anchor="middle" font-weight="bold" fill="#15803d">Change 2</text>
+              <text x="380" y="166" text-anchor="middle">start from v6, read six more times</text>
+              <text x="380" y="184" text-anchor="middle" fill="#475569" font-size="12">one line: load the old model</text>
+              <!-- D -->
+              <rect x="545" y="62" width="170" height="90" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+              <text x="630" y="88" text-anchor="middle" font-weight="bold" fill="#1d4ed8">Fair test</text>
+              <text x="630" y="108" text-anchor="middle">same 300 chunks</text>
+              <text x="630" y="126" text-anchor="middle">for both models</text>
+              <text x="630" y="142" text-anchor="middle" fill="#475569" font-size="12">no dice</text>
+              <!-- E -->
+              <rect x="765" y="62" width="120" height="90" rx="10" fill="#ecfeff" stroke="#0e7490" stroke-width="2"/>
+              <text x="825" y="90" text-anchor="middle" font-weight="bold" font-size="18" fill="#0e7490">v7</text>
+              <text x="825" y="112" text-anchor="middle" font-family="monospace" fill="#15803d">loss 1.509</text>
+              <text x="825" y="134" text-anchor="middle" fill="#475569" font-size="12">18% better</text>
+              <!-- arrows -->
+              <g stroke="#475569" stroke-width="2" fill="none" marker-end="url(#s4arr)">
+                <path d="M215,95 C 240,95 240,55 263,55"/>
+                <path d="M215,120 C 240,120 240,159 263,159"/>
+                <path d="M495,55 C 520,55 520,95 543,95"/>
+                <path d="M495,159 C 520,159 520,120 543,120"/>
+                <line x1="715" y1="107" x2="763" y2="107"/>
+              </g>
+            </g>
+          </svg>
+          <figcaption>Today in one picture. The model itself does not change. Two changes to <i>how it is trained</i>, then a test that is the same for both models.</figcaption>
+        </figure>
+
+        <!-- ============================================================ 0. WHERE WE ARE -->
+        <h2>0. Where We Are</h2>
+
+        <div class="t3-recap">
+          <div>
+            <b>Session 2</b>
+            Twenty subjects, 6,144 word pieces, and dice that pick each word.
+          </div>
+          <div>
+            <b>Session 3</b>
+            Six layers, 256 wide. Nearly 8 million numbers inside.
+          </div>
+          <div class="today">
+            <b>Today</b>
+            Mark only the answers, and keep reading.
+          </div>
+          <div>
+            <b>Next</b>
+            Session 5: what to do when someone asks a question the model has never seen.
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-chart-column"></i> Where Session 3 left your model</h4>
+          <p>v6 can hold a sentence together. Ask it about satellites and it says gravity pulls them towards
+          Earth and they keep moving. That is a proper, finished thought. v5 could not do that.</p>
+          <p style="margin-bottom:0;">But ask why iron rusts and it says iron is "a key ingredient in
+          construction". It sounds confident. It is not an answer. v6 has learned <i>how a tutor talks</i>
+          better than it has learned <i>what is true</i>. Today's two changes push more of its effort onto
+          the facts.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 1. THE RED PEN -->
+        <h2>1. What Gets Marked</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          Right now the model is marked on guessing the <i>student's question</i> as well as the <i>tutor's reply</i>.
+          Today we stop marking the question, because the model never has to write one.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-file-lines"></i> First, what one block of the book looks like</h4>
+          <p style="margin-bottom:0;">Every conversation in <code>input.txt</code> has the same shape. Here is one, with the
+          four kinds of word piece coloured in. Keep this picture in mind for the whole session.</p>
+        </div>
+
+        <figure class="t4-fig">
+          <svg viewBox="0 0 900 310" role="img" aria-label="One block of the book with its parts labelled, and which parts the red pen marks in Session 3 and Session 4">
+            <g font-size="14">
+              <!-- the block -->
+              <rect x="20" y="20" width="560" height="270" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+              <text x="40" y="44" font-size="12" fill="#64748b" font-weight="bold" letter-spacing="1">ONE BLOCK OF THE BOOK</text>
+              <!-- rows -->
+              <rect x="36" y="58" width="528" height="30" rx="5" fill="#e2e8f0"/>
+              <text x="48" y="78" font-family="monospace" fill="#475569">TOPIC: Biology &mdash; the digestive system</text>
+              <rect x="36" y="96" width="528" height="30" rx="5" fill="#e2e8f0"/>
+              <text x="48" y="116" font-family="monospace" fill="#475569" font-weight="bold">&lt;|user|&gt;</text>
+              <rect x="36" y="134" width="528" height="30" rx="5" fill="#dbeafe" stroke="#60a5fa"/>
+              <text x="48" y="154" font-family="monospace" fill="#1e3a8a">so digestion starts befre eating?</text>
+              <rect x="36" y="172" width="528" height="30" rx="5" fill="#e2e8f0"/>
+              <text x="48" y="192" font-family="monospace" fill="#475569" font-weight="bold">&lt;|assistant|&gt;</text>
+              <rect x="36" y="210" width="528" height="30" rx="5" fill="#dcfce7" stroke="#4ade80"/>
+              <text x="48" y="230" font-family="monospace" fill="#14532d">No. It starts in the mouth, with saliva.</text>
+              <rect x="36" y="248" width="528" height="30" rx="5" fill="#e2e8f0"/>
+              <text x="48" y="268" font-family="monospace" fill="#475569" font-weight="bold">&lt;|endoftext|&gt;</text>
+
+              <!-- column headers -->
+              <text x="665" y="44" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">SESSION 3</text>
+              <text x="665" y="58" text-anchor="middle" font-size="11" fill="#64748b">red pen marks</text>
+              <text x="800" y="44" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">SESSION 4</text>
+              <text x="800" y="58" text-anchor="middle" font-size="11" fill="#64748b">red pen marks</text>
+              <!-- S3 marks: every row -->
+              <g fill="none" stroke="#ef4444" stroke-width="3">
+                <circle cx="665" cy="73" r="9"/><circle cx="665" cy="111" r="9"/><circle cx="665" cy="149" r="9"/>
+                <circle cx="665" cy="187" r="9"/><circle cx="665" cy="225" r="9"/><circle cx="665" cy="263" r="9"/>
+              </g>
+              <!-- S4 marks: reply + end tag only -->
+              <g fill="none" stroke="#ef4444" stroke-width="3">
+                <circle cx="800" cy="225" r="9"/><circle cx="800" cy="263" r="9"/>
+              </g>
+              <g fill="#94a3b8" font-size="18" text-anchor="middle">
+                <text x="800" y="79">&ndash;</text><text x="800" y="117">&ndash;</text><text x="800" y="155">&ndash;</text><text x="800" y="193">&ndash;</text>
+              </g>
+              <!-- row labels, inside the block -->
+              <text x="552" y="153" text-anchor="end" font-size="11" fill="#1e3a8a">typed by a person</text>
+              <text x="552" y="229" text-anchor="end" font-size="11" fill="#14532d">written by the model</text>
+              <text x="552" y="267" text-anchor="end" font-size="11" fill="#475569">means "stop here"</text>
+            </g>
+          </svg>
+          <figcaption>Grey rows are the topic line and the tags. Blue is the student's question, typed by a person. Green is the tutor's reply,
+          the only part the model ever writes. The red rings show what gets marked. Note that Session 4 still marks the
+          <code>&lt;|endoftext|&gt;</code> tag: the model has to learn when to stop talking.</figcaption>
+        </figure>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-pen"></i> Think of training as a teacher with a red pen</h4>
+          <p>Here is how training works. The model reads a chunk of the book, 256 word pieces long. At every
+          spot it guesses what word piece comes next. Then a red pen marks every guess: a small mark if the
+          guess was close, a big mark if it was far off. The <b>loss</b> is the average size of those marks.
+          Every change to the model's 8 million numbers comes from that one average.</p>
+          <p>Here is the problem. The chunk is cut from the book at a random spot, so it has <i>everything</i>
+          in it: the topic line, the tags, the student's question and the tutor's reply. And the red pen marks
+          <b>every single word piece the same way</b>.</p>
+          <p style="margin-bottom:0;">Below is a real block from <code>input.txt</code>. Press the two buttons
+          and watch which word pieces get a red ring.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">The red pen, before and after</span>
+          <div class="t4-block" id="rp-block"></div>
+          <div class="t3-controls">
+            <button type="button" class="t3-btn on" id="rp-old">Session 3 marking</button>
+            <button type="button" class="t3-btn" id="rp-new">Session 4 marking</button>
+          </div>
+          <div class="t4-key">
+            <span><i style="background:#1e293b;border:1px solid #475569;"></i> topic line and tags</span>
+            <span><i style="background:#1c2f4a;border:1px solid #1e4a6e;"></i> the student's question</span>
+            <span><i style="background:#13301f;border:1px solid #166534;"></i> the tutor's reply</span>
+            <span><i style="background:transparent;box-shadow:0 0 0 2px #f87171;"></i> marked</span>
+          </div>
+          <p class="t4-cap" id="rp-cap"><b>Session 3.</b> Every piece is marked, even the typo in
+          <i>befre</i>. The model is being taught to guess a student's spelling mistake.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-calculator"></i> We measured it on v6</h4>
+          <p style="margin-bottom:0;">We took 400 random chunks, let v6 guess every word piece, and sorted
+          the red-pen marks by which part of the block each piece was in.</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>v6 &mdash; 400 training chunks, 102,400 word pieces</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Part of the block</th><th style="text-align:right;">Share of the pieces</th><th style="text-align:right;">Average mark</th><th style="text-align:right;">Share of all the marks</th></tr>
+              <tr><td>TOPIC line</td><td class="num">12.4%</td><td class="num">0.32</td><td class="num">2.4%</td></tr>
+              <tr style="background:#eff6ff;"><td><b>The student's question</b></td><td class="num">17.3%</td><td class="num">2.34</td><td class="num"><b>24.7%</b></td></tr>
+              <tr style="background:#f0fdf4;"><td><b>The tutor's reply</b></td><td class="num">66.3%</td><td class="num">1.81</td><td class="num"><b>72.9%</b></td></tr>
+              <tr><td>The three tags</td><td class="num">4.0%</td><td class="num">0.01</td><td class="num">0.0%</td></tr>
+            </table>
+          </div>
+          <p>Two things to notice. The TOPIC line and the tags cost almost nothing. The model learned them
+          early and never gets them wrong. But <b>a quarter of all the marks land on the student's
+          question</b>. That is the hardest text in the book to guess (half of it is lowercase, casual, and has
+          typos on purpose), and it is the one thing the model will <b>never have to write</b>.</p>
+        </div>
+
+        <div class="t4-plain">
+          <b class="lab">What that table says, in plain words</b>
+          Picture 100 red marks. About 73 of them land on the tutor's replies, which is right. But about 25 land on the
+          student's questions. Those 25 are wasted. The model is being told off for not guessing a stranger's typo, and it
+          will never have to type one. The topic lines and tags barely count: the model learned those in the first few
+          minutes and never gets them wrong.
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-lightbulb"></i> The model's job is to answer, so mark the answer</h4>
+          <p>When you chat with the model, you type the question. The model only ever writes the reply. Every
+          bit of effort spent learning to guess "so digestion starts befre eating?" is effort not spent on what
+          digestion actually is.</p>
+          <p style="margin-bottom:0;">So from today the red pen skips the question. The model still
+          <b>reads</b> it, because it has to know what was asked. It just is not <b>marked</b> on it any more.</p>
+        </div>
+
+        <details class="t4-check">
+          <summary>Check yourself: after today's change, does the model still see the student's question while it trains?</summary>
+          <p>Yes. The question is still in every chunk the model reads, and it has to understand it to write a good reply.
+          The only difference is that the red pen no longer marks the model's guesses <i>inside</i> the question. Reading and
+          being marked are two different things.</p>
+        </details>
+
+        <hr />
+
+        <!-- ============================================================ 2. SIX TIMES -->
+        <h2>2. It Has Only Read Each Fact Six Times</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          v6 stopped learning after it had read the book about six times, and it was still improving when it stopped.
+          So v7 picks up exactly where v6 left off and reads the book six more times.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-book-open"></i> The second reason the facts are blurry</h4>
+          <p>The book has about <b>38,400 facts</b> across twenty subjects. Each fact shows up in about eleven
+          or twelve blocks, so the whole book is 533,000 blocks and 44 million word pieces long.</p>
+          <p>Session 3's training read 229 million word pieces (14,000 steps &times; 64 chunks &times; 256
+          pieces). That sounds like a lot. It is only <b>5.6 trips through the book</b>. So v6 has seen each
+          fact about six times.</p>
+          <p style="margin-bottom:0;">Imagine reading a textbook with 38,400 facts in it six times, then
+          sitting the exam. You would remember some of it. The model's loss was still going down when Session
+          3's run stopped. It had not finished learning. It just ran out of time.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">Change 2: do not start again from zero</span>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">Every session so far</span>
+              <div class="t3-ba-text">Build a fresh model full of random numbers. Train it for 14,000 steps. Save
+              it. Next session, throw it away and start again from random numbers.</div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">Today</span>
+              <div class="t3-ba-text">Load <code>qa_model_v6.pth</code>. Train it 14,000 more steps with the new
+              marking. Save it as v7. Twelve trips through the book instead of six, for the same two hours.</div>
+            </div>
+          </div>
+          <p style="margin-top:18px;">This is one line of code, and it is how real AI models are made. Nobody
+          trains ChatGPT from scratch every time they improve it. They load the last version and keep going.</p>
+          <p class="t3-foot">The two hours are the same because the model is the same size. Only the starting
+          point and the marking change.</p>
+        </div>
+
+        <figure class="t4-fig">
+          <svg viewBox="0 0 900 250" role="img" aria-label="Three timelines: v6 trained from random numbers for six trips; the old way would start again from random numbers; today starts from v6 and adds six more trips">
+            <defs>
+              <marker id="s4arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>
+            </defs>
+            <g font-size="13" fill="#0f172a">
+              <!-- Row 1: Session 3 -->
+              <text x="20" y="48" font-weight="bold">Session 3</text>
+              <rect x="130" y="30" width="110" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+              <text x="185" y="50" text-anchor="middle" font-size="12" fill="#475569">random numbers</text>
+              <g fill="#94a3b8"><rect x="260" y="33" width="48" height="24" rx="3"/><rect x="312" y="33" width="48" height="24" rx="3"/><rect x="364" y="33" width="48" height="24" rx="3"/><rect x="416" y="33" width="48" height="24" rx="3"/><rect x="468" y="33" width="48" height="24" rx="3"/><rect x="520" y="33" width="48" height="24" rx="3"/></g>
+              <text x="414" y="76" text-anchor="middle" font-size="11" fill="#64748b">6 trips &middot; 2 hours</text>
+              <line x1="572" y1="45" x2="600" y2="45" stroke="#475569" stroke-width="2" marker-end="url(#s4arr2)"/>
+              <rect x="608" y="30" width="60" height="30" rx="6" fill="#e2e8f0" stroke="#64748b"/>
+              <text x="638" y="50" text-anchor="middle" font-weight="bold">v6</text>
+              <text x="690" y="50" font-size="12" fill="#475569">has read each fact 6 times</text>
+
+              <!-- Row 2: the old way -->
+              <text x="20" y="128" font-weight="bold" fill="#991b1b">The old way</text>
+              <rect x="130" y="110" width="110" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+              <text x="185" y="130" text-anchor="middle" font-size="12" fill="#475569">random numbers</text>
+              <g fill="#cbd5e1"><rect x="260" y="113" width="48" height="24" rx="3"/><rect x="312" y="113" width="48" height="24" rx="3"/><rect x="364" y="113" width="48" height="24" rx="3"/><rect x="416" y="113" width="48" height="24" rx="3"/><rect x="468" y="113" width="48" height="24" rx="3"/><rect x="520" y="113" width="48" height="24" rx="3"/></g>
+              <text x="414" y="156" text-anchor="middle" font-size="11" fill="#64748b">6 trips &middot; 2 hours</text>
+              <line x1="572" y1="125" x2="600" y2="125" stroke="#475569" stroke-width="2" marker-end="url(#s4arr2)"/>
+              <rect x="608" y="110" width="60" height="30" rx="6" fill="#fee2e2" stroke="#ef4444"/>
+              <text x="638" y="130" text-anchor="middle" font-weight="bold" fill="#991b1b">v7?</text>
+              <text x="690" y="130" font-size="12" fill="#991b1b">still only 6 times</text>
+
+              <!-- Row 3: today -->
+              <text x="20" y="208" font-weight="bold" fill="#15803d">Today</text>
+              <rect x="130" y="190" width="110" height="30" rx="6" fill="#e2e8f0" stroke="#64748b"/>
+              <text x="185" y="210" text-anchor="middle" font-weight="bold">start from v6</text>
+              <g fill="#94a3b8" opacity=".45"><rect x="260" y="193" width="22" height="24" rx="3"/><rect x="286" y="193" width="22" height="24" rx="3"/><rect x="312" y="193" width="22" height="24" rx="3"/><rect x="338" y="193" width="22" height="24" rx="3"/><rect x="364" y="193" width="22" height="24" rx="3"/><rect x="390" y="193" width="22" height="24" rx="3"/></g>
+              <text x="336" y="236" text-anchor="middle" font-size="11" fill="#64748b">6 trips already inside v6</text>
+              <g fill="#22c55e"><rect x="416" y="193" width="24" height="24" rx="3"/><rect x="444" y="193" width="24" height="24" rx="3"/><rect x="472" y="193" width="24" height="24" rx="3"/><rect x="500" y="193" width="24" height="24" rx="3"/><rect x="528" y="193" width="24" height="24" rx="3"/><rect x="556" y="193" width="24" height="24" rx="3"/></g>
+              <text x="498" y="236" text-anchor="middle" font-size="11" fill="#15803d">6 more trips &middot; 2 hours</text>
+              <line x1="584" y1="205" x2="600" y2="205" stroke="#475569" stroke-width="2" marker-end="url(#s4arr2)"/>
+              <rect x="608" y="190" width="60" height="30" rx="6" fill="#dcfce7" stroke="#16a34a"/>
+              <text x="638" y="210" text-anchor="middle" font-weight="bold" fill="#15803d">v7</text>
+              <text x="690" y="210" font-size="12" fill="#15803d">has read each fact 12 times</text>
+            </g>
+          </svg>
+          <figcaption>Same two hours of training either way. Starting again from random numbers would throw away all of v6's reading. Starting from v6 is what turns six trips into twelve.</figcaption>
+        </figure>
+
+        <details class="t4-check">
+          <summary>Check yourself: v7 trains for the same two hours as v6. How can it end up with twelve trips through the book?</summary>
+          <p>Because it does not start from zero. v6 already had six trips inside it. Loading v6 and training for another two
+          hours adds six more. Twelve in total, for the price of six.</p>
+        </details>
+
+        <hr />
+
+        <!-- ============================================================ 3. THE EDITS -->
+        <h2>3. The Edits</h2>
+
+        <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+          <h4><i class="fas fa-triangle-exclamation"></i> Before you start</h4>
+          <p>All of today's edits are in <code>train_qa.py</code>. Do not touch <code>attention_engine.py</code>.
+          It must still have 7,951,872 numbers in it, or v6 and v7 will not load. If Session 3's Activity 4 did
+          not give you that number, fix that first.</p>
+          <p style="margin-bottom:0;">Keep <code>qa_model_v6.pth</code> in your project folder. Today's
+          training starts from it.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 1 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 1: Mark where the answers are</h4>
+
+          <div class="t4-plain" style="margin-top:14px;">
+            <b class="lab">What this activity builds</b>
+            A long list of True/False, one for every word piece in the whole book. <b>True</b> means "this piece is inside a tutor's
+            reply, so the red pen may mark it". <b>False</b> means "skip it". The training loop will use this list in Activity 2.
+          </div>
+
+          <div class="tool-info-box">
+            <h4><i class="fas fa-lightbulb"></i> The idea: a light switch</h4>
+            <p>Walk through the book one word piece at a time, holding a light switch.</p>
+            <ul style="margin-bottom:0;">
+              <li>When you pass an <code>&lt;|assistant|&gt;</code> tag, switch the light <b>on</b>. A reply has started.</li>
+              <li>When you pass an <code>&lt;|endoftext|&gt;</code> tag, switch the light <b>off</b>, but only <i>after</i> that tag. The tag itself still counts, because the model has to learn to write it.</li>
+              <li>A word piece is graded if the light is on when you reach it.</li>
+            </ul>
+          </div>
+
+          <figure class="t4-fig">
+            <svg viewBox="0 0 900 275" role="img" aria-label="Nine word pieces in a row, with a light that turns on at the assistant tag and off after the endoftext tag, and the counts that produce it">
+              <g font-size="13" fill="#0f172a">
+                <!-- light band -->
+                <text x="20" y="34" font-size="12" font-weight="bold" fill="#64748b">THE LIGHT</text>
+                <rect x="110" y="20" width="305" height="26" rx="13" fill="#e2e8f0"/>
+                <text x="262" y="38" text-anchor="middle" font-size="12" fill="#475569">off</text>
+                <rect x="415" y="20" width="380" height="26" rx="13" fill="#fde047" stroke="#eab308"/>
+                <text x="605" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#713f12">ON = graded</text>
+                <rect x="795" y="20" width="90" height="26" rx="13" fill="#e2e8f0"/>
+                <text x="840" y="38" text-anchor="middle" font-size="12" fill="#475569">off</text>
+
+                <!-- tokens -->
+                <text x="20" y="92" font-size="12" font-weight="bold" fill="#64748b">WORD PIECE</text>
+                <g font-family="monospace" font-size="12" text-anchor="middle">
+                  <rect x="112" y="70" width="86" height="34" rx="6" fill="#e2e8f0"/><text x="155" y="92" fill="#475569" font-weight="bold">&lt;|user|&gt;</text>
+                  <rect x="206" y="70" width="60" height="34" rx="6" fill="#dbeafe"/><text x="236" y="92" fill="#1e3a8a">Is</text>
+                  <rect x="274" y="70" width="60" height="34" rx="6" fill="#dbeafe"/><text x="304" y="92" fill="#1e3a8a">air</text>
+                  <rect x="342" y="70" width="112" height="34" rx="6" fill="#e2e8f0" stroke="#eab308" stroke-width="2"/><text x="398" y="92" fill="#475569" font-weight="bold">&lt;|assistant|&gt;</text>
+                  <rect x="462" y="70" width="60" height="34" rx="6" fill="#dcfce7"/><text x="492" y="92" fill="#14532d">Air</text>
+                  <rect x="530" y="70" width="60" height="34" rx="6" fill="#dcfce7"/><text x="560" y="92" fill="#14532d">is</text>
+                  <rect x="598" y="70" width="86" height="34" rx="6" fill="#dcfce7"/><text x="641" y="92" fill="#14532d">a mixture</text>
+                  <rect x="692" y="70" width="112" height="34" rx="6" fill="#dcfce7" stroke="#eab308" stroke-width="2"/><text x="748" y="92" fill="#14532d" font-weight="bold">&lt;|endoftext|&gt;</text>
+                  <rect x="812" y="70" width="72" height="34" rx="6" fill="#e2e8f0"/><text x="848" y="92" fill="#475569">TOPIC</text>
+                </g>
+                <text x="398" y="122" text-anchor="middle" font-size="11" fill="#854d0e">switch ON here</text>
+                <text x="748" y="122" text-anchor="middle" font-size="11" fill="#854d0e">switch OFF after this one</text>
+
+                <!-- counts -->
+                <text x="20" y="162" font-size="12" font-weight="bold" fill="#64748b">replies started</text>
+                <g font-family="monospace" font-size="14" text-anchor="middle" fill="#0f172a">
+                  <text x="155" y="162">0</text><text x="236" y="162">0</text><text x="304" y="162">0</text><text x="398" y="162" font-weight="bold">1</text>
+                  <text x="492" y="162">1</text><text x="560" y="162">1</text><text x="641" y="162">1</text><text x="748" y="162">1</text><text x="848" y="162">1</text>
+                </g>
+                <text x="20" y="196" font-size="12" font-weight="bold" fill="#64748b">replies ended</text>
+                <text x="20" y="210" font-size="10" fill="#94a3b8">(before this piece)</text>
+                <g font-family="monospace" font-size="14" text-anchor="middle" fill="#0f172a">
+                  <text x="155" y="200">0</text><text x="236" y="200">0</text><text x="304" y="200">0</text><text x="398" y="200">0</text>
+                  <text x="492" y="200">0</text><text x="560" y="200">0</text><text x="641" y="200">0</text><text x="748" y="200">0</text><text x="848" y="200" font-weight="bold">1</text>
+                </g>
+                <line x1="110" y1="222" x2="885" y2="222" stroke="#cbd5e1"/>
+                <text x="20" y="252" font-size="12" font-weight="bold" fill="#64748b">graded?</text>
+                <g font-size="16" text-anchor="middle" font-weight="bold">
+                  <text x="155" y="254" fill="#94a3b8">&ndash;</text><text x="236" y="254" fill="#94a3b8">&ndash;</text><text x="304" y="254" fill="#94a3b8">&ndash;</text>
+                  <text x="398" y="254" fill="#94a3b8" font-size="11" font-weight="normal">tag: no</text>
+                  <text x="492" y="254" fill="#16a34a">&#10003;</text><text x="560" y="254" fill="#16a34a">&#10003;</text><text x="641" y="254" fill="#16a34a">&#10003;</text><text x="748" y="254" fill="#16a34a">&#10003;</text>
+                  <text x="848" y="254" fill="#94a3b8">&ndash;</text>
+                </g>
+              </g>
+            </svg>
+            <figcaption>"Started" counts the <code>&lt;|assistant|&gt;</code> tags passed so far. "Ended" counts the <code>&lt;|endoftext|&gt;</code> tags
+            passed <i>before</i> this piece. The light is on whenever started is bigger than ended. The one exception is the
+            <code>&lt;|assistant|&gt;</code> tag itself, which is typed for the model, so it is never graded.</figcaption>
+          </figure>
+
+          <p>The code below is exactly this light switch, written for the whole book at once.</p>
+
+          <p style="margin-top:14px;">Open <code>train_qa.py</code>. Find the line that imports from
+          <code>data_pipeline</code> and add <code>stoi</code> to it. <code>stoi</code> is the dictionary that
+          turns a word piece into its number, and you need the numbers of two tags:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+from data_pipeline import data, vocab_size, decode, encode
+
+from data_pipeline import data, vocab_size, stoi, encode, decode
+            </pre>
+          </div>
+
+          <p>Now, <b>directly under</b> the <code>LEARNING_RATE</code> line, add this block. It goes through
+          the whole book once and makes a list of True/False, one for every word piece: True if that piece is
+          inside a tutor's reply, False if it is not.</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; add under LEARNING_RATE</div>
+            <pre>
+# ---------------------------------------------------------------
+# SESSION 4, CHANGE 1: the red pen only marks the answer.
+# Count how many &lt;|assistant|&gt; tags have gone past, and how many
+# &lt;|endoftext|&gt; tags. If more replies have STARTED than have
+# ENDED, we are inside a reply.
+# ---------------------------------------------------------------
+ASSISTANT = stoi["&lt;|assistant|&gt;"]
+END = stoi["&lt;|endoftext|&gt;"]
+
+replies_started = torch.cumsum((data == ASSISTANT).int(), 0)
+replies_ended = torch.cumsum((data == END).int(), 0)
+# Count the ends BEFORE each token, not up to it, so the &lt;|endoftext|&gt;
+# tag itself is still graded. The model has to learn when to stop.
+replies_ended = torch.cat([torch.zeros(1, dtype=replies_ended.dtype), replies_ended[:-1]])
+
+answer_mask = (replies_started &gt; replies_ended) &amp; (data != ASSISTANT)
+            </pre>
+          </div>
+
+          <p>Match each line to the picture. <code>data == ASSISTANT</code> puts a 1 wherever an
+          <code>&lt;|assistant|&gt;</code> tag is and a 0 everywhere else. <code>torch.cumsum</code> is a <b>running total</b>:
+          it adds those up as it goes, so <code>replies_started</code> is the "replies started" row of numbers. The same two
+          lines on <code>END</code> give the "replies ended" row. The <code>torch.cat</code> line shifts that row one place to
+          the right, so each piece sees the ends that came <i>before</i> it, which is what keeps the
+          <code>&lt;|endoftext|&gt;</code> tag graded. The last line is the light switch: on when started is bigger than ended,
+          except on the <code>&lt;|assistant|&gt;</code> tag itself. Here is the same thing as a table:</p>
+          <div class="t3-tablebox">
+            <h4>How the True/False list is worked out, piece by piece</h4>
+            <div class="t3-scroll">
+              <table class="t3-table">
+                <tr><th>word piece</th><th style="text-align:right;">replies started</th><th style="text-align:right;">replies ended (before this piece)</th><th>inside a reply?</th></tr>
+                <tr><td><code>&lt;|user|&gt;</code></td><td class="num">0</td><td class="num">0</td><td>no</td></tr>
+                <tr><td><code>Is</code></td><td class="num">0</td><td class="num">0</td><td>no</td></tr>
+                <tr><td><code> air</code></td><td class="num">0</td><td class="num">0</td><td>no</td></tr>
+                <tr><td><code>&lt;|assistant|&gt;</code></td><td class="num">1</td><td class="num">0</td><td>the tag itself: no</td></tr>
+                <tr style="background:#f0fdf4;"><td><code>Air</code></td><td class="num">1</td><td class="num">0</td><td><b>yes</b></td></tr>
+                <tr style="background:#f0fdf4;"><td><code> is</code></td><td class="num">1</td><td class="num">0</td><td><b>yes</b></td></tr>
+                <tr style="background:#f0fdf4;"><td><code>&lt;|endoftext|&gt;</code></td><td class="num">1</td><td class="num">0</td><td><b>yes</b> &mdash; it must learn to stop</td></tr>
+                <tr><td><code>TOPIC</code></td><td class="num">1</td><td class="num">1</td><td>no</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <p>Last, add one line to the block of <code>print</code> statements so you can check the list
+          looks sensible:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; add to the printouts</div>
+            <pre>
+print(f"Graded       : {answer_mask.float().mean():.0%} of them (the answers)")
+            </pre>
+          </div>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 2 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 2: Use the list in the loss</h4>
+
+          <p style="margin-top:14px;">Two edits. First, the list has to live in the same place as the book
+          (on the GPU, if there is one). Find the line that moves <code>data</code> and add the list under it:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+data = data.to(device)
+
+data = data.to(device)
+answer_mask = answer_mask.to(device)
+            </pre>
+          </div>
+
+          <p>Second, the loss itself. Inside the training loop, find these lines:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the OLD lines, inside the loop</div>
+            <pre>
+    y = torch.stack([data[i + 1:i + block_size + 1] for i in ix])
+
+    logits = model(x)
+    loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
+            </pre>
+          </div>
+          <p>Replace them with this. The True/False values for each chunk are cut out of the list exactly the
+          way <code>y</code> is cut out of the book, so every word piece lines up with its own True or False:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; the NEW lines</div>
+            <pre>
+    y = torch.stack([data[i + 1:i + block_size + 1] for i in ix])
+    graded = torch.stack([answer_mask[i + 1:i + block_size + 1] for i in ix]).float()
+
+    logits = model(x)
+    # One mark per token, as before - but now only the answer tokens count.
+    every_token = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1),
+                                  reduction="none").view(batch_size, block_size)
+    loss = (every_token * graded).sum() / graded.sum()
+            </pre>
+          </div>
+          <p>What it does, line by line. <code>reduction="none"</code> asks for one red-pen mark per word piece
+          instead of the average. Multiplying by <code>graded</code> turns every mark outside a reply into zero,
+          because False counts as 0 and True counts as 1. Dividing by <code>graded.sum()</code> averages over
+          the reply pieces only. That is the whole change.</p>
+
+          <div class="t4-plain">
+            <b class="lab">Try it with eight word pieces</b>
+            Pretend one tiny chunk has eight pieces and the red pen gave these marks. Multiply each mark by its True/False
+            (1 or 0), add up what is left, and divide by how many were graded.
+          </div>
+          <div class="t3-tablebox">
+            <h4>Old average against new average, on a made-up chunk</h4>
+            <div class="t3-scroll">
+              <table class="t3-table">
+                <tr><th>word piece</th><th>part of the block</th><th style="text-align:right;">red mark</th><th style="text-align:right;">graded (1 or 0)</th><th style="text-align:right;">mark &times; graded</th></tr>
+                <tr><td><code>TOPIC</code></td><td>topic line</td><td class="num">0.0</td><td class="num">0</td><td class="num">0.0</td></tr>
+                <tr><td><code>so</code></td><td>question</td><td class="num">2.6</td><td class="num">0</td><td class="num">0.0</td></tr>
+                <tr><td><code>befre</code></td><td>question</td><td class="num">3.4</td><td class="num">0</td><td class="num">0.0</td></tr>
+                <tr><td><code>&lt;|assistant|&gt;</code></td><td>tag</td><td class="num">0.0</td><td class="num">0</td><td class="num">0.0</td></tr>
+                <tr style="background:#f0fdf4;"><td><code>No</code></td><td>reply</td><td class="num">1.1</td><td class="num">1</td><td class="num">1.1</td></tr>
+                <tr style="background:#f0fdf4;"><td><code>digestion</code></td><td>reply</td><td class="num">1.9</td><td class="num">1</td><td class="num">1.9</td></tr>
+                <tr style="background:#f0fdf4;"><td><code>starts</code></td><td>reply</td><td class="num">0.6</td><td class="num">1</td><td class="num">0.6</td></tr>
+                <tr style="background:#f0fdf4;"><td><code>&lt;|endoftext|&gt;</code></td><td>end tag</td><td class="num">0.2</td><td class="num">1</td><td class="num">0.2</td></tr>
+              </table>
+            </div>
+            <p><b>Session 3 loss:</b> add all eight marks and divide by 8. That is 9.8 &divide; 8 = <b>1.23</b>.<br>
+            <b>Session 4 loss:</b> add only the right-hand column and divide by the number of 1s. That is 3.8 &divide; 4 = <b>0.95</b>.<br>
+            The two typos in the question (2.6 and 3.4) no longer push the model around. Only the reply does. That is all the new three lines do,
+            just for 64 chunks of 256 pieces at a time instead of 8.</p>
+          </div>
+          <p style="margin-bottom:0;"><i class="fas fa-circle-info"></i> The printed loss is now an
+          <b>answer loss</b>. It will not match Session 3's 1.718, because that number included the easy topic
+          lines and tags, which pulled the average down. v6's answer loss, measured the new way, is about 1.8.
+          That is your starting line.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 3 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 3: Start from v6, save as your own v7</h4>
+
+          <div class="t4-plain" style="margin-top:14px;">
+            <b class="lab">Three small jobs in this activity</b>
+            <b>1. Where to start:</b> load v6 instead of starting from random numbers.<br>
+            <b>2. What to call the result:</b> save under your own name, so you never overwrite the teacher's v7.<br>
+            <b>3. Save as you go:</b> write a copy to disk every 2,000 steps, like a save point in a game, so a crashed Colab session does not lose two hours.
+          </div>
+
+          <p style="margin-top:14px;">Under the <code>LEARNING_RATE</code> line (above the block from Activity 1
+          is fine) add three settings:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; add under LEARNING_RATE</div>
+            <pre>
+# SESSION 4, CHANGE 2: carry on from where v6 stopped.
+START_FROM = "qa_model_v6.pth"
+SAVE_AS = "my_qa_model_v7.pth"   # your own copy; the teacher-trained one stays as qa_model_v7.pth
+SAVE_EVERY = 2000      # save a copy every 2,000 steps, so a lost Colab session keeps its progress
+            </pre>
+          </div>
+          <p>Why a different name? The teacher-trained model you download later is called
+          <code>qa_model_v7.pth</code>. If your own test run saved under the same name, it would write over it.</p>
+
+          <p>Just <b>before</b> <code>data = data.to(device)</code>, load the old model:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; add before data moves to the GPU</div>
+            <pre>
+if START_FROM is not None:
+    model.load_state_dict(torch.load(START_FROM, map_location=device))
+    print(f"Starting from: {START_FROM}")
+            </pre>
+          </div>
+
+          <p>Inside the loop, right after the <code>if step % 500 == 0:</code> block, add the regular save:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; add at the end of the loop</div>
+            <pre>
+    if step % SAVE_EVERY == 0:
+        torch.save(model.state_dict(), SAVE_AS)
+            </pre>
+          </div>
+
+          <p>At the bottom, change the final save to use the new name:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+torch.save(model.state_dict(), "qa_model_v6.pth")
+print("Saved qa_model_v6.pth")
+
+torch.save(model.state_dict(), SAVE_AS)
+print(f"Saved {SAVE_AS}")
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">One last handy thing. Change the <code>STEPS</code> line so you can ask
+          for a short run from the terminal, the same way <code>talk_to_your_engine.py</code> takes a file
+          name:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+STEPS = 14000
+
+STEPS = int(sys.argv[1]) if len(sys.argv) &gt; 1 else 14000   # needs  import sys  at the top
+            </pre>
+          </div>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 4 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 4: Run it for two steps</h4>
+
+          <p style="margin-top:14px;">This checks everything works without waiting two hours. It loads v6, builds
+          the True/False list, trains for two steps, and saves <code>my_qa_model_v7.pth</code>. That file is just
+          v6 plus two tiny steps, so you can delete it afterwards.</p>
+          <div class="code-block python">
+            <div class="code-header">terminal</div>
+            <pre>
+python train_qa.py 2
+            </pre>
+          </div>
+          <p>Look for these lines in the printout:</p>
+          <div class="t3-tablebox">
+            <h4>What a correct run prints</h4>
+            <div class="t3-scroll">
+              <table class="t3-table">
+                <tr><th>Line</th><th>Means</th></tr>
+                <tr style="background:#ecfeff;"><td><code>Graded : 70% of them (the answers)</code></td><td>Activity 1 worked. Seventy percent of the book is tutor replies.</td></tr>
+                <tr><td><code>Starting from: qa_model_v6.pth</code></td><td>Activity 3 worked. v6 loaded.</td></tr>
+                <tr><td><code>Saved my_qa_model_v7.pth</code></td><td>The save works. The answer printed under it will be v6's, give or take two steps.</td></tr>
+                <tr><td><code>Graded : 0%</code> or <code>100%</code></td><td>Activity 1 is wrong. Check the <code>&gt;</code> and the <code>&amp;</code> on the <code>answer_mask</code> line.</td></tr>
+                <tr><td><code>KeyError: '&lt;|assistant|&gt;'</code></td><td><code>stoi</code> was not imported, or the tag is spelled differently from the book.</td></tr>
+                <tr><td><code>RuntimeError ... same device</code></td><td>Activity 2's first edit is missing: the list never moved to the GPU.</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 4. THE FAIR TEST -->
+        <h2>4. A Fair Test</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          To compare two models fairly, give them exactly the same test and take the luck out.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-scale-balanced"></i> Why "ask it five questions" is not enough any more</h4>
+          <p>Last session you compared v5 and v6 by asking both five questions and judging by eye. That worked
+          because the difference was huge. Today's difference is smaller, and the dice make it hard to see: ask
+          v6 the same question twice and you get two different answers. Which one do you write down?</p>
+          <p>Two fixes, both written for you:</p>
+          <ul style="margin-bottom:0;">
+            <li><b>No dice.</b> The new <code>talk_to_your_engine.py</code> always picks the model's favourite
+            word piece (<code>TEMPERATURE = 0.0</code>). Same question, same answer, every time. That is fair.</li>
+            <li><b>A number.</b> <code>test_session4.py</code> cuts the same 300 chunks from the book for every
+            model and reports the <b>answer loss</b>: how surprised the model was by the tutor's real replies.
+            Lower is better, and luck has nothing to do with it.</li>
+          </ul>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Unfair against fair</span>
+          <div class="t3-ba">
+            <div class="t3-ba-card">
+              <span class="t3-ba-tag">An unfair test</span>
+              <div class="t3-ba-text">Ask v6 a question. Ask v7 a different question. The dice are on, so each model would give a
+              different answer if you asked again. Decide by eye which answer "felt better". Two people doing this would
+              disagree.</div>
+            </div>
+            <div class="t3-ba-card after">
+              <span class="t3-ba-tag">A fair test</span>
+              <div class="t3-ba-text">Cut the <b>same 300 chunks</b> of the book for both models. Dice <b>off</b>, so the result is the
+              same every time you run it. Score each model on how surprised it was by the tutor's real replies, and get
+              <b>one number</b> each. Anyone who runs it gets the same two numbers.</div>
+            </div>
+          </div>
+          <p class="t3-foot">Like comparing two runners: same track, same distance, same day. Not one running uphill in the wind and the other on a treadmill.</p>
+        </div>
+
+        <div class="rule-callout">
+          <h4><i class="fas fa-dice"></i> What happened to Session 2's four dials?</h4>
+          <p>We tested them on v6. The repetition penalty, which rescued the tiny one-layer model from loops, now
+          makes a six-layer model <b>worse</b>. It stops the model reusing words it actually needs, so
+          "photosynthesis" turns into "the process that happens during photosynthesis... through respiration".
+          Temperature and top-k neither helped nor hurt.</p>
+          <p style="margin-bottom:0;">The lesson: a fix that worked on a small model is not automatically right
+          for a bigger one. Measure again. For today, the dials are off.</p>
+        </div>
+
+        <details class="t4-check">
+          <summary>Check yourself: why is "lower answer loss" a fairer way to compare v6 and v7 than "which gave the better answer to my question"?</summary>
+          <p>The answer loss averages over thousands of word pieces in 300 chunks, and the dice are off, so it comes out the same
+          every time. One chat answer is a single roll of the dice on a single question. v7 can lose one question to v6 and still be
+          the better model overall, which is why the five chat questions are a sanity check and the number is the result.</p>
+        </details>
+
+        <!-- ------------------------------ ACTIVITY 5 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 5: Get v7 and the two scripts</h4>
+
+          <p style="margin-top:14px;"><strong>Step 1: Download three files</strong> from the link your
+          instructor gives you, into your project folder:</p>
+          <ul>
+            <li><code>qa_model_v7.pth</code> (44.5 MB), the teacher-trained model.</li>
+            <li><code>talk_to_your_engine.py</code> &mdash; replaces yours. Dice off, and it opens v7 by default.</li>
+            <li><code>test_session4.py</code> &mdash; new.</li>
+          </ul>
+          <p><b>Using a codespace?</b> The two scripts are already in your main folder. For the model, run this once in
+          the terminal and wait for it to finish:</p>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; codespace only</div>
+            <pre>
+bash .devcontainer/get_models.sh
+            </pre>
+          </div>
+          <p>It downloads <code>qa_model_v7.pth</code> into your main folder (and <code>qa_model_v8.pth</code>, which you
+          need next session). New codespaces do this by themselves when they are created.</p>
+
+          <p style="margin-top:18px;"><strong>Step 2: Run the test</strong></p>
+          <div class="code-block python">
+            <div class="code-header">terminal</div>
+            <pre>
+python test_session4.py
+            </pre>
+          </div>
+          <p>It takes about a minute. It prints the answer loss for v6 and v7, then the same ten questions
+          answered by both. Copy the two numbers into the table in the next section.</p>
+
+          <p style="margin-top:18px;"><strong>Step 3: Talk to it</strong></p>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; today's model (v7 is the default now)</div>
+            <pre>
+python talk_to_your_engine.py
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; last session's model</div>
+            <pre>
+python talk_to_your_engine.py qa_model_v6.pth
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">Ask both models the five questions from Session 3. Mark each answer
+          <b>right</b>, <b>finished but wrong</b>, or <b>fell apart</b>. Be honest. Today's gain is real, but it
+          is not magic.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 5. WHAT CHANGED -->
+        <h2>5. What This Changed</h2>
+
+        <div class="t3-tablebox">
+          <h4>Session 3 against today, side by side</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr>
+                <th>What</th>
+                <th style="text-align:right;">Session 3 &mdash; v6</th>
+                <th style="text-align:right;">Today &mdash; v7</th>
+              </tr>
+              <tr><td>Numbers inside the model</td><td class="num">7,951,872</td><td class="num">7,951,872</td></tr>
+              <tr><td>Started from</td><td class="num">random numbers</td><td class="num">v6</td></tr>
+              <tr><td>Trips through the book, in total</td><td class="num">5.6</td><td class="num">11.2</td></tr>
+              <tr><td>Word pieces marked</td><td class="num">all of them</td><td class="num">answers only (70%)</td></tr>
+              <tr><td>Training time</td><td class="num">121 min</td><td class="num">120 min</td></tr>
+              <tr style="background:#ecfeff;"><td><b>Answer loss on the 300 test chunks</b></td><td class="num"><b>1.845</b></td><td class="num"><b>1.509</b></td></tr>
+              <tr><td>Your five answers &mdash; how many right?</td><td class="num t3-fill-me">?</td><td class="num t3-fill-me">?</td></tr>
+            </table>
+          </div>
+          <p>Two changes went in at once, so which one did the work? Your instructor ran a controlled test on
+          Colab: starting from v6, 300 extra steps marked the old way against 300 extra steps marked the new
+          way, same chunks, scored on the same 300 test chunks. Ask for the two numbers. Either way, more reading
+          plus better marking is the cheapest improvement left in this model.</p>
+        </div>
+
+        <!-- ============================================================ 6. STILL BROKEN -->
+        <h2>6. What Is Still Broken</h2>
+
+        <div class="t3-tablebox">
+          <h4>Known problems, and when each one gets dealt with</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Problem</th><th>Fixed today?</th><th>Why, and when</th></tr>
+              <tr>
+                <td>A quarter of its effort went on your questions</td>
+                <td><b style="color:#16a34a;">Yes</b></td>
+                <td>The red pen only marks the reply now.</td>
+              </tr>
+              <tr>
+                <td>Had only read each fact six times</td>
+                <td><b style="color:#16a34a;">Twelve now</b></td>
+                <td>Still not many. Every extra six trips costs two more hours of GPU.</td>
+              </tr>
+              <tr>
+                <td>Says false things confidently</td>
+                <td><b style="color:#d97706;">Less often</b></td>
+                <td>Eight million numbers cannot hold 38,400 facts perfectly. It will keep happening.</td>
+              </tr>
+              <tr style="background:#fffbeb;">
+                <td><b>Never says &ldquo;I don't know&rdquo;</b></td>
+                <td><b style="color:#dc2626;">No</b></td>
+                <td>It answers everything, even questions about things that are not in the book. <b>Session 5 is about that.</b></td>
+              </tr>
+              <tr>
+                <td>Nobody has tested it on questions it has never seen</td>
+                <td><b style="color:#dc2626;">No</b></td>
+                <td>Today's 300 chunks come from the book it learned from. Session 7.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================ KNOWLEDGE CHECK -->
+        <section class="knowledge-check">
+          <div class="check-header">
+            <i class="fas fa-microchip"></i>
+            <h2>Mission Diagnostic: Level 3.04</h2>
+          </div>
+          <div class="mcq-container">
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">1. After today's change, does the model still read the student's question while it trains?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. The chunk still has the question in it, and the model still reads it. The True/False list only decides which guesses get a red-pen mark. Reading and being marked are two different things.">Yes. It reads it, it just is not marked on guessing it.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. The list does not remove anything from the chunk. If the question were hidden, the model could not learn what the reply is replying to.">No. The list hides the question so only the reply goes in.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The list is made once from the whole book and sliced per batch. It does nothing to attention_engine.py, which is unchanged today.">Only in the first layer. The other five layers see the reply only.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-green">
+              <p class="mcq-question">2. The printed loss went from 1.718 at the end of Session 3 to about 1.81 at the start of today's run. Did the model get worse?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Nothing was retrained before that first step. It is the same v6 file. Only the way the average is worked out changed.">Yes. Loading the file damaged it a little.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. 1.718 included the topic lines and tags, which the model gets almost perfectly right and which pull the average down. The answer-only loss leaves them out, so the number goes up even though the model is identical. Always ask what a loss is averaged over.">No. The new number leaves out the easy pieces, so it is a different measurement of the same model.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Random chunks change the number a little between runs, but not by 0.09 in one direction. The real reason is what the average includes.">No. The random chunks just happened to be harder.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-blue">
+              <p class="mcq-question">3. Why does the list include the <code>&lt;|endoftext|&gt;</code> tag but not the <code>&lt;|assistant|&gt;</code> tag?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. The model must learn to write the end tag, or it would never stop talking. The assistant tag is put in the prompt by the program, so the model never has to write it.">The model has to learn to write the end tag itself. The assistant tag is typed for it.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="Both are single pieces in the tokenizer. Length has nothing to do with it. The question is who writes each tag at chat time.">The end tag is longer, so it needs more practice.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="It was on purpose: counting ended replies before each piece rather than up to it is exactly what keeps the end tag marked.">It is an accident of how cumsum works and does not matter.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-amber">
+              <p class="mcq-question">4. v7 trained for the same two hours as v6 but has twelve trips through the book instead of six. How?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="The batch and chunk size are unchanged. 14,000 steps of 64 chunks of 256 pieces is still 5.6 trips per run.">Bigger batches, so each step reads twice as much.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. v7 is v6 plus another 5.6 trips. The first six came from Session 3's two hours, the next six from today's. Nothing was thrown away.">It started from v6, which already had six trips behind it.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="The list changes which pieces are marked, not how many are read. The model still reads every piece in every chunk.">The list skips the questions, so it gets through the book faster.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">5. Why is a no-dice answer (temperature 0) the fair way to compare two models, when Session 2 showed no-dice can get stuck in loops?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="Turning the dice off does not make the facts right. It makes the answer repeatable, which is what a comparison needs. The facts come from training.">Because no-dice answers are always the correct ones.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. With dice on, the same model gives different answers each time, so you cannot tell model from luck. Dice off removes the luck. And test_session4.py removes the judging too, by using a number.">Because it removes luck: the same question gives the same answer, so any difference is the model.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="It is a little faster, but that is not why. Fair means repeatable.">Because it is faster, so you can ask more questions.</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ HOMEWORK -->
+        <section class="session-block homework-block">
+          <h2>Homework / Extension</h2>
+          <div class="homework-item standard">
+            <h3>Standard Task: Read The List</h3>
+            <p>Prove the True/False list is right by looking at it. In your project folder, make a file called
+            <code>show_mask.py</code> with these lines, run it, and read the output next to the first block of
+            <code>input.txt</code>:</p>
+            <div class="code-block python">
+              <div class="code-header">show_mask.py &mdash; a few lines</div>
+              <pre>
+import torch
+from data_pipeline import data, itos, stoi
+
+ASSISTANT, END = stoi["&lt;|assistant|&gt;"], stoi["&lt;|endoftext|&gt;"]
+started = torch.cumsum((data == ASSISTANT).int(), 0)
+ended = torch.cumsum((data == END).int(), 0)
+ended = torch.cat([torch.zeros(1, dtype=ended.dtype), ended[:-1]])
+mask = (started &gt; ended) &amp; (data != ASSISTANT)
+
+for i in range(80):                          # the first 80 tokens of the book
+    print("GRADED " if mask[i] else "       ", repr(itos[data[i].item()]))
+              </pre>
+            </div>
+            <p style="margin-bottom:0;">Write down: which word piece is the first one marked GRADED, which is the
+            last one in the first block, and what sits between the end of the first reply and the start of the
+            second one that is <i>not</i> marked.</p>
+          </div>
+          <div class="homework-item advanced">
+            <h3>Advanced Task: Train v7 Yourself, And Watch It Resume</h3>
+            <p>Run the full two hours on Colab, exactly as in Session 1 but also uploading
+            <code>qa_model_v6.pth</code> with the four Python files, <code>tokenizer.json</code> and
+            <code>tokens.pt</code>. Then try the thing the <code>SAVE_EVERY</code> line is for:</p>
+            <ol>
+              <li>Stop the run on purpose after step 4,000 (click the square Stop button).</li>
+              <li>Check the Files panel: <code>my_qa_model_v7.pth</code> is there, saved at step 4,000.</li>
+              <li>Change <code>START_FROM</code> to <code>"my_qa_model_v7.pth"</code> and the <code>STEPS</code>
+              default to <code>10000</code>, and run it again.</li>
+            </ol>
+            <p style="margin-bottom:0;">You have just done what every real AI team does when a computer dies
+            halfway through training. Compare your model with the instructor's v7 using
+            <code>python test_session4.py my_qa_model_v7.pth qa_model_v7.pth</code>. Explain why the two are
+            close but not identical.</p>
+          </div>
+        </section>
+
+        <!-- ============================================================ TROUBLESHOOTING -->
+        <details class="collapsible-box">
+          <summary><strong>&#9881; Troubleshooting &amp; FAQs</strong></summary>
+          <div class="faq-item">
+            <h4><code>Graded : 0% of them</code></h4>
+            <p>Every word piece was marked False. Usually the comparison is backwards (<code>&lt;</code> instead
+            of <code>&gt;</code>), or <code>replies_ended</code> was shifted the wrong way. Compare your three
+            mask lines with Activity 1 character by character.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>RuntimeError: Expected all tensors to be on the same device</code></h4>
+            <p>The book went to the GPU and the list did not, or the other way round. Both <code>.to(device)</code>
+            lines from Activity 2 must be there, next to each other.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>RuntimeError: Error(s) in loading state_dict</code> when it starts from v6</h4>
+            <p>Your <code>attention_engine.py</code> is not the Session 3 shape. Run Session 3's Activity 4
+            count: it must say 7,951,872. Until it does, neither v6 nor v7 will load.</p>
+          </div>
+          <div class="faq-item">
+            <h4>The loss printed in the first 500 steps is <i>higher</i> than 1.81</h4>
+            <p>Normal for a few hundred steps. The optimiser starts fresh and takes a moment to settle onto a
+            model that is already trained. By step 1,000 it should be below where it started. If it is still
+            climbing at step 2,000, the learning rate is too high: check it is <code>5e-4</code>.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>test_session4.py</code> says it cannot find <code>qa_model_v7.pth</code></h4>
+            <p>It looks in its own folder, then in the project root. The download has to land in one of those
+            two, with exactly that name. Your own two-step file is called <code>my_qa_model_v7.pth</code>, which
+            is a different file.</p>
+          </div>
+          <div class="faq-item">
+            <h4>v7 got a question wrong that v6 got right</h4>
+            <p>It happens, and it is worth writing down. The answer loss is an average over thousands of word
+            pieces. One question can go either way. That is why the number is in the table and the five
+            questions are a sanity check, not the other way round.</p>
+          </div>
+        </details>
+      </section>
+
+      <div class="completion-zone">
+        <div class="completion-card">
+          <label class="checkbox-container">
+            <input type="checkbox" id="session-check">
+            <span class="checkmark"></span>
+            I made the True/False list, made the loss mark only the tutor's replies, started training from v6, checked it with a two-step run, and compared v6 and v7 on the same 300 chunks with the dice off.
+          </label>
+        </div>
+      </div>
+
+      <div class="session-nav" style="display:flex;justify-content:space-between;margin-top:30px;">
+        <a href="t3_session3.html" class="btn-secondary">Previous Session</a>
+        <button class="btn-primary" id="next-btn">Mark Complete &amp; Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </main>
+  </div>
+
+  <div id="mcq-modal" class="mcq-modal">
+    <div class="mcq-modal-content">
+      <div id="mcq-modal-status-bar"></div>
+      <div class="mcq-modal-body">
+        <div id="mcq-modal-icon"></div>
+        <h3 id="mcq-modal-title">Checking Logic...</h3>
+        <p id="mcq-modal-feedback"></p>
+        <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../nexus-core.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    (function () {
+      function $(id) { return document.getElementById(id); }
+
+      /* ================================================================
+         THE RED PEN
+         A real block from input.txt, split into word pieces by hand.
+         Each piece carries the part of the block it belongs to. The two
+         buttons change which pieces get the red ring (graded).
+         ================================================================ */
+      var PIECES = [
+        ['topic', 'TOPIC'], ['topic', ':'], ['topic', ' Human'], ['topic', ' Body'], ['topic', ' Systems'], ['topic', '\\n'],
+        ['tag', '<|user|>'], ['topic', '\\n'],
+        ['user', 'so'], ['user', ' digestion'], ['user', ' starts'], ['user', ' bef'], ['user', 're'], ['user', ' eating'], ['user', '?'], ['topic', '\\n'],
+        ['tag', '<|assistant|>'], ['topic', '\\n'],
+        ['answer', 'Your'], ['answer', ' digestive'], ['answer', ' system'], ['answer', ' begins'], ['answer', ' working'],
+        ['answer', ' when'], ['answer', ' you'], ['answer', ' smell'], ['answer', ' or'], ['answer', ' think'],
+        ['answer', ' about'], ['answer', ' food'], ['answer', '.'], ['answer', ' Your'], ['answer', ' mouth'],
+        ['answer', ' may'], ['answer', ' water'], ['answer', ','], ['answer', ' preparing'], ['answer', ' to'],
+        ['answer', ' break'], ['answer', ' down'], ['answer', ' the'], ['answer', ' food'], ['answer', ' ...'],
+        ['answer', '\\n'], ['answer-tag', '<|endoftext|>']
+      ];
+      var block = $('rp-block'), cap = $('rp-cap');
+      if (block) {
+        PIECES.forEach(function (p) {
+          var el = document.createElement('span');
+          var kind = p[0] === 'answer-tag' ? 'answer' : p[0];
+          el.className = 't4-tok ' + kind + ' graded';
+          el.textContent = p[1];
+          el.setAttribute('data-kind', p[0]);
+          block.appendChild(el);
+        });
+        var toks = block.querySelectorAll('.t4-tok');
+        function mark(newWay) {
+          for (var i = 0; i < toks.length; i++) {
+            var k = toks[i].getAttribute('data-kind');
+            var graded = !newWay || k === 'answer' || k === 'answer-tag';
+            toks[i].classList.toggle('graded', graded);
+            toks[i].classList.toggle('off', !graded);
+          }
+          $('rp-old').classList.toggle('on', !newWay);
+          $('rp-new').classList.toggle('on', newWay);
+          cap.innerHTML = newWay
+            ? '<b>Session 4.</b> Only the reply is marked, plus the <code>&lt;|endoftext|&gt;</code> that '
+              + 'ends it, so the model still learns when to stop. The question is still read, just not '
+              + 'marked. All the effort now goes on what digestion is.'
+            : '<b>Session 3.</b> Every piece is marked, even the typo in <i>befre</i>. The model is '
+              + 'being taught to guess a student’s spelling mistake.';
+        }
+        $('rp-old').addEventListener('click', function () { mark(false); });
+        $('rp-new').addEventListener('click', function () { mark(true); });
+        mark(false);
+      }
+
+      /* ================================================================ BARS */
+      var bars = document.querySelectorAll('.t3-bar .fill');
+      setTimeout(function () {
+        for (var i = 0; i < bars.length; i++) {
+          bars[i].style.width = (bars[i].getAttribute('data-w') || 0) + '%';
+        }
+      }, 300);
+    })();
+  </script>
+
+</body>
+
+</html>

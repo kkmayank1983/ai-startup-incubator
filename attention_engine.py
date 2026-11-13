@@ -3,11 +3,12 @@ import torch.nn as nn
 from torch.nn import functional as F
 from data_pipeline import vocab_size, stoi
 
-# Small, real numbers. Session 6 grows these up.
-n_embd = 256        # numbers used to describe each token
-block_size = 64    # how many tokens the AI can see at once
+# The three numbers that decide what the model can do.
+n_embd = 256       # numbers used to describe each token
+block_size = 256   # how many tokens the AI can see at once
 batch_size = 64    # how many windows get trained on together, per step
-n_head = 4         # how many heads of attention the AI has
+n_head = 8         # how many heads of attention the AI has
+n_layer = 6        # how many rounds of look-and-think it gets
 
 # Where the maths happens. A GPU does thousands of small sums at the same
 # time; a CPU does a few at a time. Same code, same model, same answers -
@@ -85,25 +86,43 @@ class FeedForward(nn.Module):
     attention gathered, instead of just blending it."""
     def __init__(self, n_embd):
         super().__init__()
+        # Four times wider in the middle. This is where a Transformer
+        # keeps what it knows.
         self.net = nn.Sequential(
-            nn.Linear(n_embd, n_embd),
+            nn.Linear(n_embd, 4 * n_embd),
             nn.ReLU(),
-            nn.Linear(n_embd, n_embd),
+            nn.Linear(4 * n_embd, n_embd),
         )
 
     def forward(self, x):
         return self.net(x)
 
+class TransformerBlock(nn.Module):
+    """One round of look-and-think.
 
-class PredictionEngine(nn.Module):
-    def __init__(self, vocab_size):
+    These are the same two lines the model always ran. Giving them a
+    name is what lets us ask for six of them instead of one."""
+    def __init__(self):
         super().__init__()
         self.ln1 = nn.LayerNorm(n_embd)   # tidy up before attention
         self.ln2 = nn.LayerNorm(n_embd)   # tidy up before thinking
-        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
-        self.position_embedding_table = nn.Embedding(block_size, n_embd)
         self.sa_head = MultiHeadAttention(n_head, n_embd // n_head)
         self.ffwd = FeedForward(n_embd)
+
+    def forward(self, x):
+        x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
+        x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+        return x
+    
+class PredictionEngine(nn.Module):
+    def __init__(self, vocab_size):
+        super().__init__()
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd)
+        # Six rounds, one after another. Round 2 reads what round 1 wrote,
+        # which is the whole reason six beats one.
+        self.blocks = nn.Sequential(*[TransformerBlock() for _ in range(n_layer)])
+        self.ln_f = nn.LayerNorm(n_embd)  # one last tidy before guessing
         self.lm_head = nn.Linear(n_embd, vocab_size)
 
     def forward(self, idx):
@@ -115,8 +134,8 @@ class PredictionEngine(nn.Module):
             torch.arange(T, device=idx.device))     # where does it sit?
         x = tok_emb + pos_emb                                    # combine both cards
 
-        x = x + self.sa_head(self.ln1(x))   # focus, then add the result back in
-        x = x + self.ffwd(self.ln2(x))      # think about it, then add that back in too
+        x = self.blocks(x)        # six rounds of look-and-think
+        x = self.ln_f(x)          # tidy up one last time
 
         logits = self.lm_head(x)  # turn it back into a guess
         return logits

@@ -1,0 +1,1228 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Nexus | Give It A Bigger Notepad</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+    /* ================================================================
+       SESSION 5 page styles. Shared boxes (t3-panel, t3-tablebox, bars)
+       are copied from Session 4 so both pages look the same.
+       Every number on this page is measured from a real run.
+       ================================================================ */
+
+    /* code blocks: long lines scroll instead of being cut off */
+    .lesson-body .code-block pre { overflow-x:auto; scrollbar-width:thin; scrollbar-color:#64748b #1e293b; padding-bottom:14px; }
+    .lesson-body .code-block pre::-webkit-scrollbar { height:11px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-track { background:#1e293b; border-radius:999px; }
+    .lesson-body .code-block pre::-webkit-scrollbar-thumb { background:#64748b; border-radius:999px; border:2px solid #1e293b; }
+
+    /* boxed data tables */
+    .t3-tablebox { background:#fff; border:1px solid #cbd5e1; border-radius:10px; padding:4px 0 0; margin:1.5rem 0; overflow:hidden; box-shadow:0 1px 4px rgba(15,23,42,.05); }
+    .t3-tablebox > h4 { margin:0; padding:13px 18px; background:#f1f5f9; border-bottom:1px solid #cbd5e1; font-size:.92rem; color:#0f172a; }
+    .t3-tablebox > .t3-scroll { padding:0 6px 6px; }
+    .t3-tablebox > p { margin:0; padding:12px 18px 14px; font-size:.92rem; color:#475569; border-top:1px solid #e2e8f0; line-height:1.6; }
+
+    /* roadmap + recap strip */
+    .t3-map { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:22px; }
+    .t3-map-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:16px 16px 14px; box-shadow:0 2px 10px rgba(15,23,42,.05); }
+    .t3-map-card h3 { margin:8px 0 6px; font-size:.98rem; color:#0f172a; }
+    .t3-map-card p { margin:0; font-size:.83rem; color:#64748b; line-height:1.5; }
+    .t3-num { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:8px; background:#0ea5e9; color:#fff; font-weight:700; font-size:.82rem; }
+    .t3-recap { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0; }
+    .t3-recap > div { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px 14px; font-size:.85rem; color:#475569; line-height:1.5; }
+    .t3-recap b { display:block; color:#0f172a; margin-bottom:4px; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+    .t3-recap .today { background:#ecfeff; border-color:#67e8f9; }
+    .t3-recap .today b { color:#0e7490; }
+
+    /* dark demo panel */
+    .t3-panel { border:1px solid #1e293b; border-radius:14px; padding:24px 26px; margin:22px 0; background:#0f172a; box-shadow:0 8px 26px rgba(2,6,23,.28); }
+    .t3-panel, .t3-panel p, .t3-panel li, .t3-panel td, .t3-panel th { color:#cbd5e1; }
+    .t3-panel h3, .t3-panel h4 { color:#f8fafc; margin-top:0; }
+    .t3-panel b, .t3-panel strong { color:#f8fafc; }
+    .t3-panel code { background:#1e293b; color:#7dd3fc; padding:2px 7px; border-radius:4px; }
+    .t3-panel p { font-size:.95rem; line-height:1.65; }
+    .t3-badge { display:inline-block; background:#0ea5e9; color:#04222f; font-weight:700; font-size:.78rem; letter-spacing:.06em; padding:4px 14px; border-radius:999px; margin-bottom:10px; }
+    .t3-badge.good { background:#22c55e; color:#052e16; }
+    .t3-badge.warn { background:#f59e0b; color:#3b2406; }
+    .t3-foot { font-size:.82rem; color:#64748b; margin-top:12px; }
+    .t3-btn { font-family:inherit; font-size:.85rem; padding:8px 18px; border-radius:999px; border:1px solid #334155; background:#1e293b; color:#e2e8f0; cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease; }
+    .t3-btn:hover:not([disabled]) { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-btn.on { background:#0ea5e9; border-color:#0ea5e9; color:#04222f; }
+    .t3-controls { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:18px; }
+
+    /* tables */
+    .t3-table { width:100%; border-collapse:collapse; margin:0; font-size:.9rem; }
+    .t3-table th, .t3-table td { padding:10px 12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+    .t3-table th { font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; color:#64748b; background:#f8fafc; }
+    .t3-table tr:last-child td { border-bottom:none; }
+    .t3-table td.num { font-family:monospace; text-align:right; font-variant-numeric:tabular-nums; }
+    .t3-panel .t3-table { margin:14px 0; }
+    .t3-panel .t3-table th { background:transparent; }
+    .t3-panel .t3-table th, .t3-panel .t3-table td { border-bottom-color:#1e293b; }
+    .t3-scroll { overflow-x:auto; }
+
+    /* bars */
+    .t3-bars { display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+    .t3-bar { display:grid; grid-template-columns:168px 1fr 70px; gap:12px; align-items:center; font-size:.86rem; }
+    .t3-bar .lab { color:#94a3b8; }
+    .t3-bar .track { display:block; background:#1e293b; border-radius:999px; height:15px; overflow:hidden; }
+    .t3-bar .fill { display:block; width:0; height:100%; border-radius:999px; background:#0ea5e9; transition:width 1.1s cubic-bezier(.22,.9,.3,1); }
+    .t3-bar .fill.good { background:#22c55e; }
+    .t3-bar .fill.warn { background:#f59e0b; }
+    .t3-bar .fill.dim { background:#475569; }
+    .t3-bar .val { font-family:monospace; color:#f8fafc; text-align:right; font-variant-numeric:tabular-nums; }
+
+    /* before / after cards */
+    .t3-ba { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .t3-ba-card { border-radius:12px; padding:16px 18px; border:1px solid #334155; background:#111f36; }
+    .t3-ba-card.after { border-color:#16a34a; background:#0d2318; }
+    .t3-ba-tag { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; margin-bottom:8px; display:block; color:#f87171; }
+    .t3-ba-card.after .t3-ba-tag { color:#4ade80; }
+    .t3-ba-text { font-size:.9rem; line-height:1.6; color:#e2e8f0; }
+
+    /* smaller type inside the big tool boxes */
+    .page-session .tool-info-box > p, .page-session .tool-info-box > ul, .page-session .tool-info-box > ol { font-size:1.02rem; line-height:1.7; }
+    .page-session .tool-info-box > h4 { margin:0 0 10px; font-size:1.05rem; color:#0b4f8a; }
+    .page-session .tool-info-box .code-block { font-size:1rem; }
+    .rule-callout ul, .rule-callout ol { margin:10px 0 0; padding-left:20px; line-height:1.8; }
+    .rule-callout li { font-weight:400; }
+
+    /* ---------------- SESSION 5: "new word" boxes, placed where each word is first used ---------------- */
+    .t5-def { background:#f0f9ff; border:1px solid #bae6fd; border-left:5px solid #0ea5e9; border-radius:10px; padding:14px 18px; margin:18px 0; color:#334155; line-height:1.7; }
+    .t5-def h5 { margin:0 0 6px; font-size:1rem; color:#0b4f8a; }
+    .t5-def p { margin:0 0 8px; } .t5-def p:last-child { margin-bottom:0; }
+    .t5-def .like { color:#0e7490; }
+    .t5-def ol, .t5-def ul { margin:6px 0 8px; padding-left:22px; }
+
+    /* ---------------- SESSION 5: the notepad ---------------- */
+    .t5-pads { display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:end; }
+    .t5-padwrap { text-align:center; }
+    .t5-pad { position:relative; margin:0 auto; width:150px; border-radius:6px 6px 10px 10px; background:#fefce8; border:2px solid #ca8a04;
+              box-shadow:0 6px 18px rgba(0,0,0,.35); overflow:hidden; transition:height 1.2s cubic-bezier(.22,.9,.3,1); }
+    .t5-pad::before { content:""; position:absolute; top:0; left:0; right:0; height:16px; background:#ca8a04; }
+    .t5-lines { position:absolute; top:16px; left:0; right:0; bottom:0; display:flex; flex-direction:column; padding:3px 6px; gap:0; }
+    .t5-line { flex:1; border-bottom:1px solid rgba(202,138,4,.25); }
+    .t5-line.full { background:linear-gradient(90deg, var(--c) 0 70%, transparent 70%); opacity:.85; }
+    .t5-line.clash { background:repeating-linear-gradient(90deg, #ef4444 0 6px, #3b82f6 6px 12px, #22c55e 12px 18px); opacity:.95; }
+    .t5-padlab { margin-top:12px; font-size:.9rem; color:#e2e8f0; }
+    .t5-padlab b { font-size:1.15rem; color:#fde68a; display:block; }
+    .t5-key { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-size:.8rem; color:#94a3b8; margin-top:16px; }
+    .t5-key span { display:flex; align-items:center; gap:6px; }
+    .t5-key i { width:22px; height:9px; border-radius:2px; display:inline-block; }
+
+    /* ---------------- SESSION 5: the square that becomes four ---------------- */
+    .t5-squares { display:grid; grid-template-columns:1fr auto 1fr; gap:18px; align-items:center; justify-items:center; }
+    .t5-sq { width:90px; height:90px; background:#0ea5e9; border:2px solid #7dd3fc; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#04222f; font-weight:700; font-size:.8rem; text-align:center; }
+    .t5-sq4 { display:grid; grid-template-columns:90px 90px; gap:3px; }
+    .t5-sq4 .t5-sq { opacity:0; transform:scale(.6); transition:opacity .5s ease, transform .5s ease; }
+    .t5-sq4.show .t5-sq { opacity:1; transform:scale(1); }
+    .t5-sq4.show .t5-sq:nth-child(2) { transition-delay:.25s; } .t5-sq4.show .t5-sq:nth-child(3) { transition-delay:.5s; } .t5-sq4.show .t5-sq:nth-child(4) { transition-delay:.75s; }
+    .t5-arrow { font-size:2rem; color:#fde68a; }
+    .t5-sqcap { font-size:.86rem; color:#cbd5e1; margin-top:10px; text-align:center; }
+    .t5-sqcol { display:flex; flex-direction:column; align-items:center; }
+    .t5-sqgrid { display:grid; grid-template-columns:auto auto; gap:6px; align-items:center; }
+    .t5-sqtop { grid-column:2; text-align:center; font-size:.8rem; color:#fde68a; }
+    .t5-sqside { writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; font-size:.8rem; color:#fde68a; }
+    .t5-sqtop b, .t5-sqside b { color:#fef08a; }
+    .t5-steps { margin:18px 0 0; padding:14px 18px 14px 38px; background:#0b1424; border:1px solid #334155; border-radius:10px; color:#e2e8f0; font-size:.92rem; line-height:1.7; }
+    .t5-steps li { opacity:.45; transition:opacity .4s ease; }
+    .t5-steps li.on { opacity:1; }
+    .t5-steps b { color:#fde68a; }
+
+    /* ---------------- SESSION 5: stacked parameter bars ---------------- */
+    .t5-stack { display:grid; grid-template-columns:70px 1fr 110px; gap:12px; align-items:center; margin:12px 0; font-size:.86rem; }
+    .t5-stack .who { color:#f8fafc; font-weight:700; }
+    .t5-stack .track { display:flex; height:30px; background:#1e293b; border-radius:8px; overflow:hidden; }
+    .t5-stack .seg { width:0; height:100%; transition:width 1.2s cubic-bezier(.22,.9,.3,1); }
+    .t5-stack .total { font-family:monospace; color:#f8fafc; text-align:right; }
+    .seg.ff { background:#22c55e; } .seg.at { background:#0ea5e9; } .seg.dict { background:#a78bfa; } .seg.out { background:#f59e0b; }
+
+    /* ---------------- SESSION 5: code-structure picture ---------------- */
+    .t5-codepic { background:#0b1424; border:1px solid #334155; border-radius:12px; padding:18px; margin:14px 0 4px; }
+    .t5-codeline { font-family:monospace; font-size:1rem; color:#e2e8f0; text-align:center; letter-spacing:.02em; }
+    .t5-codeline .hl { background:#854d0e; color:#fef08a; padding:2px 6px; border-radius:4px; }
+    .t5-flow { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px; }
+    .t5-flow div { background:#13233d; border:1px solid #1e4a6e; border-radius:10px; padding:10px 12px; font-size:.82rem; color:#cbd5e1; text-align:center; line-height:1.5; }
+    .t5-flow b { display:block; color:#7dd3fc; font-size:.95rem; }
+    .t5-down { text-align:center; color:#fde68a; font-size:1.2rem; margin:6px 0 0; letter-spacing:6rem; }
+
+    /* ---------------- SESSION 5: v6's small square inside v8's big square ---------------- */
+    .t5-fit { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; justify-items:center; }
+    .t5-fit .t5-sq.learned { background:#0ea5e9; }
+    .t5-fit .t5-sq.empty { background:#1e293b; border:2px dashed #64748b; color:#94a3b8; font-weight:600; }
+    .t5-fit .t5-sq4 .t5-sq { opacity:1; transform:none; }
+    .t5-fitmid { text-align:center; }
+    .t5-fitmid .t5-arrow { display:block; }
+    .t5-stop { display:inline-block; margin-top:6px; padding:4px 10px; border-radius:999px; background:#7f1d1d; color:#fecaca; font-size:.78rem; font-weight:700; }
+
+    /* ---------------- SESSION 5: screenshot slot ---------------- */
+    .t5-shot { margin:14px 0; border:2px dashed #94a3b8; border-radius:12px; padding:10px; text-align:center; background:#f8fafc; }
+    .t5-shot img { max-width:100%; border-radius:8px; display:block; margin:0 auto; }
+    .t5-shot figcaption { font-size:.85rem; color:#475569; margin-top:8px; }
+
+    /* ---------------- SESSION 5: word pieces ---------------- */
+    .t5-pieces { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0; }
+    .t5-pc { font-family:monospace; font-size:.92rem; padding:4px 9px; border-radius:6px; background:#1c2f4a; color:#bae6fd; border:1px solid #1e4a6e; }
+    .t5-pc.whole { background:#13301f; color:#dcfce7; border-color:#166534; }
+    .t5-pc.fake { background:#3f1d1d; color:#fecaca; border-color:#991b1b; }
+    .t5-wordrow { display:grid; grid-template-columns:150px 1fr 150px; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid #1e293b; font-size:.88rem; }
+    .t5-wordrow:last-child { border-bottom:none; }
+    .t5-wordrow .w { color:#f8fafc; font-weight:700; }
+    .t5-wordrow .n { font-family:monospace; color:#fde68a; text-align:right; }
+
+    /* ---------------- SESSION 5: the v7 / v8 answer compare ---------------- */
+    .t5-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .t5-q { font-size:1.02rem; color:#f8fafc; margin:0 0 14px; }
+    .t5-q code { font-size:.95rem; }
+    .t5-ans { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .t5-card { border-radius:12px; padding:14px 16px; border:1px solid #334155; background:#111f36; }
+    .t5-card.v8 { border-color:#16a34a; background:#0d2318; }
+    .t5-card h5 { margin:0 0 8px; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase; color:#93c5fd; }
+    .t5-card.v8 h5 { color:#4ade80; }
+    .t5-card .txt { font-size:.9rem; line-height:1.65; color:#e2e8f0; min-height:7.5em; }
+    .t5-card mark.bad { background:#7f1d1d; color:#fecaca; padding:0 3px; border-radius:3px; }
+    .t5-card mark.good { background:#14532d; color:#bbf7d0; padding:0 3px; border-radius:3px; }
+    .t5-score { width:100%; border-collapse:collapse; margin-top:12px; font-size:.82rem; }
+    .t5-score td { padding:4px 4px; border-bottom:1px solid #1e293b; color:#cbd5e1; }
+    .t5-score td.m { text-align:center; width:38px; font-weight:700; }
+    .m-yes { color:#4ade80; } .m-no { color:#f87171; } .m-part { color:#fbbf24; }
+    .t5-verdict { margin-top:14px; font-size:.92rem; line-height:1.6; color:#cbd5e1; }
+
+    /* ---------------- SESSION 5: test result bars ---------------- */
+    .t5-res { display:grid; grid-template-columns:70px 1fr 76px; gap:12px; align-items:center; margin:12px 0; font-size:.86rem; }
+    .t5-res .who { color:#f8fafc; font-weight:700; }
+    .t5-res .track { display:flex; height:28px; background:#1e293b; border-radius:8px; overflow:hidden; }
+    .t5-res .seg { width:0; height:100%; transition:width 1.2s cubic-bezier(.22,.9,.3,1); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; color:#04222f; overflow:hidden; white-space:nowrap; }
+    .seg.r { background:#22c55e; } .seg.p { background:#fbbf24; } .seg.w { background:#475569; color:#e2e8f0; }
+    .t5-res .sc { font-family:monospace; color:#f8fafc; text-align:right; }
+
+    /* ---------------- SESSION 5: plain-words and check-yourself boxes ---------------- */
+    .t4-plain { background:#fffbeb; border:1px solid #fcd34d; border-left:5px solid #f59e0b; border-radius:10px; padding:14px 18px; margin:18px 0; font-size:1.02rem; line-height:1.65; color:#1e293b; }
+    .t4-plain b.lab { display:block; font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; color:#b45309; margin-bottom:4px; }
+    .t4-check { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 16px; margin:16px 0; }
+    .t4-check summary { cursor:pointer; font-weight:600; color:#1e40af; }
+    .t4-check p { margin:10px 0 4px; line-height:1.6; }
+    .tool-info-box .t3-table td, .tool-info-box .t3-table th { background:#fff; }
+
+    @media (prefers-reduced-motion: reduce) { .t3-bar .fill, .t5-pad, .t5-stack .seg, .t5-res .seg, .t5-sq4 .t5-sq { transition:none; } }
+    @media (max-width: 900px) {
+      .t3-map, .t3-recap { grid-template-columns:1fr 1fr; } .t3-ba, .t5-ans, .t5-pads { grid-template-columns:1fr; }
+      .t5-flow { grid-template-columns:1fr; } .t5-down { letter-spacing:0; }
+      .t5-wordrow { grid-template-columns:1fr; } .t5-wordrow .n { text-align:left; }
+    }
+    @media (max-width: 560px) { .t3-map, .t3-recap { grid-template-columns:1fr; } .t5-squares, .t5-fit { grid-template-columns:1fr; } .t5-arrow { transform:rotate(90deg); } }
+  </style>
+
+</head>
+
+<body class="page-session" data-current-session="t3_s5">
+  <nav class="navbar">
+    <a href="../index.html" class="site-logo">
+      <img src="../Images/STEM_CA_LOGO.png" alt="STEM Centre Australia" />
+    </a>
+    <div class="nav-links">
+      <span class="user-status">Status: <strong>AI Systems Architect</strong></span>
+      <a href="term3.html" class="btn-primary">My Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-section" data-sidebar-term="3">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>TERM 3: THE INSTRUCTION-TUNED PLATFORM</span>
+          <i class="fas fa-chevron-down" style="transition: transform 0.3s ease;"></i>
+        </h3>
+        <ul style="display: block;">
+          <li data-session-id="t3_s1"><a href="t3_session1.html"><i class="fas fa-earth-asia"></i> S1: Same Engine, Bigger World</a></li>
+          <li data-session-id="t3_s2"><a href="t3_session2.html"><i class="fas fa-dice"></i> S2: Twenty Subjects, One Mouth</a></li>
+          <li data-session-id="t3_s3"><a href="t3_session3.html"><i class="fas fa-layer-group"></i> S3: Give It Room To Think</a></li>
+          <li data-session-id="t3_s4"><a href="t3_session4.html"><i class="fas fa-highlighter"></i> S4: Learn From The Answer</a></li>
+          <li data-session-id="t3_s5" class="active"><a href="t3_session5.html"><i class="fas fa-expand"></i> S5: Give It A Bigger Notepad</a></li>
+          <li data-session-id="t3_s6"><a href="t3_session6.html"><i class="fas fa-thumbs-up"></i> S6: Teaching It What Good Means</a></li>
+          <li data-session-id="t3_s7"><a href="t3_session7.html"><i class="fas fa-clipboard-check"></i> S7: Is It Actually Any Good?</a></li>
+          <li data-session-id="t3_s8"><a href="t3_session8.html"><i class="fas fa-code"></i> S8: Build the Website</a></li>
+          <li data-session-id="t3_s9"><a href="t3_session9.html"><i class="fas fa-rocket"></i> S9: Put Your Model Online</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <div id="sidebar-resizer" class="resizer"></div>
+
+        <main class="content">
+      <nav class="breadcrumb">Mission Control / Term 3 / Session 5 / Give It A Bigger Notepad</nav>
+
+      <section id="lesson-header">
+        <h1>Session 5: Give It A Bigger Notepad</h1>
+        <p class="lead">Today you make your model <b>bigger</b> by changing just <b>one number</b>. Then you test
+        the old model (v7) and the new model (v8) side by side, and check what got better.</p>
+        <div class="stats-bar">
+          <span><i class="far fa-clock"></i> 60 Minutes</span>
+          <span><i class="fas fa-signal"></i> Level: AI Systems Architect</span>
+        </div>
+      </section>
+
+      <section class="lesson-body">
+
+        <!-- ============================================================ ROADMAP -->
+        <div class="t3-map">
+          <div class="t3-map-card">
+            <span class="t3-num">1</span>
+            <h3>See the notepad grow</h3>
+            <p>Each word piece gets 512 lines for its notes instead of 256.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">2</span>
+            <h3>Change one number</h3>
+            <p>One line in <code>attention_engine.py</code>, and three small lines in the other files.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">3</span>
+            <h3>Meet v8</h3>
+            <p>You get the v8 model, which is slightly better than v7.</p>
+          </div>
+          <div class="t3-map-card">
+            <span class="t3-num">4</span>
+            <h3>Judge the answers</h3>
+            <p>You ask v7 and v8 the same questions and score them with a checklist.</p>
+          </div>
+        </div>
+
+        <div class="outcome-box">
+          <h4><i class="fas fa-bullseye"></i> Session Mission</h4>
+          <p>Make your model <b>bigger</b> by changing one number, and find out what a bigger model can and
+          cannot do.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+          <h4><i class="fas fa-download"></i> Same deal as last session</h4>
+          <p>Training v8 takes about an hour and a half on a Colab GPU. So your instructor trained it for you, with exactly the code you are about to write.
+          You will:</p>
+          <ol>
+            <li>Make the changes in three files.</li>
+            <li>Download <code>qa_model_v8.pth</code> and compare it with v7.</li>
+          </ol>
+        </div>
+
+        <!-- ============================================================ 0. WHERE WE ARE -->
+        <h2>0. Where We Are</h2>
+
+        <div class="t5-def">
+          <h5><i class="fas fa-sliders"></i> A word you need first: parameter</h5>
+          <p>A <b>parameter</b> is one number inside your model. Your model holds millions of them.</p>
+          <p>Before training, every parameter is a random number, so the model's guesses are random too. Training
+          makes a guess, checks how wrong it was, and nudges every parameter a tiny bit. After millions of nudges,
+          these numbers hold everything the model knows.</p>
+          <p class="like">Think of each parameter as one tiny dial. Training turns millions of dials, a little at a
+          time, until the model's answers sound right. More dials means more room to store what it learns.</p>
+          <p>We write big counts with an M, which means million. So 7.9M means 7.9 million (about 7,900,000).</p>
+        </div>
+
+        <div class="t3-recap">
+          <div>
+            <b>Session 3</b>
+            v6 learned the facts in the book. About 7.9M parameters.
+          </div>
+          <div>
+            <b>Session 4</b>
+            The marking changed. Only the answer counts, and v7 kept reading from v6.
+          </div>
+          <div class="today">
+            <b>Today</b>
+            The model gets wider. About 25.3M parameters.
+          </div>
+          <div>
+            <b>Next</b>
+            Session 6: teaching it what a good answer looks like.
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-chart-column"></i> Where Session 4 left your model</h4>
+          <p>v7 sounds like a tutor. Its sentences flow, and it uses the right kind of words. But it often answers
+          a <b>different question</b> from the one you asked.</p>
+          <p style="margin-bottom:0;">Ask v7 "what is the value of escape velocity on earth", and it explains how
+          a push makes a toy car speed up. That is a real fact, but it answers the wrong question. Today you
+          find out whether a bigger model fixes this.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 1. WHY A WIDER NOTEPAD -->
+        <h2>1. Why A Wider Notepad</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          Every token gets a notepad with 256 lines. Notes for twenty subjects do not fit, so they get written over
+          each other. Today you give every token 512 lines.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-users"></i> Back to the study group</h4>
+          <p>Remember the study group from Session 3. Your question is a row of students. Each student holds
+          one token and has a notepad. The notepad has 256 lines (<code>n_embd = 256</code>).</p>
+          <p>Everything the model knows about that token must fit on those lines. That includes what the token
+          means, which of the twenty subjects it belongs to, and which word usually comes next.</p>
+          <p style="margin-bottom:0;">Your book now has twenty subjects. On 256 lines, the notes for different
+          subjects start to land on the <b>same lines</b>. They squash on top of each other, so the model mixes
+          up its facts. Today you give every student <b>512 lines</b>.</p>
+        </div>
+
+        <div class="t5-def">
+          <h5><i class="fas fa-puzzle-piece"></i> Two reminders from Session 3</h5>
+          <p><b>Token.</b> One small piece of text, like <code>photo</code> or <code>synthesis</code>. Each student
+          in the study group holds one token.</p>
+          <p><b>n_embd.</b> The setting at the top of <code>attention_engine.py</code> that says how many numbers
+          describe each token. That is the number of lines on the notepad. People also call it the model's
+          <b>width</b>. <span class="like">A wider model is a study group with bigger notepads.</span></p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">The notepad for one token: 256 lines against 512</span>
+          <div class="t5-pads">
+            <div class="t5-padwrap">
+              <div class="t5-pad" id="pad-a" style="height:150px;"><div class="t5-lines" id="pad-a-lines"></div></div>
+              <div class="t5-padlab"><b>256 lines</b>v7: notes for different subjects land on the same lines</div>
+            </div>
+            <div class="t5-padwrap">
+              <div class="t5-pad" id="pad-b" style="height:150px;"><div class="t5-lines" id="pad-b-lines"></div></div>
+              <div class="t5-padlab"><b id="pad-b-num">256 lines</b><span id="pad-b-cap">Press the button to give it 512</span></div>
+            </div>
+          </div>
+          <div class="t3-controls" style="justify-content:center;">
+            <button type="button" class="t3-btn" id="pad-grow">Grow to 512 lines</button>
+            <button type="button" class="t3-btn" id="pad-reset">Reset</button>
+          </div>
+          <div class="t5-key">
+            <span><i style="background:#3b82f6;"></i> notes for one subject</span>
+            <span><i style="background:repeating-linear-gradient(90deg,#ef4444 0 4px,#3b82f6 4px 8px,#22c55e 8px 12px);"></i> two subjects squashed on one line</span>
+            <span><i style="background:#fefce8;border:1px solid #ca8a04;"></i> free line</span>
+          </div>
+          <p class="t3-foot">A picture, not a measurement: each drawn line stands for a group of real lines.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 2. WHERE THE NUMBERS GO -->
+        <h2>2. Where The Extra Numbers Go</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          Doubling the width does not double the model. It makes it about three times bigger, because most of the
+          model is made of squares, and a square twice as wide holds four times as many numbers.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-calculator"></i> Double the width, but more than double the model</h4>
+          <p>You double <code>n_embd</code>, from 256 to 512. You might expect the model to double too. It does
+          not. It grows <b>3.2 times</b>, from exactly 7,951,872 to exactly 25,334,784 parameters.</p>
+          <p>The reason is the shape of the layers inside. Most of them are
+          <b>squares</b> of numbers: <code>n_embd</code> rows &times; <code>n_embd</code> columns. In v7 that is
+          256 &times; 256 = 65,536 numbers. When you make a square twice as wide, it also gets twice as tall. So
+          it holds <b>four times</b> as many numbers.</p>
+          <p style="margin-bottom:0;">Think of a rug. A rug 2 metres by 2 metres covers 4 square metres. Make it
+          twice as big on both sides, 4 metres by 4 metres, and it covers 16 square metres. That is four times the
+          rug, not twice.</p>
+        </div>
+
+        <div class="t5-def">
+          <h5><i class="fas fa-layer-group"></i> One reminder: layer</h5>
+          <p>A <b>layer</b> is one round of look-and-think on the notepads. Your model has 6 layers, in v7 and in
+          v8. Today changes how <b>wide</b> each layer is, not how many there are.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Why doubling the width makes four times the numbers</span>
+          <div class="t5-squares">
+            <div class="t5-sqcol">
+              <div class="t5-sqgrid">
+                <div class="t5-sqtop"><b>256</b> wide</div>
+                <div class="t5-sqside"><b>256</b> tall</div>
+                <div class="t5-sq">256 &times; 256</div>
+              </div>
+              <p class="t5-sqcap">One layer in v7<br><b>65,536</b> numbers</p>
+            </div>
+            <div class="t5-arrow">&#10140;</div>
+            <div class="t5-sqcol">
+              <div class="t5-sqgrid">
+                <div class="t5-sqtop">256 + 256 = <b>512</b> wide</div>
+                <div class="t5-sqside">256 + 256 = <b>512</b> tall</div>
+                <div class="t5-sq4" id="sq4">
+                  <div class="t5-sq">256 &times; 256</div><div class="t5-sq">256 &times; 256</div>
+                  <div class="t5-sq">256 &times; 256</div><div class="t5-sq">256 &times; 256</div>
+                </div>
+              </div>
+              <p class="t5-sqcap">The same layer in v8: 512 &times; 512<br><b>262,144</b> numbers, which is 4 times as many</p>
+            </div>
+          </div>
+          <ol class="t5-steps" id="sq-steps">
+            <li class="on">In v7, <code>n_embd = 256</code>. One square layer is 256 numbers wide and 256 numbers tall.</li>
+            <li>In v8, <code>n_embd = 512</code>. The square is now 512 wide <b>and</b> 512 tall. Both sides grow, not just one.</li>
+            <li>512 is two lots of 256. So the big square is exactly four small squares: two across and two down.</li>
+            <li>Four small squares hold 4 &times; 65,536 = <b>262,144</b> numbers. Double the width, and you get <b>four times</b> the numbers.</li>
+          </ol>
+          <div class="t3-controls" style="justify-content:center;">
+            <button type="button" class="t3-btn" id="sq-play">Show the 512 &times; 512 layer</button>
+          </div>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-layer-group"></i> The four parts of your model</h4>
+          <p>We opened <code>qa_model_v7.pth</code> and <code>qa_model_v8.pth</code> and counted the numbers in
+          every part. Your model has four parts. You met them all in Session 3:</p>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Part</th><th>What it does</th><th>In the study group</th></tr>
+              <tr><td><b>Dictionary</b></td><td>Turns each token into its row of numbers.</td><td>Writes the first notes on each notepad.</td></tr>
+              <tr><td><b>Attention</b></td><td>Each token takes in useful information from the tokens before it.</td><td>Students copy helpful notes from the notepads to their left.</td></tr>
+              <tr><td><b>Feed-forward</b></td><td>Where the model stores its facts.</td><td>The shelf of facts that every student reaches into.</td></tr>
+              <tr><td><b>Output</b></td><td>Reads the last notepad and picks the next token.</td><td>The student at the end says the next word.</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">Where every parameter sits</span>
+          <div class="t5-stack">
+            <span class="who">v7</span>
+            <span class="track"><span class="seg ff" data-w="12.45"></span><span class="seg at" data-w="6.21"></span><span class="seg dict" data-w="6.47"></span><span class="seg out" data-w="6.23"></span></span>
+            <span class="total">7.9M</span>
+          </div>
+          <div class="t5-stack">
+            <span class="who">v8</span>
+            <span class="track"><span class="seg ff" data-w="49.73"></span><span class="seg at" data-w="24.85"></span><span class="seg dict" data-w="12.93"></span><span class="seg out" data-w="12.44"></span></span>
+            <span class="total">25.3M</span>
+          </div>
+          <div class="t5-key" style="justify-content:flex-start;">
+            <span><i style="background:#22c55e;"></i> feed-forward (the shelf of facts)</span>
+            <span><i style="background:#0ea5e9;"></i> attention</span>
+            <span><i style="background:#a78bfa;"></i> dictionary</span>
+            <span><i style="background:#f59e0b;"></i> output</span>
+          </div>
+          <table class="t3-table">
+            <tr><th>Part</th><th style="text-align:right;">v7</th><th style="text-align:right;">v8</th><th style="text-align:right;">Grew by</th></tr>
+            <tr><td>Feed-forward (the shelf of facts)</td><td class="num">3.2M</td><td class="num">12.6M</td><td class="num"><b>4 times</b></td></tr>
+            <tr><td>Attention</td><td class="num">1.6M</td><td class="num">6.3M</td><td class="num"><b>4 times</b></td></tr>
+            <tr><td>Dictionary</td><td class="num">1.6M</td><td class="num">3.3M</td><td class="num">2 times</td></tr>
+            <tr><td>Output</td><td class="num">1.6M</td><td class="num">3.2M</td><td class="num">2 times</td></tr>
+          </table>
+          <p class="t3-foot">The total also includes a few thousand numbers in the layer norms (small parts that keep the numbers tidy). They are too small to draw.</p>
+        </div>
+
+        <div class="rule-callout" style="background: rgba(34, 197, 94, 0.1); border-left-color: #16a34a;">
+          <h4><i class="fas fa-lightbulb"></i> Most of the new room goes on the shelf</h4>
+          <p>The shelf of facts grows four times, from about 3.2M to about 12.6M numbers. Half of v8 is now
+          shelf. The dictionary only doubles, because the number of tokens stays at 6,144.</p>
+          <p style="margin-bottom:0;">This is the whole idea of today. The model gets far more room to store
+          facts. With more room, there is less squashing between the twenty subjects.</p>
+        </div>
+
+        <details class="t4-check">
+          <summary>Check yourself: you changed one number. Which part of the model grew the most, and why?</summary>
+          <p>The feed-forward, the shelf of facts. It grew four times, because it is built from squares of
+          <code>n_embd</code>, and a square twice as wide holds four times as many numbers. The dictionary only
+          doubled, because the number of tokens stayed at 6,144.</p>
+        </details>
+
+        <hr />
+
+        <!-- ============================================================ 3. THE EDITS -->
+        <h2>3. The Edits</h2>
+
+        <div class="rule-callout" style="background: rgba(234, 88, 12, 0.08); border-left-color:#ea580c;">
+          <h4><i class="fas fa-triangle-exclamation"></i> Before you start</h4>
+          <p>Keep your Session 4 folder exactly as it is. You need it later to run v7, because v7 only opens in a
+          256-wide model.</p>
+          <p style="margin-bottom:0;">You make every change today in a <b>new</b> Session 5 folder.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 1 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 1: Make a Session 5 folder</h4>
+          <ol style="margin-top:14px;">
+            <li>Make a new folder next to your Session 4 folder. Call it <code>Session5</code>.</li>
+            <li>Copy these seven files from Session 4 into it:
+              <code>attention_engine.py</code>, <code>bpe_tokenizer.py</code>, <code>data_pipeline.py</code>,
+              <code>train_qa.py</code>, <code>talk_to_your_engine.py</code>, <code>tokenizer.json</code> and
+              <code>tokens.pt</code>.</li>
+            <li>Do not copy <code>qa_model_v6.pth</code> or <code>qa_model_v7.pth</code>. They are 256 wide, and
+            they cannot open in the model you build today.</li>
+          </ol>
+          <p><b>Using a codespace?</b> Your Session 4 files are in the main folder you have used all term. Make
+          <code>Session5</code> inside that folder. Wherever this page says "Session 4 folder", use the main folder.</p>
+          <p style="margin-bottom:0;">Your book (<code>tokens.pt</code>) and your tokenizer stay exactly the same.
+          Only the size of the model changes.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 2 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 2: Change the width</h4>
+          <p style="margin-top:14px;">Open <code>attention_engine.py</code> in your Session 5 folder. Change one
+          number near the top:</p>
+          <div class="code-block python">
+            <div class="code-header">attention_engine.py &mdash; OLD, then NEW</div>
+            <pre>
+n_embd = 256       # numbers used to describe each token
+
+n_embd = 512       # numbers used to describe each token
+            </pre>
+          </div>
+          <p>This one number reaches every part of the model. The picture shows where it goes:</p>
+          <div class="t5-codepic">
+            <div class="t5-codeline">n_embd = <span class="hl">512</span></div>
+            <div class="t5-down">&#9660; &#9660; &#9660;</div>
+            <div class="t5-flow">
+              <div><b>Every notepad</b>512 lines for each token, instead of 256</div>
+              <div><b>Every head</b>512 &divide; 8 heads = 64 lines each, instead of 32</div>
+              <div><b>The shelf</b>4 &times; 512 = 2,048 numbers wide, instead of 1,024</div>
+            </div>
+          </div>
+          <p style="margin-top:16px;">Now check the new size. Run this in your Session 5 folder:</p>
+          <div class="code-block python">
+            <div class="code-header">terminal</div>
+            <pre>
+python -c "from attention_engine import model; print(sum(p.numel() for p in model.parameters()))"
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">It must print <b>25334784</b>. If it prints 7951872, the file still says
+          256, or you ran it in your Session 4 folder.</p>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 3 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 3: Train from zero, and read for longer</h4>
+          <p style="margin-top:14px;">Open <code>train_qa.py</code>. Last session, v7's training started from
+          v6 as a <b>checkpoint</b> (a saved copy of a model's numbers that training can carry on from). So v7 did
+          not start from random numbers. It started from everything v6 had already learned.</p>
+          <p>Today you cannot start from v6. The picture uses the squares from Section 2 to show why.</p>
+          <div class="t3-panel" style="margin:14px 0;">
+            <span class="t3-badge warn">Can v6's numbers go into v8?</span>
+            <div class="t5-fit">
+              <div class="t5-sqcol">
+                <div class="t5-sq learned">256 &times; 256</div>
+                <p class="t5-sqcap">One layer of <b>v6</b><br>filled with learned numbers</p>
+              </div>
+              <div class="t5-fitmid">
+                <span class="t5-arrow">&#10140;</span>
+                <span class="t5-stop">size mismatch</span>
+              </div>
+              <div class="t5-sqcol">
+                <div class="t5-sq4">
+                  <div class="t5-sq learned">v6 fits here</div><div class="t5-sq empty">empty</div>
+                  <div class="t5-sq empty">empty</div><div class="t5-sq empty">empty</div>
+                </div>
+                <p class="t5-sqcap">The same layer in <b>v8</b>: 512 &times; 512<br>v6 would fill only 1 part in 4</p>
+              </div>
+            </div>
+            <ol class="t5-steps" style="padding-left:38px;">
+              <li class="on">Every square layer in v6 is 256 &times; 256. In v8, the same layer is 512 &times; 512.</li>
+              <li class="on">Your code can only load a saved model into a model of <b>exactly the same shape</b>.
+              The shapes are different, so it stops with a <code>size mismatch</code> error.</li>
+              <li class="on">Even if you pasted v6 into a corner, it would fill only <b>one quarter</b> of each
+              square. The other three quarters would still be random.</li>
+            </ol>
+            <p style="margin:14px 0 0;">So v8 starts from random numbers and learns everything from the beginning.</p>
+          </div>
+          <p>Because v8 starts from zero, it needs to read for longer. Make three changes:</p>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD</div>
+            <pre>
+#     python train_qa.py          -> the full 14,000 steps (about 2 hours on a T4)
+#     python train_qa.py 300      -> a short test run
+STEPS = int(sys.argv[1]) if len(sys.argv) > 1 else 14000
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; NEW</div>
+            <pre>
+#     python train_qa.py          -> the full 28,000 steps
+#     python train_qa.py 300      -> a short test run
+STEPS = int(sys.argv[1]) if len(sys.argv) > 1 else 28000
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">train_qa.py &mdash; OLD, then NEW</div>
+            <pre>
+START_FROM = "qa_model_v6.pth"
+SAVE_AS = "qa_model_v7.pth"
+
+START_FROM = None
+SAVE_AS = "qa_model_v8.pth"
+            </pre>
+          </div>
+          <ul style="margin-bottom:0;">
+            <li><code>STEPS</code> goes from 14,000 to 28,000. v7 had 28,000 steps of practice behind it in
+            total: 14,000 as v6, then 14,000 more in Session 4. v8 starts from nothing, so it gets the same 28,000
+            steps in one go. That keeps the test between them fair.</li>
+            <li><code>START_FROM = None</code> tells the code to start from random numbers.</li>
+            <li><code>SAVE_AS</code> gives the new model its own name, so it never overwrites v7.</li>
+          </ul>
+        </div>
+
+        <!-- ------------------------------ ACTIVITY 4 -->
+        <div class="activity-box">
+          <h4>&#128296; Activity 4: Point the chat at v8</h4>
+          <p style="margin-top:14px;">Open <code>talk_to_your_engine.py</code>. Change the default model, and the
+          two comment lines above it:</p>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; OLD</div>
+            <pre>
+#     python talk_to_your_engine.py                     -> today's model, qa_model_v7.pth
+#     python talk_to_your_engine.py qa_model_v6.pth     -> last session's model
+checkpoint = sys.argv[1] if len(sys.argv) > 1 else "qa_model_v7.pth"
+            </pre>
+          </div>
+          <div class="code-block python">
+            <div class="code-header">talk_to_your_engine.py &mdash; NEW</div>
+            <pre>
+#     python talk_to_your_engine.py                     -> today's model, qa_model_v8.pth
+#     (v7 is 256 wide, so it cannot open here: run it from the Session 4 folder)
+checkpoint = sys.argv[1] if len(sys.argv) > 1 else "qa_model_v8.pth"
+            </pre>
+          </div>
+          <p style="margin-bottom:0;">That is every change for today. Nothing else in any file is different from
+          Session 4.</p>
+        </div>
+
+        <hr />
+
+        <!-- ============================================================ 4. JUDGE IT -->
+        <h2>4. v7 Against v8: Judge It Yourself</h2>
+
+        <div class="t4-plain">
+          <b class="lab">In one sentence</b>
+          A bigger model is better <i>on average</i>, not on every question. So you judge it with a checklist and
+          a big test, never with one answer.
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-list-check"></i> The scorecard: six checks for every answer</h4>
+          <p>A good answer passes all six checks. Use them for every answer you read today.</p>
+          <ol style="margin-bottom:0;">
+            <li><b>Stays on the question</b> (it answers what you asked, not a nearby question).</li>
+            <li><b>The right fact</b> (the science is correct).</li>
+            <li><b>Real words only</b> (no made-up words).</li>
+            <li><b>Sentences make sense</b> (no gibberish, no sentence that says two opposite things).</li>
+            <li><b>Finishes its sentences</b> (no sentence that stops halfway).</li>
+            <li><b>Right words for the subject</b> (it uses gravity words for gravity, cell words for cells).</li>
+          </ol>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge">Six real questions, asked to v7 and v8</span>
+          <div class="t5-tabs" id="cmp-tabs"></div>
+          <p class="t5-q" id="cmp-q"></p>
+          <div class="t5-ans">
+            <div class="t5-card"><h5>v7 &mdash; 7.9M parameters</h5><div class="txt" id="cmp-v7"></div><table class="t5-score" id="cmp-s7"></table></div>
+            <div class="t5-card v8"><h5>v8 &mdash; 25.3M parameters</h5><div class="txt" id="cmp-v8"></div><table class="t5-score" id="cmp-s8"></table></div>
+          </div>
+          <p class="t5-verdict" id="cmp-verdict"></p>
+          <div class="t5-key" style="justify-content:flex-start;">
+            <span><i style="background:#14532d;"></i> the right fact</span>
+            <span><i style="background:#7f1d1d;"></i> wrong, made up, or off the question</span>
+            <span><b class="m-yes">&#10003;</b> passes</span>
+            <span><b class="m-part">~</b> partly</span>
+            <span><b class="m-no">&#10007;</b> fails</span>
+          </div>
+          <p class="t3-foot">These are the exact answers. Both models answer greedily: at every step they pick
+          their favourite next token, with no dice roll. So you get the same words when you ask the same questions.</p>
+        </div>
+
+        <div class="activity-box">
+          <h4>&#128296; Activity 5: Ask both models yourself</h4>
+          <p style="margin-top:14px;"><b>Step 1:</b> Download <code>qa_model_v8.pth</code> (114 MB) from the course's
+          <a href="https://github.com/kkmayank1983/ai-startup-incubator/releases/tag/models" target="_blank" rel="noopener">models page on GitHub</a>. Put it in your <code>Session5</code> folder.</p>
+          <p><b>Using a codespace?</b> <code>qa_model_v8.pth</code> is already in your main folder (if it is not, run
+          <code>bash .devcontainer/get_models.sh</code> once). Move it into <code>Session5</code>:</p>
+          <div class="code-block python">
+            <div class="code-header">terminal &mdash; codespace only, from the main folder</div>
+            <pre>
+mv qa_model_v8.pth Session5/
+            </pre>
+          </div>
+          <p><b>Step 2:</b> Open a terminal. Go to your Term 3 folder (the folder that holds
+          <code>Session4</code> and <code>Session5</code>). Then go into <code>Session4</code> and start v7:</p>
+          <div class="code-block python">
+            <div class="code-header">terminal 1 &mdash; v7</div>
+            <pre>
+cd path\to\your\Term3\folder
+cd Session4
+python talk_to_your_engine.py
+            </pre>
+          </div>
+          <p><b>Step 3:</b> Open a <b>second</b> split terminal by clicking the "split terminal" option on the top right corner of your terminal box in vs code. Go to the same Term 3 folder, then into
+          <code>Session5</code>, and start v8:</p>
+          <div class="code-block python">
+            <div class="code-header">terminal 2 &mdash; v8</div>
+            <pre>
+cd path\to\your\Term3\folder
+cd Session5
+python talk_to_your_engine.py
+            </pre>
+          </div>
+          <p>Replace <code>path\to\your\Term3\folder</code> with where your folder really is, for example
+          <code>Desktop\Term3</code>. Put the two terminals side by side so you can compare the answers.</p>
+          <p><b>Using a codespace?</b> Terminal 1 stays in the main folder. In terminal 2, type
+          <code>cd Session5</code> first.</p>
+          <!-- SCREENSHOT: put your image file next to this page, then change src below to its name.
+               Example: src="s5_two_terminals.png" -->
+          <figure class="t5-shot">
+            <img src="../Images/Session 5/Split Terminal.png" onerror="this.parentNode.style.display='none'" alt="Two terminals side by side: v7 running in the Session4 folder on the left, v8 running in the Session5 folder on the right">
+            <figcaption>Left: v7 in the Session4 folder. Right: v8 in the Session5 folder.</figcaption>
+          </figure>
+          <p><b>Step 4:</b> Type the six questions from the panel above into both. Check that you get the same answers.</p>
+          <p><b>Step 5:</b> Ask both models four questions of your own. Keep them short and plain, like
+          "what is a cell" or "why is the sky blue".</p>
+          <p style="margin-bottom:0;"><b>Step 6:</b> Score every answer with the six checks. Count how many checks
+          each model passes in total.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-spell-check"></i> Why does the model make up words?</h4>
+          <p>Your model only knows the words in its book. When you ask about a word the book <b>rarely or never
+          uses</b>, the model has nothing to copy. So it glues together pieces it does know, and it builds a word
+          that sounds right but is not real.</p>
+          <p style="margin-bottom:0;">We counted how often each word appears in your book. The panel shows what
+          the tokenizer does with each one.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge warn">Words the book knows, and words it does not</span>
+          <div class="t5-wordrow"><span class="w">mitochondria</span><span class="t5-pieces"><span class="t5-pc whole">mitochondria</span></span><span class="n">761 times in the book</span></div>
+          <div class="t5-wordrow"><span class="w">biomolecule</span><span class="t5-pieces"><span class="t5-pc">bi</span><span class="t5-pc">om</span><span class="t5-pc">ole</span><span class="t5-pc">cule</span></span><span class="n">0 times in the book</span></div>
+          <div class="t5-wordrow"><span class="w">v8 wrote: Biomixis</span><span class="t5-pieces"><span class="t5-pc fake">B</span><span class="t5-pc fake">i</span><span class="t5-pc fake">om</span><span class="t5-pc fake">ix</span><span class="t5-pc fake">is</span></span><span class="n">0 times: not a word</span></div>
+          <p style="margin-top:14px;margin-bottom:0;">The tokenizer stores "mitochondria" as one whole piece, and
+          the book uses it 761 times. v8 answers that question correctly. The book never uses "biomolecule", so
+          v8 glues known pieces into "Biomixis".</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-code-branch"></i> A second trap: two words that start the same way</h4>
+          <p>You ask v8 "what is a neuron". It answers: <i>"<b>Neutrons</b> are like tiny messengers..."</i>
+          The book's real answer says: <i>"<b>Neurons</b> are like tiny messengers in your brain..."</i></p>
+          <p style="margin-bottom:0;">So v8 remembered the right idea, but it wrote the wrong word. Here is
+          why, one step at a time.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge warn">Neurons or Neutrons? The model picks one piece at a time</span>
+          <div class="t5-wordrow"><span class="w">Neurons</span><span class="t5-pieces"><span class="t5-pc whole">N</span><span class="t5-pc whole">e</span><span class="t5-pc">ur</span><span class="t5-pc">ons</span></span><span class="n">what you asked about</span></div>
+          <div class="t5-wordrow"><span class="w">Neutrons</span><span class="t5-pieces"><span class="t5-pc whole">N</span><span class="t5-pc whole">e</span><span class="t5-pc fake">utr</span><span class="t5-pc">ons</span></span><span class="n">what v8 wrote</span></div>
+          <p style="margin:16px 0 6px;color:#e2e8f0;">At the start of an answer, after <b>N e</b>, which piece comes next in the book?</p>
+          <div class="t5-res"><span class="who">utr</span><span class="track"><span class="seg w" data-w="100">379 times</span></span><span class="sc">Neutrons</span></div>
+          <div class="t5-res"><span class="who">ur</span><span class="track"><span class="seg r" data-w="8.4">32</span></span><span class="sc">Neurons</span></div>
+          <ol class="t5-steps" style="padding-left:38px;">
+            <li class="on">The model writes one piece at a time. "Neurons" and "Neutrons" both start with
+            <b>N</b> then <b>e</b>, so after two pieces both words are still possible.</li>
+            <li class="on">For the third piece, the book has <b>utr</b> (Neutrons) after N e 379 times, and
+            <b>ur</b> (Neurons) only 32 times.</li>
+            <li class="on">The model always takes the favourite. So it picks <b>utr</b>, and the word comes out as
+            "Neutrons".</li>
+          </ol>
+          <p style="margin:14px 0 0;">So the model leans towards the word it saw <b>most often</b>, when two words
+          start with the same pieces. v7 fell into the same trap in a different way. It wrote <b>"Neon"</b>,
+          which also starts with N e.</p>
+          <p class="t3-foot">A bigger model does not fully fix this. A bigger model can only remember what its book
+          says, and how often it says it.</p>
+        </div>
+
+        <div class="tool-info-box">
+          <h4><i class="fas fa-vial"></i> Our test: 200 new questions</h4>
+          <p>We asked v6, v7 and v8 the same <b>200 new questions</b>, ten for each subject. The questions are short
+          and plain, like "what is a herbivore" or "why is mars red".</p>
+          <p>A marker read all 600 answers without knowing which model wrote each one. The marker marked every
+          answer <b>right</b>, <b>partly right</b> or <b>wrong</b>.</p>
+          <p style="margin-bottom:0;">Then we counted how many answers each model got right.</p>
+        </div>
+
+        <div class="t3-panel">
+          <span class="t3-badge good">The result: 200 new questions</span>
+          <div class="t5-res"><span class="who">v6</span><span class="track"><span class="seg r" data-w="20">40</span><span class="seg p" data-w="26.5">53</span><span class="seg w" data-w="53.5">107</span></span><span class="sc">40 right</span></div>
+          <div class="t5-res"><span class="who">v7</span><span class="track"><span class="seg r" data-w="23.5">47</span><span class="seg p" data-w="23">46</span><span class="seg w" data-w="53.5">107</span></span><span class="sc">47 right</span></div>
+          <div class="t5-res"><span class="who">v8</span><span class="track"><span class="seg r" data-w="38.5">77</span><span class="seg p" data-w="18">36</span><span class="seg w" data-w="43.5">87</span></span><span class="sc">77 right</span></div>
+          <div class="t5-key" style="justify-content:flex-start;">
+            <span><i style="background:#22c55e;"></i> right</span>
+            <span><i style="background:#fbbf24;"></i> partly right</span>
+            <span><i style="background:#475569;"></i> wrong</span>
+            <span>number on the right = right answers, out of 200</span>
+          </div>
+          <table class="t3-table">
+            <tr><th>Model</th><th style="text-align:right;">Parameters</th><th style="text-align:right;">Right</th><th style="text-align:right;">Partly right</th><th style="text-align:right;">Wrong</th></tr>
+            <tr><td>v6 (Session 3)</td><td class="num">7.9M</td><td class="num">40</td><td class="num">53</td><td class="num">107</td></tr>
+            <tr><td>v7 (Session 4)</td><td class="num">7.9M</td><td class="num">47</td><td class="num">46</td><td class="num">107</td></tr>
+            <tr><td><b>v8 (today)</b></td><td class="num"><b>25.3M</b></td><td class="num"><b>77</b></td><td class="num">36</td><td class="num">87</td></tr>
+          </table>
+          <p style="margin:0;">v8 gets about <b>2 answers in 5</b> fully right. v7 gets about <b>1 in 4</b>. So v8 is
+          clearly better, but it still gets more answers wrong than right.</p>
+          <p class="t3-foot">These numbers are approximate. 200 questions is a small test, so a different set of
+          questions could move each count by a few.</p>
+        </div>
+
+        <div class="t3-tablebox">
+          <h4>Question by question: v8 against v7</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>What happened</th><th style="text-align:right;">Questions</th></tr>
+              <tr style="background:#f0fdf4;"><td>v8 gave the better answer</td><td class="num"><b>66</b></td></tr>
+              <tr><td>v7 gave the better answer</td><td class="num">35</td></tr>
+              <tr><td>Both got the same mark</td><td class="num">36</td></tr>
+              <tr><td>Both were wrong</td><td class="num">63</td></tr>
+            </table>
+          </div>
+          <p>The same test also counted made-up words. v7 used a made-up word in 24 of its 200 answers. v8 did it in
+          16. v8 makes up words less often, but it still does it.</p>
+        </div>
+
+        <details class="t4-check">
+          <summary>Check yourself: v8 got 77 right and v7 got 47. Does that mean v8 beats v7 on every question?</summary>
+          <p>No. On 35 of the 200 questions v7 gave the better answer. A bigger model wins on average. That is why
+          one answer never settles it, and the 200-question test does.</p>
+        </details>
+
+        <hr />
+
+        <!-- ============================================================ 5. WHAT CHANGED -->
+        <h2>5. What This Changed</h2>
+
+        <div class="t3-tablebox">
+          <h4>Session 4 against today, side by side</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>What</th><th>Session 4 &mdash; v7</th><th>Today &mdash; v8</th></tr>
+              <tr><td>Width (<code>n_embd</code>)</td><td>256</td><td><b>512</b></td></tr>
+              <tr><td>Lines for each head</td><td>32</td><td>64</td></tr>
+              <tr><td>Parameters</td><td>7.9M</td><td><b>25.3M</b></td></tr>
+              <tr><td>Started from</td><td>v6</td><td>random numbers</td></tr>
+              <tr><td>Training steps in total</td><td>28,000 (14,000 as v6, then 14,000 more)</td><td>28,000</td></tr>
+              <tr><td>Model file</td><td>44.5 MB</td><td>114 MB</td></tr>
+              <tr><td>Time to answer one question on our laptop</td><td>about 2 seconds</td><td>about 3 seconds</td></tr>
+              <tr><td>Right answers in our 200-question test</td><td>47</td><td><b>77</b></td></tr>
+            </table>
+          </div>
+          <p>The book, the tokenizer and the marking are the same. The only real change is the width.</p>
+        </div>
+
+        <!-- ============================================================ 6. STILL BROKEN -->
+        <h2>6. What Is Still Broken</h2>
+
+        <div class="t3-tablebox">
+          <h4>Known problems after today</h4>
+          <div class="t3-scroll">
+            <table class="t3-table">
+              <tr><th>Problem</th><th>Fixed today?</th><th>What we know</th></tr>
+              <tr><td>Facts squash together on a small notepad</td><td>Better</td><td>The shelf of facts is four times bigger.</td></tr>
+              <tr><td>It answers a nearby question</td><td>Less often</td><td>v8 still does it.</td></tr>
+              <tr><td>It makes up words</td><td>Less often</td><td>16 answers in 200, down from 24. It happens with words the book rarely uses.</td></tr>
+              <tr><td>It sounds sure when it is wrong</td><td>No</td><td>It never says "I don't know".</td></tr>
+              <tr><td>It gets most questions right</td><td>No</td><td>v8 gets about 2 in 5 fully right.</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- ============================================================ KNOWLEDGE CHECK -->
+        <section class="knowledge-check">
+          <div class="check-header">
+            <i class="fas fa-microchip"></i>
+            <h2>Mission Diagnostic: Level 3.05</h2>
+          </div>
+          <div class="mcq-container">
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">1. What does <code>n_embd</code> decide?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. n_embd is how many numbers describe one token. In the study group, it is how many lines are on each notepad.">How many numbers describe one token.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. The number of tokens the model can see at once is block_size, and it stays at 256.">How many tokens the model can see at once.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. The number of different tokens is set by the tokenizer, and it stays at 6,144.">How many different tokens the tokenizer knows.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">2. You double the width from 256 to 512. Why does the model grow about 3.2 times, and not 2 times?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="No. Both models have 6 layers. Only the width changed.">Because v8 has more layers.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. A square layer that gets twice as wide also gets twice as tall, so it holds 4 times as many numbers. The dictionary and the output only double, so the total ends up 3.2 times bigger.">Because most layers are squares, and a square twice as wide holds 4 times as many numbers.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. The tokenizer and the book are exactly the same as in Session 4.">Because v8 uses a bigger tokenizer.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">3. Why does v8 start from random numbers instead of from v6?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. v6's numbers fit a 256-line notepad. They have no place in a 512-line one, so the shapes do not match and v6 cannot load.">Because v6 is 256 wide, and its numbers do not fit a 512-wide model.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. v6 is a fine starting point for a 256-wide model. The problem is only the size.">Because v6 has too many mistakes.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. Starting from zero is slower, which is why v8 reads for 28,000 steps.">Because starting from zero is faster.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">4. You ask "what is a biomolecule", and v8 says "Biomixis". Why?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="No. Greedy picks the same token every time. The model makes up the word because the book never uses 'biomolecule'.">Because it rolls dice and picked a strange word.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. The word 'biomolecule' appears 0 times in the book. The model has nothing to copy, so it glues together pieces it knows.">Because the book never uses the word, so the model glues known pieces into a new one.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. v7 also made up a word for this question ('biolumids'). A bigger model cannot learn a word its book does not contain.">Because v8 is too big and makes more mistakes than v7.</button>
+              </div>
+            </div>
+            <div class="mcq-item q-purple">
+              <p class="mcq-question">5. In our 200-question test, v8 got 77 right and v7 got 47 right. What does that tell you?</p>
+              <div class="mcq-options">
+                <button class="mcq-btn" data-correct="false" data-feedback="No. 77 right out of 200 means v8 still gets more answers wrong or partly right than fully right.">v8 now answers almost every question correctly.</button>
+                <button class="mcq-btn" data-correct="false" data-feedback="No. 30 more right answers out of 200 is a clear gap. Run-to-run luck moves the counts by a few, not by 30.">The two models are about the same.</button>
+                <button class="mcq-btn" data-correct="true" data-feedback="Correct. v8 gets about 2 in 5 fully right, and v7 about 1 in 4. That is a real gain, but most answers are still not fully right.">v8 is clearly better, but it still gets most questions not fully right.</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================ HOMEWORK -->
+        <section class="session-block homework-block">
+          <h2>Homework / Extension</h2>
+          <div class="homework-item standard">
+            <h3>Standard Task: Score Five Questions</h3>
+            <ol>
+              <li>Write five short questions from five different subjects.</li>
+              <li>Ask each one to v7 (Session 4 folder) and to v8 (Session 5 folder).</li>
+              <li>Score every answer with the six checks from Section 4.</li>
+              <li>Add up the checks each model passed.</li>
+            </ol>
+            <p style="margin-bottom:0;">Write one sentence about the question where v8 did best, and one sentence
+            about a question where v8 still failed.</p>
+          </div>
+          <div class="homework-item advanced">
+            <h3>Advanced Task: Count The Shelf By Hand</h3>
+            <p>The shelf (the feed-forward) in one layer has two parts. The first part turns 512 numbers into 2,048.
+            The second part turns 2,048 back into 512. Each part also has one extra number for every output.</p>
+            <ol>
+              <li>Work out the numbers in one layer's shelf: (512 &times; 2,048 + 2,048) + (2,048 &times; 512 + 512).</li>
+              <li>Multiply by 6 layers.</li>
+              <li>Check that you get <b>12,598,272</b>. That is the 12.6M in the Section 2 table.</li>
+            </ol>
+            <p style="margin-bottom:0;">Now do the same sum for v7 with 256 and 1,024. Divide the v8 answer by the v7
+            answer. Explain in one sentence why you get about 4.</p>
+          </div>
+        </section>
+
+        <!-- ============================================================ TROUBLESHOOTING -->
+        <details class="collapsible-box">
+          <summary><strong>&#9881; Troubleshooting &amp; FAQs</strong></summary>
+          <div class="faq-item">
+            <h4>The parameter count prints <code>7951872</code></h4>
+            <p>Your <code>attention_engine.py</code> still says <code>n_embd = 256</code>, or you ran the command in
+            your Session 4 folder. Open the Session 5 file and check the number near the top.</p>
+          </div>
+          <div class="faq-item">
+            <h4><code>RuntimeError: Error(s) in loading state_dict</code> or <code>size mismatch</code></h4>
+            <p>You tried to open a 256-wide model (v6 or v7) in your 512-wide code. Run v7 from your Session 4
+            folder, and run v8 from your Session 5 folder.</p>
+          </div>
+          <div class="faq-item">
+            <h4>v8 answers more slowly than v7</h4>
+            <p>That is normal. v8 has 3.2 times as many numbers to work through for every token. On our laptop one
+            answer took about 3 seconds with v8 and about 2 seconds with v7.</p>
+          </div>
+          <div class="faq-item">
+            <h4>v7 got a question right that v8 got wrong</h4>
+            <p>It happens. In our test, v7 gave the better answer on 35 questions. One question can go either way.
+            That is why the 200-question test matters more than any single answer.</p>
+          </div>
+        </details>
+      </section>
+
+      <div class="completion-zone">
+        <div class="completion-card">
+          <label class="checkbox-container">
+            <input type="checkbox" id="session-check">
+            <span class="checkmark"></span>
+            I made a Session 5 folder, changed n_embd to 512, checked the new count of 25.3M parameters, set the training to start from zero for 28,000 steps, and scored v7 and v8 with the six checks.
+          </label>
+        </div>
+      </div>
+
+      <div class="session-nav" style="display:flex;justify-content:space-between;margin-top:30px;">
+        <a href="t3_session4.html" class="btn-secondary">Previous Session</a>
+        <button class="btn-primary" id="next-btn">Mark Complete &amp; Next <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </main>
+  </div>
+
+
+  <div id="mcq-modal" class="mcq-modal">
+    <div class="mcq-modal-content">
+      <div id="mcq-modal-status-bar"></div>
+      <div class="mcq-modal-body">
+        <div id="mcq-modal-icon"></div>
+        <h3 id="mcq-modal-title">Checking Logic...</h3>
+        <p id="mcq-modal-feedback"></p>
+        <button class="btn-primary" onclick="closeMcqModal()">Resume Mission</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../nexus-core.js"></script>
+  <script src="../script.js"></script>
+    <script>
+    (function () {
+      function $(id) { return document.getElementById(id); }
+
+      /* ================================================================
+         THE NOTEPAD
+         A picture, not a measurement. Each drawn line stands for a group
+         of real lines. On the small pad, twenty subjects share 24 lines,
+         so many lines hold two subjects at once (striped). On the big pad,
+         the same notes spread over 48 lines, so far fewer clash.
+         ================================================================ */
+      var COLORS = ['#3b82f6', '#22c55e', '#a855f7', '#f97316', '#06b6d4', '#ec4899', '#eab308', '#14b8a6'];
+      function drawPad(el, n, clashes) {
+        el.innerHTML = '';
+        for (var i = 0; i < n; i++) {
+          var d = document.createElement('div');
+          if (clashes.indexOf(i) >= 0) { d.className = 't5-line clash'; }
+          else if (i < 20) { d.className = 't5-line full'; d.style.setProperty('--c', COLORS[i % COLORS.length]); }
+          else { d.className = 't5-line'; }
+          el.appendChild(d);
+        }
+      }
+      var SMALL_CLASH = [1, 3, 4, 6, 8, 9, 11, 13, 14, 16, 18, 19];
+      var BIG_CLASH = [6, 15];
+      if ($('pad-a')) {
+        drawPad($('pad-a-lines'), 24, SMALL_CLASH);
+        function small() {
+          $('pad-b').style.height = '150px';
+          drawPad($('pad-b-lines'), 24, SMALL_CLASH);
+          $('pad-b-num').textContent = '256 lines';
+          $('pad-b-cap').textContent = 'Press the button to give it 512';
+          $('pad-grow').classList.remove('on');
+        }
+        function big() {
+          $('pad-b').style.height = '300px';
+          drawPad($('pad-b-lines'), 48, BIG_CLASH);
+          $('pad-b-num').textContent = '512 lines';
+          $('pad-b-cap').textContent = 'v8: the same notes spread out, so far fewer lines clash';
+          $('pad-grow').classList.add('on');
+        }
+        $('pad-grow').addEventListener('click', big);
+        $('pad-reset').addEventListener('click', small);
+        small();
+      }
+
+      /* ================================================================ SQUARES */
+      if ($('sq-play')) {
+        var steps = $('sq-steps').querySelectorAll('li'), timers = [];
+        $('sq-play').addEventListener('click', function () {
+          var s = $('sq4');
+          s.classList.remove('show');
+          void s.offsetWidth;          // restart the animation
+          s.classList.add('show');
+          this.classList.add('on');
+          /* light up the four steps one after another, in time with the squares */
+          timers.forEach(clearTimeout); timers = [];
+          for (var i = 0; i < steps.length; i++) steps[i].classList.toggle('on', i === 0);
+          for (var k = 1; k < steps.length; k++) {
+            (function (k) { timers.push(setTimeout(function () { steps[k].classList.add('on'); }, k * 900)); })(k);
+          }
+        });
+      }
+
+      /* ================================================================
+         v7 AGAINST v8
+         The exact greedy answers from the student files (Session 4 folder
+         for v7, Session 5 folder for v8). <mark> only adds colour.
+         Checks: on the question, right fact, real words, makes sense,
+         finishes its sentences, right words for the subject.
+         y = passes, p = partly, n = fails.
+         ================================================================ */
+      var CHECKS = ['Stays on the question', 'The right fact', 'Real words only',
+                    'Sentences make sense', 'Finishes its sentences', 'Right words for the subject'];
+      var QS = [
+        { tab: 'Escape velocity', q: 'what is the value of escape velocity on earth',
+          v7: '<mark class="bad">The acceleration of an object depends on two things: the total force pushing or pulling on it and how heavy it is.</mark> If you push two objects with the same force, the lighter one will speed up more because it has less mass. <mark class="bad">So, a toy car goes faster on the Moon than on Earth.</mark>',
+          s7: 'nnyyyn',
+          v8: 'Escape velocity is how fast something must go to completely leave a planet\'s gravity. <mark class="good">For Earth, that speed is about 11.2 kilometers per second.</mark> If a spacecraft doesn\'t reach this speed, Earth\'s gravity will pull it back.',
+          s8: 'yyyyyy',
+          verdict: '<b>v8 wins.</b> v7 answers a question about pushing things, which you did not ask. v8 gives the right number: 11.2 km per second.' },
+        { tab: 'Rubbing hands', q: 'why do i feel warm when i rub my hands against each other',
+          v7: 'That\'s because <mark class="bad">static friction is the force that keeps your hands from moving.</mark> It\'s usually stronger when you try to push a heavy box; <mark class="bad">it\'s easier to keep moving because static friction is stronger than kinetic friction.</mark>',
+          s7: 'nnyppy',
+          v8: 'When you rub your hands together, <mark class="good">you\'re creating heat due to friction, which converts kinetic energy into thermal energy.</mark> The faster you rub your hands, the more heat is produced. You can feel this by rubbing your hands together quickly and noticing how warm they become.',
+          s8: 'yyyyyy',
+          verdict: '<b>v8 wins.</b> v7 talks about friction, but never says why your hands get warm. v8 says it: friction turns movement energy into heat.' },
+        { tab: 'Density of water', q: 'what is the density of water',
+          v7: 'Water has a specific density of <mark class="bad">about 2.32 to 2 grams per cubic centimeter.</mark> <mark class="bad">This means it\'s extremely heavy for water to sink.</mark> You can measure this using a water bottle and see how much it weighs across a table!',
+          s7: 'ynynyy',
+          v8: '<mark class="good">The density of water is around 1 gram per cubic centimeter</mark> when it is at its densest, which occurs at 4 degrees Celsius. This is important because <mark class="bad">it helps explain why ice holds water properly.</mark> You can feel this if you put ice in a warm room and it feels cold!',
+          s8: 'yyypyy',
+          verdict: '<b>v8 wins.</b> v7 gives the wrong number. v8 gives the right one (1 gram per cubic centimetre), but its last two sentences drift into filler.' },
+        { tab: 'Friction', q: 'what is friction',
+          v7: 'Friction happens when two surfaces rub against each other, <mark class="bad">and it can make movement.</mark> For example, when you slide a book on a table, <mark class="bad">friction makes it slow down and eventually.</mark> This happens because the surfaces resist sliding past each other.',
+          s7: 'ypyppy',
+          v8: '<mark class="good">Friction is a force that tries to stop things from sliding past each other.</mark> It happens whenever two surfaces are in contact, like your hand sliding on a table. This force helps us walk, drive, and make sure we don\'t slip and move things.',
+          s8: 'yyyyyy',
+          verdict: '<b>v8 wins.</b> v7 has the right idea, but one sentence stops halfway: "slow down and eventually." v8 gives a clean, complete answer.' },
+        { tab: 'Biomolecule', q: 'what is a biomolecule',
+          v7: 'A <mark class="bad">biolumids</mark> is a small part of a plant\'s structure, which is important for its growth and survival. <mark class="bad">Instead of bringing energy from food, animals like men\'s eyes, which rely on those plants for movement.</mark> You can think of a plant as a tiny factory that supports all the life on Earth, while an animal only an animal is a city where they help keep the ecosystem balanced.',
+          s7: 'nnnnyn',
+          v8: '<mark class="bad">Biomixis</mark> is a fascinating process where plants can make their own food. This means that if you watch a plant, you\'re only consuming a tiny part of the entire ecosystem! Next time you see a plant or a <mark class="bad">caterpill</mark>, think about how it\'s like a tiny world all happening in your area.',
+          s8: 'nnnnyn',
+          verdict: '<b>Both fail.</b> The word "biomolecule" is not in the book even once. Both models glue known pieces into a fake word.' },
+        { tab: 'Planets', q: 'why does every planet in our solar system revolves around sun',
+          v7: '<mark class="good">The Sun\'s gravity is strong enough to hold all the planets, including Earth, all of it in orbit.</mark> This pull keeps moons moving in their orbits, which keeps them in orbit. Think of it like a string of <mark class="bad">Christmas\'s law</mark> in the string keeping the planets in orbit!',
+          s7: 'yyypyy',
+          v8: 'Every planet in our solar system has a different orbit around the Sun. <mark class="bad">This means that planets don\'t have a solid surface like other planets. Even though the Sun is much closer, the solidest and thick they are, which is why they orbit the Sun.</mark> You can think of it like a merry-go-round, with other planets going around the Sun instead.',
+          s8: 'pnynyp',
+          verdict: '<b>v7 wins this one.</b> v7 names the Sun\'s gravity. v8 talks about orbits but gives a wrong reason. A bigger model is better on average, not on every question.' }
+      ];
+      var MARK = { y: ['m-yes', '✓'], p: ['m-part', '~'], n: ['m-no', '✗'] };
+      function score(el, s) {
+        var html = '';
+        for (var i = 0; i < CHECKS.length; i++) {
+          var m = MARK[s.charAt(i)];
+          html += '<tr><td>' + CHECKS[i] + '</td><td class="m ' + m[0] + '">' + m[1] + '</td></tr>';
+        }
+        el.innerHTML = html;
+      }
+      var tabs = $('cmp-tabs');
+      if (tabs) {
+        var btns = [];
+        function show(k) {
+          var x = QS[k];
+          $('cmp-q').innerHTML = 'You ask: <code>' + x.q + '</code>';
+          $('cmp-v7').innerHTML = x.v7;
+          $('cmp-v8').innerHTML = x.v8;
+          score($('cmp-s7'), x.s7);
+          score($('cmp-s8'), x.s8);
+          $('cmp-verdict').innerHTML = x.verdict;
+          for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', i === k);
+        }
+        QS.forEach(function (x, k) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 't3-btn'; b.textContent = (k + 1) + '. ' + x.tab;
+          b.addEventListener('click', function () { show(k); });
+          tabs.appendChild(b); btns.push(b);
+        });
+        show(0);
+      }
+
+      /* ================================================================ BARS (grow when visible) */
+      function grow(panel) {
+        var segs = panel.querySelectorAll('.seg');
+        for (var i = 0; i < segs.length; i++) segs[i].style.width = (segs[i].getAttribute('data-w') || 0) + '%';
+      }
+      function whenSeen(el, fn) {
+        if (!el) return;
+        if (!('IntersectionObserver' in window)) { fn(); return; }
+        var io = new IntersectionObserver(function (es) {
+          if (es[0].isIntersecting) { fn(); io.disconnect(); }
+        }, { threshold: 0.3 });
+        io.observe(el);
+      }
+      /* every panel with bars grows on its own, when you scroll to it */
+      var panels = [];
+      document.querySelectorAll('.t5-stack, .t5-res').forEach(function (row) {
+        if (panels.indexOf(row.parentNode) < 0) panels.push(row.parentNode);
+      });
+      panels.forEach(function (p) { whenSeen(p, function () { grow(p); }); });
+    })();
+  </script>
+
+</body>
+
+</html>
